@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "251922939522",
+    "project_id": "travelwin-dfb1f",
+    "storage_bucket": "travelwin-dfb1f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251922939522:android:2029426a4c4ca051defe9b",
+        "android_client_info": {
+          "package_name": "com.example.travelwin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251922939522-e7lt0bbvj8uc05tpp6btehqp1ntq3nec.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.travelwin",
+            "certificate_hash": "39b0fafad20844c7a9ecd93c28208ef0cdb178fe"
+          }
+        },
+        {
+          "client_id": "251922939522-hcv4tu936qnac8s30k8j28tkpccnov3g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe2St_mHMlYQFvDdzpgDW1YbATfPCUKIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251922939522-hcv4tu936qnac8s30k8j28tkpccnov3g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "251922939522-6to8sclr67bec6aialrot81dc1pga055.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "travelwin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251922939522:android:317e0e4f6f330428defe9b",
+        "android_client_info": {
+          "package_name": "com.travelwin1.travelwin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251922939522-sm3muhr24t07khadf433p5o2dr7vg7o9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travelwin1.travelwin",
+            "certificate_hash": "39b0fafad20844c7a9ecd93c28208ef0cdb178fe"
+          }
+        },
+        {
+          "client_id": "251922939522-hcv4tu936qnac8s30k8j28tkpccnov3g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAe2St_mHMlYQFvDdzpgDW1YbATfPCUKIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251922939522-hcv4tu936qnac8s30k8j28tkpccnov3g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "251922939522-6to8sclr67bec6aialrot81dc1pga055.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "travelwin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

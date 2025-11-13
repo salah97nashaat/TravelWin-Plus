@@ -1,0 +1,15 @@
+const Map<String, String> fr = {
+  "GENERAL": "GÉNÉRAL",
+  "Dark Mode": "Mode sombre",
+  "Language": "Langue",
+  "Logout": "Se déconnecter",
+  "Setting":"Setting",
+  "Profile":"Profile",
+  "Name":"Name",
+  "Email":"Email",
+  "Mobile Number":"Mobile Number",
+  "Point":"Point",
+  "Age":"Age",
+  "IN":"IN",
+  "LOG":"LOG",
+};
