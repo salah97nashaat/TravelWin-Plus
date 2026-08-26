@@ -46,7 +46,7 @@ class AboutController extends GetxController {
     final GetStorage authBox = GetStorage();
 
     String token = authBox.read('token').toString();
-    String apiurl = "https://travelwin1.com/api/api/get_privacy"; //api url
+    String apiurl = "$baseUrlApi/get_privacy"; //api url
     var response = await http.get(Uri.parse(apiurl), headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -64,7 +64,7 @@ class AboutController extends GetxController {
 
     String token = authBox.read('token').toString();
     String apiurl =
-        "https://travelwin1.com/api/api/get_other_services"; //api url
+        "$baseUrlApi/get_other_services"; //api url
     var response = await http.get(Uri.parse(apiurl), headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

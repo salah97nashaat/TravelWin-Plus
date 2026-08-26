@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelwin/utils/my_string.dart';
 import '../../models/notification_model.dart';
 import 'dart:convert';
 
@@ -36,7 +37,7 @@ class NotificationDetailsController extends GetxController {
     String token = authBox.read('token').toString();
     try {
       String apiurl =
-          "https://travelwin1.com/api/api/update_notification_status/?id=" +
+          "$baseUrlApi/update_notification_status/?id=" +
               id; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',

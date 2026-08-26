@@ -10,7 +10,7 @@ import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
 import '../../widgets/text_utils.dart';
 // import 'package:url_launcher/url_launcher.dart';
-import 'package:map_launcher/map_launcher.dart';
+// import 'package:map_launcher/map_launcher.dart';
 
 class ViewTourPlaceFavoriteDetailsScreen extends StatelessWidget {
   final TourPlaceDetailsFavoriteController tourPlaceDetailsFavoriteController =
@@ -229,18 +229,18 @@ class ViewTourPlaceFavoriteDetailsScreen extends StatelessWidget {
                           vertical: 12,
                         )),
                     onPressed: () async {
-                      MapLauncher.showMarker(
-                          mapType: MapType.google,
-                          coords: Coords(
-                              double.parse(tourPlaceDetailsFavoriteController
-                                  .lat.value
-                                  .toString()),
-                              double.parse(tourPlaceDetailsFavoriteController
-                                  .longitude.value
-                                  .toString())),
-                          title: tourPlaceDetailsFavoriteController
-                              .name_ar.value
-                              .toString());
+                      // MapLauncher.showMarker(
+                      //     mapType: MapType.google,
+                      //     coords: Coords(
+                      //         double.parse(tourPlaceDetailsFavoriteController
+                      //             .lat.value
+                      //             .toString()),
+                      //         double.parse(tourPlaceDetailsFavoriteController
+                      //             .longitude.value
+                      //             .toString())),
+                      //     title: tourPlaceDetailsFavoriteController
+                      //         .name_ar.value
+                      //         .toString());
 
                       // String lat = tourPlaceDetailsFavoriteController.lat.value
                       //     .toString();

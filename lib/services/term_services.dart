@@ -1,5 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelwin/utils/my_string.dart';
 
 import '../models/term_model.dart';
 // import '../models/tripe_favorite_model.dart';
@@ -13,7 +14,7 @@ class RemoteServices {
 
     String token = authBox.read('token').toString();
     var response = await client
-        .get(Uri.parse('https://travelwin1.com/api/api/get_term'), headers: {
+        .get(Uri.parse('$baseUrlApi/get_term'), headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',

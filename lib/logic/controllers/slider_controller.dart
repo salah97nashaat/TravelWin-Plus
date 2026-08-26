@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:travelwin/utils/my_string.dart';
 import '../../services/slider_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -137,7 +138,7 @@ class SliderController extends GetxController {
     try {
       isLoadingFavorite(true);
       String apiurl =
-          "https://travelwin1.com/api/api/add_favourites/?type=trip&type_id=" +
+          "$baseUrlApi/add_favourites/?type=trip&type_id=" +
               id +
               "&user_id=" +
               user_id; //api url

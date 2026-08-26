@@ -5,6 +5,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:travelwin/utils/my_string.dart';
+
 class NotificationCountController extends GetxController {
   var isLoading = true.obs;
   var notif = 0.obs;
@@ -24,7 +26,7 @@ class NotificationCountController extends GetxController {
     String token = authBox.read('token').toString();
     try {
       String apiurl =
-          "https://travelwin1.com/api/api/get_notification_status/?id=" +
+          "$baseUrlApi/get_notification_status/?id=" +
               id; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',

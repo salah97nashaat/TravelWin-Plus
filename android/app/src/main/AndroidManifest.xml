@@ -21,7 +21,8 @@
    <application
         android:label="travelwin"
 
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
        <!-- Provide required visibility configuration for API level 30 and above -->
 
        <meta-data

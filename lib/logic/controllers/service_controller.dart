@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:travelwin/models/banner_model.dart';
+import 'package:travelwin/models/NewHome.dart';
 import 'package:travelwin/models/service_model.dart';
 import 'package:travelwin/models/service_state_model.dart';
+import 'package:travelwin/services/profile_services.dart';
 import 'package:travelwin/utils/api_wrapper.dart';
 
 import '../../view/screens/services/state_chooser.dart';
@@ -19,7 +20,7 @@ class ServicesController extends GetxController {
 
   ServiceModel get service => _service.value;
   final services = <ServiceModel>[].obs;
-  final banners = <BannerModel>[].obs;
+  final banners = <Banners>[].obs;
 
   void setService(ServiceModel service) {
     _service.value = service;
@@ -71,22 +72,15 @@ class ServicesController extends GetxController {
     _isLoading(false);
   }
 
-  Future<List<BannerModel>> getBanners() async {
-    // var result = <BannerModel>[];
-    var resp = await ApiWrapper.get("/home/");
-    if (resp.statusCode == 200) {
-      var respbanners = jsonDecode(resp.body)['data']['banners'];
-      banners.clear();
-      for (var banner in respbanners) {
-        // result.add(BannerModel.fromJson(banner));
-        if (banner['type'] == "services") {
-          banners.add(BannerModel.fromJson(banner));
-        }
-      }
-      // print(result);
-      return banners;
-    }
-
-    return [];
+  Future<List<Banners>> getBanners() async {
+    // Keep this in sync with Home. The previous ApiWrapper request used a
+    // different token source and `/home/`, so service banners could be empty
+    // even when Home displayed them.
+    final home = await RemoteServices.fetchHome();
+    final serviceBanners = (home?.data?.banners ?? <Banners>[])
+        .where((banner) => banner.placement == 'services')
+        .toList();
+    banners.assignAll(serviceBanners);
+    return serviceBanners;
   }
 }

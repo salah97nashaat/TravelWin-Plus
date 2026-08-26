@@ -212,7 +212,7 @@ class AdmobManager extends GetxController {
     try {
       String token = authBox.read('token').toString();
       String user_id = authBox.read('userid').toString();
-      String apiurl = "https://travelwin1.com/api/api/get_point?user_id=" +
+      String apiurl = "$baseUrlApi/get_point?user_id=" +
           user_id; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',
@@ -270,7 +270,7 @@ class AdmobManager extends GetxController {
     final GetStorage authBox = GetStorage();
     String token = authBox.read('token').toString();
     String apiurl =
-        "https://travelwin1.com/api/api/get_withdrawal_date"; //api url
+        "$baseUrlApi/get_withdrawal_date"; //api url
     var response = await http.get(Uri.parse(apiurl), headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

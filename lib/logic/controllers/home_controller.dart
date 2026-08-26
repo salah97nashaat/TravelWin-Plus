@@ -26,6 +26,8 @@ class HomeController extends GetxController {
   final GetStorage authBox = GetStorage();
   Rx<List<Banners>> homeBanner = Rx([]);
   Rx<List<Banners>> otherBanner = Rx([]);
+  final isHomeLoading = true.obs;
+  final homeLoadError = false.obs;
   // Obtain shared preferences.
 
 // Save an integer value to 'counter' key.
@@ -34,19 +36,29 @@ class HomeController extends GetxController {
   void onInit() async {
     get_whatsapp_number();
 
-// Save an integer value to 'counter' k
-    home.value = (await RemoteServices.fetchHome()) ?? NewHome();
-    home.value!.data!.banners!.forEach((element) {
-      if (element.type != 'banner2' && element.type != 'services') {
-        homeBanner.value.add(element);
+    try {
+      // Keep the screen safe while the first network response is in flight.
+      // On a cold release build this response commonly arrives after HomeScreen
+      // has already been built.
+      final fetchedHome = await RemoteServices.fetchHome();
+      if (fetchedHome != null) {
+        home.value = fetchedHome;
+        final banners = fetchedHome.data?.banners ?? <Banners>[];
+        homeBanner.value = banners
+            .where((banner) => banner.placement?.toLowerCase() == 'home')
+            .toList();
       } else {
-        if (element.type != 'services') {
-          otherBanner.value.add(element);
-          update();
-        }
+        homeLoadError.value = true;
       }
-      update();
-    });
+    } catch (_) {
+      homeLoadError.value = true;
+    } finally {
+      isHomeLoading.value = false;
+    }
+
+    // Real-estate banners used the legacy `type: banner2` field. The dynamic
+    // banner API now has only `home` and `services` placements.
+    otherBanner.value = [];
     RemoteServices.dailyPoint().then((value) {
       BuildContext context = MultiChildRenderObjectElement(Column());
       if (value == 'Added successfully') {
@@ -93,7 +105,7 @@ class HomeController extends GetxController {
   //   String user_id = authBox.read('userid').toString();
   //   String token = authBox.read('token').toString();
   //   try {
-  //     String apiurl = "https://travelwin1.com/api/api/check_login_day?user_id="+ user_id; //api url
+  //     String apiurl = "$baseUrlApi/check_login_day?user_id="+ user_id; //api url
   //     var response = await http.get(Uri.parse(apiurl), headers: {
   //       'Content-Type': 'application/json',
   //       'Accept': 'application/json',
@@ -134,8 +146,7 @@ class HomeController extends GetxController {
     final GetStorage authBox = GetStorage();
     String token = authBox.read('token').toString();
     try {
-      String apiurl =
-          "https://travelwin1.com/api/api/get_whatsapp?type=reservation"; //api url
+      String apiurl = "$baseUrlApi/get_whatsapp?type=reservation"; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

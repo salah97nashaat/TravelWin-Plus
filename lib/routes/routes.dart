@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:travelwin/logic/bindings/provider_binding.dart';
 import 'package:travelwin/logic/bindings/services_binding.dart';
+import 'package:travelwin/view/screens/activities/activities_Screen.dart';
 import 'package:travelwin/view/screens/auth/enter_code.dart';
 import 'package:travelwin/view/screens/booking/booking.dart';
 import 'package:travelwin/view/screens/favorites/favorites.dart';
@@ -259,6 +260,11 @@ class AppRoutes {
         name: Routes.providerChooser,
         page: () => ProviderChooser(),
         binding: ProviderBinding()),
+    GetPage(
+      name: Routes.ActivitiesScreen,
+      page: () => ActivitiesScreen(),
+      binding: MainBininding(),
+    )
   ];
 }
 
@@ -292,7 +298,7 @@ class Routes {
   static const EditProfileScreen = '/EditProfileScreen';
   static const ViewNotificationScreen = '/ViewNotificationScreen';
   static const ViewNotificationDetailsScreen = '/ViewNotificationDetailsScreen';
-
+  static const ActivitiesScreen = '/ActivitiesScreen';
   static const FavoriteHomeScreen = '/FavoriteHomeScreen';
   static const AboutScreen = '/AboutScreen';
   static const ViewFavoriteTripsDetailsScreen =

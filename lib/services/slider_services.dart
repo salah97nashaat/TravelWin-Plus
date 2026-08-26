@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelwin/utils/my_string.dart';
 import '../logic/controllers/slider_controller.dart';
 import '../logic/controllers/tripe_controller.dart';
 import '../models/slider_model.dart';
@@ -19,7 +20,7 @@ class RemoteServices {
     // var response = await http
     //     .get(Uri.parse('http://host233.aya.sy/mobtech/get_sliders.php'));
     var response = await http.get(
-        Uri.parse('https://travelwin1.com/api/api/get_file_tripe2/?id=' + id),
+        Uri.parse('$baseUrlApi/get_file_tripe2/?id=' + id),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -42,7 +43,7 @@ class RemoteServices {
     //     .get(Uri.parse('http://host233.aya.sy/mobtech/get_sliders.php'));
     var response = await http.get(
         Uri.parse(
-            'https://travelwin1.com/api/api/get_file_advertisement/?id=1'),
+            '$baseUrlApi/get_file_advertisement/?id=1'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -68,7 +69,7 @@ class RemoteServices {
     String token = authBox.read('token').toString();
     try {
       String apiurl =
-          "https://travelwin1.com/api/api/add_favourites/?type=trip&type_id=" +
+          "$baseUrlApi/add_favourites/?type=trip&type_id=" +
               id +
               "&user_id=" +
               user_id; //api url
@@ -107,7 +108,7 @@ class RemoteServices {
 
     String token = authBox.read('token').toString();
     try {
-      String apiurl = "https://travelwin1.com/api/api/delete_favourites/?id=" +
+      String apiurl = "$baseUrlApi/delete_favourites/?id=" +
           id; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',
@@ -150,7 +151,7 @@ class RemoteServices {
     String token = authBox.read('token').toString();
     try {
       String apiurl =
-          "https://travelwin1.com/api/api/add_reqpoint/?type=trip&type_id=" +
+          "$baseUrlApi/add_reqpoint/?type=trip&type_id=" +
               id +
               "&user_id=" +
               user_id; //api url

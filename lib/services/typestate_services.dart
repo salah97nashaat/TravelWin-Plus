@@ -1,5 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelwin/utils/my_string.dart';
 // import '../models/slider_model.dart';
 import '../models/type_state_model.dart';
 
@@ -13,7 +14,7 @@ class RemoteServices {
     // var response = await http
     //     .get(Uri.parse('http://host233.aya.sy/mobtech/get_sliders.php'));
     var response = await http.get(
-        Uri.parse('https://travelwin1.com/api/api/get_type_state/?id=' + id),
+        Uri.parse('$baseUrlApi/get_type_state/?id=' + id),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

@@ -2,14 +2,14 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+// import 'package:map_launcher/map_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travelwin/helpers/adv/admob_banner.dart';
 import '../../../helpers/helper.dart';
 import '../../../logic/controllers/sliderTourPlace_controller.dart';
 import '../../../utils/theme.dart';
 import '../../widgets/text_utils.dart';
-import 'package:map_launcher/map_launcher.dart';
-
+// import 'package:map_launcher/map_launcher.dart' as maps;
 class ViewTourPlaceDetailsScreen extends StatelessWidget {
   final SliderTourPlaceController sliderTourPlaceController =
       Get.put(SliderTourPlaceController());
@@ -223,23 +223,36 @@ class ViewTourPlaceDetailsScreen extends StatelessWidget {
                       if (showLoginScreenIfNotLogin) {
                         return;
                       }
-                      // if (await showMessageIfGust(context)) {
-                      //   return ;
+
+                      // try {
+                      //   // 1. In v4.0+, MapApp is a class, and the list of all maps is 'all'
+                      //   final availableMaps =
+                      //       await MapLauncher.getAvailableMaps(MapApp.all);
+
+                      //   if (availableMaps.isNotEmpty) {
+                      //     // 2. Create the marker request
+                      //     final markerRequest = MapLauncher.marker(
+                      //       Location.coords(
+                      //         double.parse(sliderTourPlaceController.lat.value
+                      //             .toString()),
+                      //         double.parse(sliderTourPlaceController
+                      //             .longitude.value
+                      //             .toString()),
+                      //         title: sliderTourPlaceController.name_ar.value
+                      //             .toString(),
+                      //       ),
+                      //     );
+
+                      //     // 3. In v4.0+, the method is '.open()', not '.launch()'
+                      //     // This avoids conflict with the url_launcher package
+                      //     await markerRequest.show(map:availableMaps.first.map);
+                      //   } else {
+                      //     Get.snackbar("Error", "No map apps found");
+                      //   }
+                      // } catch (e) {
+                      //   print("Map Error: $e");
+                      //   Get.snackbar("Error", "Could not open map: $e");
                       // }
-
-                      final availableMaps = await MapLauncher.installedMaps;
-                      print(
-                          availableMaps); // [AvailableMap { mapName: Google Maps, mapType: google }, ...]
-
-                      await availableMaps.first.showMarker(
-                          coords: Coords(
-                              double.parse(sliderTourPlaceController.lat.value
-                                  .toString()),
-                              double.parse(sliderTourPlaceController
-                                  .longitude.value
-                                  .toString())),
-                          title: sliderTourPlaceController.name_ar.value
-                              .toString());
 
                       // MapLauncher.showMarker(
                       //     mapType: MapType.google,

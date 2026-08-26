@@ -33,8 +33,10 @@ class Banners {
     this.titleAr,
     this.titleEn,
     this.image,
-    this.type,
-    this.link,
+    this.placement,
+    this.actionType,
+    this.actionValue,
+    this.targetId,
     this.createdAt,
   });
 
@@ -43,16 +45,22 @@ class Banners {
     titleAr = json['title_ar'];
     titleEn = json['title_en'];
     image = json['image'];
-    type = json['type'];
-    link = json['link'];
+    placement = json['placement'];
+    actionType = json['action_type'];
+    actionValue = json['action_value'];
+    targetId = json['target_id'] is int
+        ? json['target_id']
+        : int.tryParse(json['target_id']?.toString() ?? '');
     createdAt = json['createdAt'];
   }
   int? id;
   String? titleAr;
   String? titleEn;
   String? image;
-  String? type;
-  dynamic link;
+  String? placement;
+  String? actionType;
+  String? actionValue;
+  int? targetId;
   String? createdAt;
 
   Map<String, dynamic> toJson() {
@@ -61,8 +69,10 @@ class Banners {
     map['title_ar'] = titleAr;
     map['title_en'] = titleEn;
     map['image'] = image;
-    map['type'] = type;
-    map['link'] = link;
+    map['placement'] = placement;
+    map['action_type'] = actionType;
+    map['action_value'] = actionValue;
+    map['target_id'] = targetId;
     map['createdAt'] = createdAt;
     return map;
   }

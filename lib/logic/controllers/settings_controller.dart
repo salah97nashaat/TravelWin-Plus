@@ -50,7 +50,7 @@ class SettingController extends GetxController {
     String token = authBox.read('token').toString();
     try {
       String apiurl =
-          "https://travelwin1.com/api/api/get_whatsapp?type=notes"; //api url
+          "$baseUrlApi/get_whatsapp?type=notes"; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

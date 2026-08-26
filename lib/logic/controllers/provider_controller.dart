@@ -43,19 +43,34 @@ class ProviderController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    ServicesController sc = Get.find();
-    getProviders(sc.service);
+    // A banner can open a provider directly from Home, where the services
+    // controller is not necessarily registered.
+    if (Get.isRegistered<ServicesController>()) {
+      getProviders(Get.find<ServicesController>().service);
+    }
   }
 
-  Future getProvider(int id) async {
+  Future<ProviderModel?> getProvider(int id, {int? previousViewsCount}) async {
     var resp = await ApiWrapper.get("/serviceProviders/$id");
     if (resp.statusCode == 200) {
       var provider = jsonDecode(resp.body)['provider'];
       var pp = ProviderModel.fromJson(provider);
+      // The detail endpoint records the view, but can return the provider
+      // before that increment is reflected in its response.
+      if (previousViewsCount != null &&
+          (pp.viewsCount == null || pp.viewsCount! <= previousViewsCount)) {
+        pp.viewsCount = previousViewsCount + 1;
+      }
+      final index = providers.indexWhere((item) => item.id == id);
+      if (index != -1) {
+        pp.isfav = providers[index].isfav;
+        providers[index] = pp;
+        providers.refresh();
+      }
+      update();
       return pp;
-      // print(result);
-      // return result;
     }
+    return null;
   }
 
   Future getProviders(ServiceModel service) async {
@@ -113,19 +128,39 @@ class ProviderController extends GetxController {
   }
 
   void toggleFav(ProviderModel provider) {
-    final index = providers.indexOf(provider);
-    if (index != -1) {
-      providers[index] = providers[index]..isfav = !provider.isfav;
+    List<int> currentFavs = getFav();
+
+    // 1. Toggle ID in the list
+    if (currentFavs.contains(provider.id)) {
+      currentFavs.remove(provider.id);
+      provider.isfav = false;
+    } else {
+      currentFavs.add(provider.id);
+      provider.isfav = true;
     }
-    var box = GetStorage();
-    box.write("fav_providers",
-        providers.where((p0) => p0.isfav).map((e) => e.id).toList());
-    // box.save();
+
+    // 2. Save to Storage
+    GetStorage().write("fav_providers", currentFavs);
+
+    // 3. Update the item inside the RxList to trigger Obx
+    int index = providers.indexWhere((p) => p.id == provider.id);
+    if (index != -1) {
+      providers[index] = provider; // This triggers Rx rebuilds
+    }
+
+    // 4. Force global refresh
+    providers.refresh();
+    update();
   }
 
   List<int> getFav() {
     var box = GetStorage();
-    return box.read("fav_providers") ?? [];
+    var rawData = box.read("fav_providers");
+
+    if (rawData == null) return [];
+
+    // Use List<int>.from to safely convert the dynamic list to an integer list
+    return List<int>.from(rawData);
   }
 
   Future addProvider(

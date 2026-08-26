@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 // import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelwin/utils/my_string.dart';
 import '../models/slider_model.dart';
 
 class RemoteServices {
@@ -17,7 +18,7 @@ class RemoteServices {
     //     .get(Uri.parse('http://host233.aya.sy/mobtech/get_sliders.php'));
     var response = await http.get(
         Uri.parse(
-            'https://travelwin1.com/api/api/get_file_tourplace/?id=' + id),
+            '$baseUrlApi/get_file_tourplace/?id=' + id),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -42,7 +43,7 @@ class RemoteServices {
     String token = authBox.read('token').toString();
     try {
       String apiurl =
-          "https://travelwin1.com/api/api/add_favourites/?type=place&type_id=" +
+          "$baseUrlApi/add_favourites/?type=place&type_id=" +
               id +
               "&user_id=" +
               user_id; //api url
@@ -81,7 +82,7 @@ class RemoteServices {
 
     String token = authBox.read('token').toString();
     try {
-      String apiurl = "https://travelwin1.com/api/api/delete_favourites/?id=" +
+      String apiurl = "$baseUrlApi/delete_favourites/?id=" +
           id; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',
@@ -119,7 +120,7 @@ class RemoteServices {
     String token = authBox.read('token').toString();
     try {
       String apiurl =
-          "https://travelwin1.com/api/api/add_reqpoint/?type=place&type_id=" +
+          "$baseUrlApi/add_reqpoint/?type=place&type_id=" +
               id +
               "&user_id=" +
               user_id; //api url

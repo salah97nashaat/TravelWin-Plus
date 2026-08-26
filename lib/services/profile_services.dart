@@ -17,6 +17,7 @@ import 'package:travelwin/models/Ticket.dart';
 import 'package:travelwin/models/TicketTerm.dart';
 import 'package:travelwin/models/TripModel.dart';
 import 'package:travelwin/models/Whatappnumbers.dart';
+import 'package:travelwin/models/activity_model.dart';
 import 'package:travelwin/routes/routes.dart';
 import 'package:travelwin/utils/my_string.dart';
 
@@ -56,6 +57,29 @@ class RemoteServices {
     }
   }
 
+  static Future<bool> submitActivityParticipation(
+      Map<String, String> data, String? filePath) async {
+    final GetStorage authBox = GetStorage();
+    String token = authBox.read('token').toString();
+
+    var request =
+        http.MultipartRequest('POST', Uri.parse('$baseUrlApi/leads/book'));
+
+    request.headers.addAll({
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    });
+
+    request.fields.addAll(data);
+
+    if (filePath != null && filePath.isNotEmpty) {
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
+    }
+
+    var response = await request.send();
+    return response.statusCode == 200;
+  }
+
   static Future<Chats?> fetchChats() async {
     final GetStorage authBox = GetStorage();
 
@@ -93,6 +117,28 @@ class RemoteServices {
       return ChatMessages.fromJson(json.decode(jsonString));
     } else {
       //show error message
+      return null;
+    }
+  }
+
+  static Future<List<ActivityModel>?> fetchActivities() async {
+    try {
+      final authBox = GetStorage();
+      final token = authBox.read('token')?.toString();
+      final headers = <String, String>{'Accept': 'application/json'};
+      if (token != null && token.isNotEmpty && token != 'null') {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await client
+          .get(Uri.parse('$baseUrl/activities'), headers: headers)
+          .timeout(const Duration(seconds: 20));
+      if (response.statusCode == 200) {
+        return activityModelFromJson(response.body);
+      }
+      return null;
+    } catch (e) {
+      print("Fetch Error: $e");
       return null;
     }
   }

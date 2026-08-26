@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 // import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelwin/utils/my_string.dart';
 
 import '../models/takit_model.dart';
 // import '../models/tripe_favorite_model.dart';
@@ -21,7 +22,7 @@ class RemoteServices {
     String token = authBox.read('token').toString();
     var response = await client.get(
         Uri.parse(
-            'https://travelwin1.com/api/api/get_ticket?user_id=' + user_id),
+            '$baseUrlApi/get_ticket?user_id=' + user_id),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -44,7 +45,7 @@ class RemoteServices {
     String token = authBox.read('token').toString();
     var response = await client.get(
         Uri.parse(
-            'https://travelwin1.com/api/api/add_ticket?user_id=' + user_id),
+            '$baseUrlApi/add_ticket?user_id=' + user_id),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

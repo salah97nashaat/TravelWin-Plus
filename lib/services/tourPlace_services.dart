@@ -1,5 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelwin/utils/my_string.dart';
 import '../models/TourPlace_model.dart';
 // import '../models/slider_model.dart';
 import '../models/tourPlace_favorite_model.dart';
@@ -14,7 +15,7 @@ class RemoteServices {
     String user_id = authBox.read('userid').toString();
     String token = authBox.read('token').toString();
     var response = await http.get(
-        Uri.parse('https://travelwin1.com/api/api/get_tourplace?stateid=' +
+        Uri.parse('$baseUrlApi/get_tourplace?stateid=' +
             stateid +
             '&typeid=' +
             typeid +
@@ -40,7 +41,7 @@ class RemoteServices {
     String token = authBox.read('token').toString();
     String userid = authBox.read('userid').toString();
     var response = await http.get(
-        Uri.parse('https://travelwin1.com/api/api/get_tourplace_favorite/?id=' +
+        Uri.parse('$baseUrlApi/get_tourplace_favorite/?id=' +
             userid),
         headers: {
           'Content-Type': 'application/json',

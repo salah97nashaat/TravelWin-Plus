@@ -6,6 +6,8 @@ import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:travelwin/utils/my_string.dart';
+
 class WheelController extends GetxController {
   final selected = BehaviorSubject<int>();
   List<int> items = [2, 4, 8, 10, 15,20,25];
@@ -23,7 +25,7 @@ class WheelController extends GetxController {
     String user_id = authBox.read('userid').toString();
     String token = authBox.read('token').toString();
     try {
-      String apiurl = "https://travelwin1.com/api/api/check_wheel?user_id="+ user_id+"&point="+point; //api url
+      String apiurl = "$baseUrlApi/check_wheel?user_id="+ user_id+"&point="+point; //api url
       var response = await http.get(Uri.parse(apiurl), headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

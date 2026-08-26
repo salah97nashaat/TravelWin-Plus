@@ -1,13 +1,28 @@
 class BannerModel {
   String imageUrl;
-  String link;
+  String titleAr;
+  String titleEn;
+  String placement;
+  String actionType;
+  String? actionValue;
+  int? targetId;
 
   factory BannerModel.fromJson(Map<String, dynamic> json) {
     return BannerModel()
-      ..imageUrl = json['image']
-      ..link = json['link'] ?? "";
+      ..imageUrl = json['image']?.toString() ?? ''
+      ..titleAr = json['title_ar']?.toString() ?? ''
+      ..titleEn = json['title_en']?.toString() ?? ''
+      ..placement = json['placement']?.toString() ?? ''
+      ..actionType = json['action_type']?.toString() ?? 'none'
+      ..actionValue = json['action_value']?.toString()
+      ..targetId = json['target_id'] is int
+          ? json['target_id']
+          : int.tryParse(json['target_id']?.toString() ?? '');
   }
   BannerModel()
       : imageUrl = "",
-        link = "";
+        titleAr = "",
+        titleEn = "",
+        placement = "",
+        actionType = "none";
 }

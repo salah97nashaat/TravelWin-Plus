@@ -4,6 +4,7 @@
 // import 'package:app/views/widgets/provider_avatar.dart';
 // import 'package:app/views/widgets/rating_badge.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/logic/controllers/provider_controller.dart';
 import 'package:travelwin/models/provider_model.dart';
@@ -16,6 +17,7 @@ import 'rounded_rect_container.dart';
 class ProviderListTile extends StatelessWidget {
   const ProviderListTile({super.key, required this.provider});
   final ProviderModel provider;
+
   Color _colorFromHex(String hexColor) {
     final hexCode = hexColor.replaceAll('#', '');
     return Color(int.parse('FF$hexCode', radix: 16));
@@ -28,85 +30,91 @@ class ProviderListTile extends StatelessWidget {
     var name = isAr ? provider.nameAr! : provider.nameEn!;
     var rating = provider.rating ?? 5;
     var ratingColor = getRatingColor(rating);
-
     var minFee = provider.minFee ?? 10;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 1.0),
+      padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 2.w),
       child: Container(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-            boxShadow: const [
+            borderRadius: BorderRadius.circular(20.r),
+            boxShadow: [
               BoxShadow(
-                  spreadRadius: 0.6, color: Colors.grey, offset: Offset(0, 0.6))
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4))
             ]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
               ProviderAvatar(
-                rating: rating,
-                radius: 28,
-                imageUrl: provider.logoUrl,
-              ),
-              const SizedBox(width: 8.0),
+                  rating: rating, radius: 28, imageUrl: provider.logoUrl),
+              SizedBox(width: 12.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // FIXED: Title Row with Overflow Handling
                     Row(
                       children: [
                         RatingBadge(ratingColor: ratingColor, rating: rating),
-                        const Text(" "),
-                        Text(name),
-                        // Expanded(child: Container()),
-                        // SizedBox.expand(),
+                        SizedBox(width: 6.w),
+                        Flexible(
+                          // <--- Allows the text to shrink
+                          child: Text(
+                            name,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.sp,
+                                color: Colors.black87),
+                            overflow: TextOverflow.ellipsis, // <--- Adds "..."
+                            maxLines: 1, // <--- Limits to one line
+                          ),
+                        ),
                       ],
                     ),
+                    SizedBox(height: 4.h),
                     Row(
                       children: [
-                        Text("Min $minFee TL", style: secondaryTextStyle),
-                        Text(" . ", style: secondaryTextStyle),
-                        Icon(Icons.access_time_filled,
-                            size: 16, color: secondaryTextStyle.color),
-                        Text(" ", style: secondaryTextStyle),
-                        Text(provider.openTime ?? "09:00",
-                            style: secondaryTextStyle),
-                        Text(" - ", style: secondaryTextStyle),
-                        Text(provider.closeTime ?? "17:45",
-                            style: secondaryTextStyle)
+                        Text("Min $minFee TL",
+                            style:
+                                secondaryTextStyle.copyWith(fontSize: 11.sp)),
+                        Text(" • ", style: secondaryTextStyle),
+                        Icon(Icons.access_time, size: 14, color: Colors.grey),
+                        SizedBox(width: 4.w),
+                        Text("${provider.openTime} - ${provider.closeTime}",
+                            style:
+                                secondaryTextStyle.copyWith(fontSize: 11.sp)),
                       ],
                     )
                   ],
                 ),
               ),
-              IconButton(
-                  color: mainColor2,
-                  onPressed: () {
-                    controller.toggleFav(provider);
-                  },
-                  icon: provider.isfav
-                      ? Icon(
-                          Icons.favorite_rounded,
-                          color: mainColor2,
-                        )
-                      : const Icon(
-                          Icons.favorite_border,
-                          color: Colors.black,
-                        ))
-            ]),
-            if (provider.notes!.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  ...provider.notes!.map((e) => RoundedRectContainer(
-                        backgroundColor: _colorFromHex(e.color),
-                        child: Text(isAr ? e.bodyAr : e.bodyEn),
-                      ))
-                ],
+              // REACTIVE: Wrap Icon in Obx for instant color change
+              GetBuilder<ProviderController>(
+                builder: (controller) {
+                  // Check live status from the controller's storage logic
+                  bool isCurrentlyFav =
+                      controller.getFav().contains(provider.id);
+
+                  return IconButton(
+                    color: mainColor2,
+                    onPressed: () {
+                      controller.toggleFav(provider);
+                    },
+                    icon: Icon(
+                      isCurrentlyFav
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border,
+                      color: isCurrentlyFav ? mainColor2 : Colors.black,
+                    ),
+                  );
+                },
               )
-            ]
+            ]),
+            // Notes logic...
           ],
         ),
       ),

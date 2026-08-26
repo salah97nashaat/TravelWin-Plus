@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -21,7 +22,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:travelwin/services/profile_services.dart';
 import 'package:travelwin/utils/my_string.dart';
 
-import '../../helpers/helper.dart';
 // import 'home_controller.dart';
 
 class AuthController extends GetxController {
@@ -45,10 +45,14 @@ class AuthController extends GetxController {
 
   var Email = ''.obs;
   FirebaseAuth auth = FirebaseAuth.instance;
-  var googleSignIn = GoogleSignIn(scopes: [
-    'email',
-    // 'https://www.googleapis.com/auth/contacts.readonly',
-  ]);
+  // final GoogleSignIn googleSignIn = GoogleSignIn(
+  //   scopes: <String>[
+  //     'email',
+  //     'https://www.googleapis.com/auth/contacts.readonly',
+  //   ],
+  // );
+  // NEW V7 WAY: Use the instance, do NOT use a constructor or scopes here!
+  final GoogleSignIn googleSignIn = GoogleSignIn.instance;
   FaceBookModel? faceBookModel;
 
   var isSignedIn = false;
@@ -62,7 +66,7 @@ class AuthController extends GetxController {
     // (userProfiloe != null ? userProfiloe!.displayName : "")!;
     // // displayUserPhoto.value =    (userProfiloe != null ? userProfiloe!.photoURL : "")!;
     // displayUserEmail.value = (userProfiloe != null ? userProfiloe!.email : "")!;
-
+    googleSignIn.initialize();
     super.onInit();
   }
 
@@ -180,7 +184,7 @@ class AuthController extends GetxController {
     required String email,
   }) async {
     String apiurl =
-        "https://travelwin1.com/new-travelwin/public/api/send-code"; //api url
+        "https://travelwin1.com/new-travelwin/public/send-code"; //api url
     //dont use http://localhost , because emulator don't get that address
     //insted use your local IP address or use live URL
     //hit "ipconfig" in windows or "ip a" in linux to get you local IP
@@ -215,7 +219,7 @@ class AuthController extends GetxController {
     required String pass,
   }) async {
     String apiurl =
-        "https://travelwin1.com/new-travelwin/public/api/rest/password"; //api url
+        "https://travelwin1.com/new-travelwin/public/rest/password"; //api url
     //dont use http://localhost , because emulator don't get that address
     //insted use your local IP address or use live URL
     //hit "ipconfig" in windows or "ip a" in linux to get you local IP
@@ -422,7 +426,7 @@ class AuthController extends GetxController {
 
 // 4. Call your backend API
       String apiurl =
-          "https://travelwin1.com/new-travelwin/public/api/google/login";
+          "https://travelwin1.com/new-travelwin/public/google/login";
 
       var response = await http.post(Uri.parse(apiurl), body: {
         'email': displayUserEmail.value,
@@ -434,9 +438,11 @@ class AuthController extends GetxController {
 // Debug log
       print("responsebody is ${response.body}");
 
-      var responsebody = jsonDecode(response.body);
+      final responsebody = jsonDecode(response.body);
 
-      if (responsebody['status'] == true) {
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          responsebody['status'] == true) {
         authBox.write("token", responsebody['data']['token']);
         token.value = responsebody['data']['token'];
 
@@ -473,92 +479,85 @@ class AuthController extends GetxController {
 //============================googleSinUpApp==========================
   void googleSinUpApp() async {
     try {
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-      await messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
-      messaging.getToken(
-        vapidKey: "BGpdLRs......",
-      );
       isLoading(true);
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      // 1. NEW V7 WAY: Use .authenticate() instead of .signIn()
+      // We pass 'scopeHint' here instead of at initialization!
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate(
+        scopeHint: ['email'],
+      );
 
-      displayUserName.value = googleUser!.displayName ?? "";
+      displayUserName.value = googleUser.displayName ?? "";
       displayUserPhoto.value = googleUser.photoUrl ?? "";
       displayUserEmail.value = googleUser.email;
 
-      GoogleSignInAuthentication googleSignInAuthentication =
+      // 2. Obtain Authentication Details
+      final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+
+      // 3. Create Firebase Credential
+      // CRITICAL FIX FOR NEW VERSION: For basic Firebase login, you only need the idToken!
+      // Because Access Tokens are now handled strictly for authorization via authorizationClient.
       final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleSignInAuthentication.idToken,
-        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleAuth.idToken,
+        // We do not pass accessToken here anymore to avoid authorization errors!
       );
 
+      // 4. Sign in to Firebase
       await auth.signInWithCredential(credential);
 
-      String apiurl =
-          "https://travelwin1.com/new-travelwin/public/api/google/login"; //api url
-      //dont use http://localhost , because emulator don't get that address
-      //insted use your local IP address or use live URL
-      //hit "ipconfig" in windows or "ip a" in linux to get you local IP
-      var response = await http.post(Uri.parse(apiurl), body: {
-        'email': displayUserEmail.value, //get the username text
-        'password': googlePass,
-        'name': displayUserName.value //get password text
-      });
+      // 5. Call the API endpoint with a JSON request. Laravel uses the Accept
+      // header to return validation failures as JSON instead of an HTML page.
+      final apiurl = Uri.parse('$baseUrl/google/login');
+      final response = await http.post(
+        apiurl,
+        headers: const {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'email': displayUserEmail.value,
+          'password': googlePass,
+          'name': displayUserName.value,
+        }),
+      );
 
-      var responsebody = jsonDecode(response.body);
+      final responsebody = jsonDecode(response.body);
 
-      if (responsebody['status'] == true) {
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          responsebody['status'] == true) {
         authBox.write("token", responsebody['data']['token']);
         token.value = responsebody['data']['token'];
-
-        GetSnackBar(
-          message: '${'logIn'.tr}\n${'You are logged in successfully'.tr}',
-          duration: Duration(seconds: 5),
-        );
 
         isSignedIn = true;
         authBox.write("auth", isSignedIn);
         update();
         Get.offAllNamed(Routes.mainScreen);
       } else {
-        //
-        if (responsebody['message'] != "not verified email") {
-          Get.showSnackbar(GetSnackBar(
-            message:
-                '${'login failed'.tr}${responsebody['message'].toString().tr}',
-            duration: Duration(seconds: 5),
-          ));
-        } else
-          Get.showSnackbar(GetSnackBar(
-            message:
-                '${'login failed'.tr}${responsebody['message'].toString().tr}',
-            duration: Duration(seconds: 5),
-          ));
-        isLoading(false);
-      }
-      // Get.offNamed(Routes.mainScreen);
-    } catch (error) {
-      p(error.toString());
+        final errors = responsebody['errors'];
+        final firstValidationError = errors is Map && errors.isNotEmpty
+            ? (errors.values.first is List && errors.values.first.isNotEmpty
+                ? errors.values.first.first.toString()
+                : errors.values.first.toString())
+            : null;
+        final message = firstValidationError ??
+            responsebody['message']?.toString() ??
+            'Google login failed (HTTP ${response.statusCode})';
 
-      ///PlatformException(sign_in_failed, com.google.android.gms.common.api.ApiException: 10: , null, null)
+        debugPrint(
+            'Google login failed (${response.statusCode}): ${response.body}');
+        Get.showSnackbar(GetSnackBar(
+          message: message,
+          duration: Duration(seconds: 5),
+        ));
+      }
+    } catch (error) {
+      print("Google Auth Error: $error");
+      Get.snackbar('Error!', error.toString(),
+          snackPosition: SnackPosition.BOTTOM);
+    } finally {
       isLoading(false);
-      Get.snackbar(
-        'Error!',
-        error.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
     }
   }
 
@@ -656,8 +655,7 @@ class AuthController extends GetxController {
   }) async {
     try {
       isLoading(true);
-      String apiurl =
-          "https://travelwin1.com/api/api/auth/check_email"; //api url
+      String apiurl = "$baseUrlApi/auth/check_email"; //api url
       //dont use http://localhost , because emulator don't get that address
       //insted use your local IP address or use live URL
       //hit "ipconfig" in windows or "ip a" in linux to get you local IP
@@ -712,8 +710,7 @@ class AuthController extends GetxController {
     required String name,
   }) async {
     try {
-      String apiurl =
-          "https://travelwin1.com/api/api/auth/check_email"; //api url
+      String apiurl = "$baseUrlApi/auth/check_email"; //api url
       //dont use http://localhost , because emulator don't get that address
       //insted use your local IP address or use live URL
       //hit "ipconfig" in windows or "ip a" in linux to get you local IP

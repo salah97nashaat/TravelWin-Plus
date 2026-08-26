@@ -29,6 +29,7 @@ String validationEmail =
 String validationName = r'^[a-z A-Z]+$';
 String validationAge = r'^[a-z A-Z]+$';
 String baseUrl = 'https://travelwin1.com/new-travelwin/public/api';
+String baseUrlApi = 'https://travelwin1.com/new-travelwin/public/api';
 Rx<Profile> profile = Rx(Profile());
 Rx<Guidence> guidence = Rx(Guidence());
 Rx<Chats?> chats = Rx(Chats());

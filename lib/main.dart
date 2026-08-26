@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:travelwin/language/localiztion.dart';
+import 'package:travelwin/logic/controllers/activities_controller.dart';
 import 'package:travelwin/logic/controllers/adController.dart';
 import 'package:travelwin/logic/controllers/auth_controller.dart';
 import 'package:travelwin/logic/controllers/chat_controller.dart';
@@ -38,6 +39,7 @@ void main() {
       // If logged in, go to main screen, otherwise go to welcome screen.
       // NOTE: Get.put() your AuthController here so it's ready.
       Get.put(AuthController());
+      Get.put(ActivitiesController());
       runApp(MyApp(isLoggedIn: isLoggedIn));
 
     }).catchError((error, stackTrace) {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:travelwin/models/banner_model.dart';
 
 class CarouselCard extends StatelessWidget {
-  const CarouselCard({super.key, this.imageUrl, this.link});
+  const CarouselCard({super.key, this.imageUrl, this.link, required BannerModel banner});
   final String? imageUrl, link;
 
   @override
