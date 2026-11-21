@@ -32,6 +32,8 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=$_geminiApiKey';
 
   late List<_ChatMessage> _messages;
+  String? _contextPlaceName;
+  List<String>? _customPlacePrompts;
 
   final List<String> _quickPromptsAr = [
     'خطط لي رحلة 3 أيام في إسطنبول 🏰',
@@ -69,11 +71,39 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
   void initState() {
     super.initState();
     final bool isAr = Get.locale?.languageCode == 'ar';
+
+    final args = Get.arguments;
+    if (args != null && args is Map && args.containsKey('placeName')) {
+      final name = args['placeName']?.toString();
+      if (name != null && name.trim().isNotEmpty) {
+        _contextPlaceName = name.trim();
+        _customPlacePrompts = isAr
+            ? [
+                'أفضل المطاعم والمقاهي القريبة من $_contextPlaceName 🍽️',
+                'أفضل وقت وزاوية لالتقاط الصور في $_contextPlaceName 📸',
+                'نصائح هامة وتنبيهات الزيارة لـ $_contextPlaceName 💡',
+                'كيف أصل بالمواصلات إلى $_contextPlaceName؟ 🚗',
+              ]
+            : [
+                'Best restaurants & cafes near $_contextPlaceName 🍽️',
+                'Top photo spots & timing at $_contextPlaceName 📸',
+                'Important visiting tips for $_contextPlaceName 💡',
+                'How to get to $_contextPlaceName by transport? 🚗',
+              ];
+      }
+    }
+
+    final welcomeText = _contextPlaceName != null
+        ? (isAr
+            ? 'أهلاً بك! أنا رفيقك السياحي الذكي 🌟\nأنا جاهز لمساعدتك بكل ما يخص ($_contextPlaceName)!\nما الذي تود معرفته عن هذا المكان؟'
+            : 'Welcome! I am your AI Travel Concierge 🌟\nI am ready to help you with everything about ($_contextPlaceName)!\nWhat would you like to know about this spot?')
+        : (isAr
+            ? 'مرحباً بك! أنا رفيقك السياحي الذكي من TravelWin Plus 🌟\nكيف يمكنني مساعدتك في التخطيط لرحلتك، واقتراح أفضل الأماكن، أو نصائح السفر؟'
+            : 'Welcome! I am your AI Travel Concierge from TravelWin Plus 🌟\nHow can I help you plan your itinerary, recommend top attractions, or share essential travel tips?');
+
     _messages = [
       _ChatMessage(
-        text: isAr
-            ? 'مرحباً بك! أنا رفيقك السياحي الذكي من TravelWin Plus 🌟\nكيف يمكنني مساعدتك في التخطيط لرحلتك، واقتراح أفضل الأماكن، أو نصائح السفر؟'
-            : 'Welcome! I am your AI Travel Concierge from TravelWin Plus 🌟\nHow can I help you plan your itinerary, recommend top attractions, or share essential travel tips?',
+        text: welcomeText,
         isUser: false,
         time: DateTime.now(),
       ),
@@ -101,10 +131,18 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
         receiveTimeout: const Duration(seconds: 15),
       ));
 
+      final placeContext = _contextPlaceName != null
+          ? (isAr
+              ? "السياق الحالي: السائح يستفسر بالتحديد عن '$_contextPlaceName' في تركيا. "
+              : "Current Context: The tourist is inquiring specifically about '$_contextPlaceName' in Turkey. ")
+          : "";
+
       final systemPrompt = isAr
           ? "أنت 'المساعد السياحي الذكي' الرسمي لتطبيق TravelWin Plus المتخصص في السياحة والسفر والحجوزات (خصوصاً في تركيا وإسطنبول وطرابزون وبورصة والعالم). "
+            "$placeContext"
             "أجب السائح بلطافة واحترافية وبمعلومات سياحية دقيقة ومفيدة ومنسقة بنقاط واضحة. أجب باللغة العربية بأسلوب عملي وممتع."
           : "You are the official 'AI Travel Concierge' for TravelWin Plus, specialized in travel, tourism, and bookings (especially in Turkey, Istanbul, Trabzon, Bursa, and worldwide). "
+            "$placeContext"
             "Provide tourists with polite, accurate, practical, and well-structured travel recommendations and itineraries formatted with clear bullet points. Answer in English.";
 
       final response = await dio.post(
@@ -186,7 +224,7 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
   Widget build(BuildContext context) {
     final bool isDark = Get.isDarkMode;
     final bool isAr = Get.locale?.languageCode == 'ar';
-    final quickPrompts = isAr ? _quickPromptsAr : _quickPromptsEn;
+    final quickPrompts = _customPlacePrompts ?? (isAr ? _quickPromptsAr : _quickPromptsEn);
 
     return Scaffold(
       bottomNavigationBar: const AdmobBannerUi(),
