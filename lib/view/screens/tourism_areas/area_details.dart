@@ -18,6 +18,8 @@ import 'package:travelwin/utils/theme.dart';
 // import '../../../const.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/my_string.dart';
+import '../../../helpers/adv/admob_banner.dart';
+import '../../../helpers/adv/admob_native.dart';
 // import '../../widgets/bookmark_widget.dart';
 // import '../../widgets/normalButton.dart';
 import '../../widgets/place_text.dart';
@@ -322,6 +324,7 @@ class _AreaDetailsState extends State<AreaDetails> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FD),
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -350,6 +353,9 @@ class _AreaDetailsState extends State<AreaDetails> {
               padding: EdgeInsets.symmetric(vertical: 15.h),
               child: _buildCategorySelector(),
             ),
+
+            // Native Ad
+            const AdmobNativeUi(),
 
             // 3. Places Grid
             Obx(() {

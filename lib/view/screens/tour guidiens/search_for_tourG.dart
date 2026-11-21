@@ -10,6 +10,8 @@ import 'package:travelwin/view/screens/tour%20guidiens/widgets.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/my_string.dart';
 import '../../../utils/theme.dart';
+import '../../../helpers/adv/admob_banner.dart';
+import '../../../helpers/adv/admob_native.dart';
 // import '../../widgets/auth/auth_text_from_field.dart';
 
 class SearchForTourGuide extends StatefulWidget {
@@ -29,6 +31,7 @@ class _SearchForTourGuideState extends State<SearchForTourGuide> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -110,14 +113,19 @@ class _SearchForTourGuideState extends State<SearchForTourGuide> {
                       itemBuilder: (context, index) => TourGuyWidget(
                             index: index,
                           ),
-                      separatorBuilder: (context, index) => Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5.h, horizontal: 25.w),
-                            child: Divider(
-                              thickness: 1,
-                              color: Colors.grey,
-                            ),
+                      separatorBuilder: (context, index) {
+                        if (index == 0) {
+                          return const AdmobNativeUi();
+                        }
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 5.h, horizontal: 25.w),
+                          child: const Divider(
+                            thickness: 1,
+                            color: Colors.grey,
                           ),
+                        );
+                      },
                       itemCount: guidence.value.guidances!.length),
             ),
           ),

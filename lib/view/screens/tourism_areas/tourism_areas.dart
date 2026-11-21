@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:travelwin/logic/controllers/medicalTourismController.dart';
 // import 'package:travelwin/utils/theme.dart';
 import 'package:travelwin/view/widgets/tourism_place.dart';
-// import 'package:url_launcher/url_launcher.dart';
-// import '../../../const.dart';
+import '../../../helpers/adv/admob_banner.dart';
+import '../../../helpers/adv/admob_native.dart';
 import '../../../models/NewHome.dart';
 import '../../../utils/my_string.dart';
 // import '../../widgets/normalButton.dart';
@@ -29,6 +29,7 @@ class TourismAreas extends StatelessWidget {
         title: Text("Tourism Areas".tr, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black), onPressed: () => Get.back()),
       ),
+      bottomNavigationBar: const AdmobBannerUi(),
       body: Column(
         children: [
           // Modern Search Bar
@@ -51,6 +52,8 @@ class TourismAreas extends StatelessWidget {
               ),
             ),
           ),
+
+          const AdmobNativeUi(),
           
           Expanded(
             child: Obx(() => ListView.builder(

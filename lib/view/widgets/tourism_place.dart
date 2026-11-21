@@ -136,7 +136,7 @@ class TourismPlace extends StatelessWidget {
         Get.toNamed(Routes.areaDetails);
       },
       child: Container(
-        margin: EdgeInsets.only(left: 15.w, bottom: 10.h),
+        margin: EdgeInsets.only(left: 15.w, bottom: 4.h),
         width: Get.width * 0.85,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
@@ -174,7 +174,7 @@ class TourismPlace extends StatelessWidget {
             ),
             // Content
             Padding(
-              padding: EdgeInsets.all(15.w),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,

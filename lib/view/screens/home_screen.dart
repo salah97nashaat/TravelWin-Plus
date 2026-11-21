@@ -374,25 +374,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 Obx(() => homeController.homeBanner.value.isEmpty
                     ? const SizedBox.shrink()
                     : Padding(
-                        padding: EdgeInsets.only(top: 10.h),
+                        padding: EdgeInsets.only(top: 6.h),
                         child: MyCarsoulSlider(
                           items: homeController.homeBanner.value,
-                          height: 0.18, // Adjusted height to fit screen
+                          height: 0.165, // Adjusted height to fit screen comfortably
                         ),
                       )),
 
                 // 2. MIDDLE SECTION: Action Grid (Fixed 3x2 Grid)
                 Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                      EdgeInsets.symmetric(horizontal: 15.w, vertical: 6.h),
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(), // Important
                     crossAxisCount: 3,
-                    mainAxisSpacing: 12.w,
-                    crossAxisSpacing: 12.w,
+                    mainAxisSpacing: 10.w,
+                    crossAxisSpacing: 10.w,
                     childAspectRatio:
-                        1.1, // Adjust this to make items shorter/taller
+                        1.18, // Adjust this to make items shorter/taller
                     children: [
                       HomeActionItem(
                         title: 'Flights',
@@ -471,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                     return ListView.builder(
                       padding: EdgeInsets.only(
-                          left: 15.w, right: 15.w, bottom: 20.h),
+                          left: 15.w, right: 15.w, bottom: 6.h),
                       scrollDirection: Axis.horizontal,
                       itemCount: states.length,
                       itemBuilder: (context, index) => TourismPlace(
