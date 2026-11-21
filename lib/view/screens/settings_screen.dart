@@ -4,14 +4,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:travelwin/view/widgets/setting/delete_account_widget.dart';
-// import 'package:travelwin/utils/theme.dart';
-// import 'package:travelwin/view/widgets/setting/dark_mode_widget.dart';
 import 'package:travelwin/view/widgets/setting/language_widget.dart';
+import 'package:travelwin/view/widgets/setting/about_widget.dart';
 import 'package:travelwin/view/widgets/setting/logout_widget.dart';
-// import '../../helpers/helper.dart';
-import '../../logic/controllers/settings_controller.dart';
-// import '../../routes/routes.dart';
-import '../widgets/setting/about_widget.dart';
+import 'package:travelwin/logic/controllers/settings_controller.dart';
+import 'package:travelwin/utils/theme.dart';
+import '../../routes/routes.dart';
 // import '../widgets/setting/delete_account_widget.dart';
 import '../widgets/setting/feedback_widget.dart';
 import '../widgets/setting/login_widget.dart';
@@ -124,11 +122,11 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Container(
                     padding: EdgeInsets.all(8.w),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: mainColor,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.auto_awesome, color: goldAccent, size: 20),
+                    child: Icon(Icons.auto_awesome, color: goldAccent, size: 20),
                   ),
                   SizedBox(width: 14.w),
                   Expanded(
@@ -164,7 +162,7 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Container(
                     padding: EdgeInsets.all(8.w),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: mainColor,
                       shape: BoxShape.circle,
                     ),

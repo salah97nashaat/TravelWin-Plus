@@ -30,7 +30,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   };
 
   final Map<String, String> _currencyNames = {
-    'USD': 'US Dollar ($)',
+    'USD': 'US Dollar (\$)',
     'EUR': 'Euro (€)',
     'TRY': 'Turkish Lira (₺)',
     'SAR': 'Saudi Riyal (ر.س)',
