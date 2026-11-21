@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 const Color mainColor = Color(0xff215B82);
 const Color mainColor2 = Color(0xff046BA5);
 const Color mainColor3 = Color(0xF2F2F4FF);
+const Color goldAccent = Color(0xFFD4AF37);
+const Color goldAccentLight = Color(0xFFF6E05E);
 const Color darkGreyClr = Color(0xFF000000);
 const Color darkGreyClr2 = Color(0xFF444444);
 const Color gray = Color(0xffc2c2bd);

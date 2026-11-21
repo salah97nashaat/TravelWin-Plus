@@ -30,6 +30,49 @@ class MyDrawer extends StatelessWidget {
               },
             ),
             ListTile(
+              title: const Text(
+                "مساعد السفر الذكي (AI Guide)",
+                style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              leading: const Icon(
+                Icons.auto_awesome,
+                color: Color(0xFFD4AF37),
+                size: 25,
+              ),
+              onTap: () async {
+                Get.toNamed(Routes.travelAIAssistantScreen);
+              },
+            ),
+            ListTile(
+              title: const Text(
+                "محول العملات ومصاريف السفر",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              leading: const Icon(
+                Icons.currency_exchange_rounded,
+                color: Colors.white,
+                size: 25,
+              ),
+              onTap: () async {
+                Get.toNamed(Routes.currencyConverterScreen);
+              },
+            ),
+            ListTile(
+              title: const Text(
+                "دليل الطوارئ والعبارات السياحية",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              leading: const Icon(
+                Icons.emergency_outlined,
+                color: Colors.white,
+                size: 25,
+              ),
+              onTap: () async {
+                Get.toNamed(Routes.emergencyGuideScreen);
+              },
+            ),
+            const Divider(color: Colors.white24),
+            ListTile(
               title: Text(
                 "Setting".tr,
                 style: const TextStyle(color: Colors.white, fontSize: 18),

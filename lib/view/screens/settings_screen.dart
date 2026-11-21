@@ -109,6 +109,86 @@ class SettingsScreen extends StatelessWidget {
           SizedBox(
             height: 15.h,
           ),
+          InkWell(
+            onTap: () {
+              Get.toNamed(Routes.travelAIAssistantScreen);
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: goldAccent.withOpacity(0.5)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: const BoxDecoration(
+                      color: mainColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.auto_awesome, color: goldAccent, size: 20),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Text(
+                      Get.locale?.languageCode == 'ar' ? 'مساعد السفر الذكي (AI Guide)' : 'Smart Travel AI Guide',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Get.isDarkMode ? Colors.white : mainColor,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios, size: 16.sp, color: goldAccent),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 15.h,
+          ),
+          InkWell(
+            onTap: () {
+              Get.toNamed(Routes.currencyConverterScreen);
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: const BoxDecoration(
+                      color: mainColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.currency_exchange_rounded, color: Colors.white, size: 20),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Text(
+                      Get.locale?.languageCode == 'ar' ? 'محول العملات ومصاريف السفر' : 'Currency & Travel Expenses',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Get.isDarkMode ? Colors.white : mainColor,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios, size: 16.sp, color: Colors.grey),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 15.h,
+          ),
           FeedbackWidget(),
           SizedBox(
             height: 15.h,

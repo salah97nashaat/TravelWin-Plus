@@ -177,6 +177,53 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             // --- RIGHT: Favorite & Notification ---
             actions: [
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(Routes.travelAIAssistantScreen);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4AF37).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: const Color(0xFFD4AF37), width: 1.2),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.auto_awesome, color: Color(0xFFD4AF37), size: 16),
+                      SizedBox(width: 4.w),
+                      Text(
+                        'AI Guide',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(Routes.currencyConverterScreen);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.currency_exchange_rounded,
+                    color: Color(0xFFD4AF37),
+                    size: 18,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
               _buildIconButton(
                 icon: 'assets/images/favorite.svg',
                 onTap: () {

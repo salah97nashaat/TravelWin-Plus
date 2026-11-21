@@ -56,6 +56,9 @@ import '../view/screens/tourist_areas/view_touristArea_screen.dart';
 import '../view/screens/trip/view_trip_details_screen.dart';
 import '../view/screens/trip/view_trips_screen.dart';
 import '../view/term/view_term_screen.dart';
+import '../view/screens/tools/travel_ai_assistant_screen.dart';
+import '../view/screens/tools/currency_converter_screen.dart';
+import '../view/screens/tools/emergency_guide_screen.dart';
 
 class AppRoutes {
   //initialRoute
@@ -65,6 +68,18 @@ class AppRoutes {
   //getPages
 
   static final routes = [
+    GetPage(
+      name: Routes.travelAIAssistantScreen,
+      page: () => const TravelAIAssistantScreen(),
+    ),
+    GetPage(
+      name: Routes.currencyConverterScreen,
+      page: () => const CurrencyConverterScreen(),
+    ),
+    GetPage(
+      name: Routes.emergencyGuideScreen,
+      page: () => const EmergencyGuideScreen(),
+    ),
     GetPage(
       name: Routes.welcomeScreen,
       page: () => const WelcomeScreen(),
@@ -326,4 +341,7 @@ class Routes {
   static const stateChooser = '/stateChooser';
   static const serviceChooser = '/serviceChooser';
   static const providerChooser = '/providerChooser';
+  static const travelAIAssistantScreen = '/travelAIAssistantScreen';
+  static const currencyConverterScreen = '/currencyConverterScreen';
+  static const emergencyGuideScreen = '/emergencyGuideScreen';
 }
