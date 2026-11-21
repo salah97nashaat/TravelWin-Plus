@@ -182,23 +182,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   Get.toNamed(Routes.travelAIAssistantScreen);
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37).withOpacity(0.2),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(color: const Color(0xFFD4AF37), width: 1.2),
+                    border: Border.all(color: const Color(0xFF4285F4).withOpacity(0.4), width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF4285F4).withOpacity(0.15),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.auto_awesome, color: Color(0xFFD4AF37), size: 16),
-                      SizedBox(width: 4.w),
-                      Text(
-                        'AI Guide',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.bold,
+                      ShaderMask(
+                        shaderCallback: (bounds) => googleGradient.createShader(bounds),
+                        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
+                      ),
+                      SizedBox(width: 5.w),
+                      ShaderMask(
+                        shaderCallback: (bounds) => googleGradient.createShader(bounds),
+                        child: Text(
+                          'AI Guide',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ),
                     ],

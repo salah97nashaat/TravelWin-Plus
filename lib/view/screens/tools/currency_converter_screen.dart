@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,18 +15,20 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   final TextEditingController _amountController = TextEditingController(text: '100');
   String _fromCurrency = 'USD';
   String _toCurrency = 'TRY';
+  bool _isLive = false;
+  bool _isFetching = false;
 
-  // Benchmark exchange rates relative to USD (supports offline calculations)
+  // Real-time fallback exchange rates relative to USD (updated benchmark)
   final Map<String, double> _rates = {
     'USD': 1.0,
-    'EUR': 0.92,
-    'TRY': 34.5,
+    'EUR': 0.91,
+    'TRY': 50.5,
     'SAR': 3.75,
     'AED': 3.67,
     'KWD': 0.31,
     'QAR': 3.64,
-    'EGP': 49.2,
-    'GBP': 0.79,
+    'EGP': 53.8,
+    'GBP': 0.76,
     'JOD': 0.71,
   };
 
@@ -48,6 +51,36 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   void initState() {
     super.initState();
     _calculateConversion();
+    _fetchLiveRates();
+  }
+
+  Future<void> _fetchLiveRates() async {
+    try {
+      setState(() => _isFetching = true);
+      final dio = Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 8),
+        receiveTimeout: const Duration(seconds: 8),
+      ));
+      final response = await dio.get('https://open.er-api.com/v6/latest/USD');
+      if (response.statusCode == 200 && response.data != null) {
+        final ratesData = response.data['rates'] as Map<String, dynamic>?;
+        if (ratesData != null) {
+          ratesData.forEach((key, val) {
+            if (_rates.containsKey(key) && val is num) {
+              _rates[key] = val.toDouble();
+            }
+          });
+          _isLive = true;
+          _calculateConversion();
+        }
+      }
+    } catch (e) {
+      debugPrint('Live rates fetch error: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isFetching = false);
+      }
+    }
   }
 
   void _calculateConversion() {
@@ -135,16 +168,34 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                           letterSpacing: 1.2,
                         ),
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-                        decoration: BoxDecoration(
-                          color: goldAccent.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: goldAccent, width: 0.8),
-                        ),
-                        child: Text(
-                          'Live & Offline',
-                          style: TextStyle(color: goldAccent, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                      InkWell(
+                        onTap: _fetchLiveRates,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: _isLive ? Colors.green.withOpacity(0.25) : goldAccent.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(color: _isLive ? Colors.greenAccent : goldAccent, width: 0.8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _isFetching ? Icons.sync : Icons.wifi_tethering,
+                                size: 12.sp,
+                                color: _isLive ? Colors.greenAccent : goldAccent,
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                _isFetching ? 'جاري التحديث...' : (_isLive ? 'أسعار حية مباشرة 🟢' : 'تحديث الأسعار 🔄'),
+                                style: TextStyle(
+                                  color: _isLive ? Colors.greenAccent : goldAccent,
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

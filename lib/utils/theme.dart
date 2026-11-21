@@ -6,6 +6,15 @@ const Color mainColor2 = Color(0xff046BA5);
 const Color mainColor3 = Color(0xF2F2F4FF);
 const Color goldAccent = Color(0xFFD4AF37);
 const Color goldAccentLight = Color(0xFFF6E05E);
+const List<Color> googleColors = [
+  Color(0xFF4285F4), // Google Blue
+  Color(0xFFEA4335), // Google Red
+  Color(0xFFFBBC05), // Google Yellow
+  Color(0xFF34A853), // Google Green
+];
+const LinearGradient googleGradient = LinearGradient(
+  colors: googleColors,
+);
 const Color darkGreyClr = Color(0xFF000000);
 const Color darkGreyClr2 = Color(0xFF444444);
 const Color gray = Color(0xffc2c2bd);

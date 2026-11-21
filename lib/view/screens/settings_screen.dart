@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:travelwin/view/widgets/setting/delete_account_widget.dart';
 import 'package:travelwin/view/widgets/setting/language_widget.dart';
 import 'package:travelwin/view/widgets/setting/about_widget.dart';
@@ -116,30 +117,55 @@ class SettingsScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: mainColor.withOpacity(0.06),
                 borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(color: goldAccent.withOpacity(0.5)),
+                border: Border.all(color: const Color(0xFF4285F4).withOpacity(0.4)),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: EdgeInsets.all(8.w),
                     decoration: BoxDecoration(
-                      color: mainColor,
+                      color: Colors.white,
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF4285F4).withOpacity(0.15),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    child: Icon(Icons.auto_awesome, color: goldAccent, size: 20),
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => googleGradient.createShader(bounds),
+                      child: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+                    ),
                   ),
                   SizedBox(width: 14.w),
                   Expanded(
-                    child: Text(
-                      Get.locale?.languageCode == 'ar' ? 'مساعد السفر الذكي (AI Guide)' : 'Smart Travel AI Guide',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Get.isDarkMode ? Colors.white : mainColor,
-                      ),
+                    child: Row(
+                      children: [
+                        Text(
+                          Get.locale?.languageCode == 'ar' ? 'مساعد السفر الذكي ' : 'Travel AI ',
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Get.isDarkMode ? Colors.white : mainColor,
+                          ),
+                        ),
+                        ShaderMask(
+                          shaderCallback: (bounds) => googleGradient.createShader(bounds),
+                          child: Text(
+                            '(AI Guide)',
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Icon(Icons.arrow_forward_ios, size: 16.sp, color: goldAccent),
+                  Icon(Icons.arrow_forward_ios, size: 16.sp, color: const Color(0xFF4285F4)),
                 ],
               ),
             ),
@@ -180,6 +206,120 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                   Icon(Icons.arrow_forward_ios, size: 16.sp, color: Colors.grey),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 15.h,
+          ),
+          // First Blog: TravelWin Trends
+          InkWell(
+            onTap: () async {
+              const url = 'https://trends.travelwin1.com';
+              if (await canLaunchUrlString(url)) {
+                await launchUrlString(url, mode: LaunchMode.externalApplication);
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0284C7),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.trending_up_rounded, color: Colors.white, size: 20),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Get.locale?.languageCode == 'ar' ? 'مدونة تريندات وسياحة TravelWin' : 'TravelWin Trends Blog',
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Get.isDarkMode ? Colors.white : mainColor,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          'trends.travelwin1.com',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.open_in_new_rounded, size: 16.sp, color: Colors.grey),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 15.h,
+          ),
+          // Second Blog: Official Blogger Portal
+          InkWell(
+            onTap: () async {
+              const url = 'https://travelwintr.blogspot.com';
+              if (await canLaunchUrlString(url)) {
+                await launchUrlString(url, mode: LaunchMode.externalApplication);
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: mainColor.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF97316),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.article_rounded, color: Colors.white, size: 20),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Get.locale?.languageCode == 'ar' ? 'مدونة TravelWin السياحية (Blogger)' : 'TravelWin Travel Blog',
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Get.isDarkMode ? Colors.white : mainColor,
+                          ),
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          'travelwintr.blogspot.com',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.open_in_new_rounded, size: 16.sp, color: Colors.grey),
                 ],
               ),
             ),

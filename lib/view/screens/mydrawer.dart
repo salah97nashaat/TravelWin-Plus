@@ -30,14 +30,28 @@ class MyDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              title: const Text(
-                "مساعد السفر الذكي (AI Guide)",
-                style: TextStyle(color: Color(0xFFD4AF37), fontSize: 18, fontWeight: FontWeight.bold),
+              title: Row(
+                children: [
+                  const Text(
+                    "مساعد السفر الذكي ",
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  ShaderMask(
+                    shaderCallback: (bounds) => googleGradient.createShader(bounds),
+                    child: const Text(
+                      "(AI Guide)",
+                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
-              leading: const Icon(
-                Icons.auto_awesome,
-                color: Color(0xFFD4AF37),
-                size: 25,
+              leading: ShaderMask(
+                shaderCallback: (bounds) => googleGradient.createShader(bounds),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: Colors.white,
+                  size: 25,
+                ),
               ),
               onTap: () async {
                 Get.toNamed(Routes.travelAIAssistantScreen);
