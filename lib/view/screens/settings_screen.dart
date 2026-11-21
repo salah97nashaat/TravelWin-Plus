@@ -215,6 +215,46 @@ class SettingsScreen extends StatelessWidget {
           SizedBox(
             height: 15.h,
           ),
+          InkWell(
+            onTap: () {
+              Get.toNamed(Routes.emergencyGuideScreen);
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEF4444).withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14.r),
+                border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFEF4444),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.emergency_outlined, color: Colors.white, size: 20),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Text(
+                      Get.locale?.languageCode == 'ar' ? 'دليل الطوارئ والعبارات السياحية' : 'Emergency & Travel Guide',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Get.isDarkMode ? Colors.white : mainColor,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios, size: 16.sp, color: Colors.grey),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 15.h,
+          ),
           // First Blog: TravelWin Trends
           InkWell(
             onTap: () async {

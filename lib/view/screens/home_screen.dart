@@ -238,6 +238,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(width: 8.w),
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(Routes.emergencyGuideScreen);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5.w),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444).withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.emergency_outlined,
+                    color: Color(0xFFEF4444),
+                    size: 18,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
               _buildIconButton(
                 icon: 'assets/images/favorite.svg',
                 onTap: () {
