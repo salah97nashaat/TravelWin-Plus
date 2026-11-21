@@ -336,6 +336,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       )),
 
+                // --- SLIM WEATHER MICRO TICKER (Non-cluttering) ---
+                _buildWeatherBar(),
+
                 // 2. MIDDLE SECTION: Action Grid (Fixed 3x2 Grid)
                 Padding(
                   padding:
@@ -620,6 +623,84 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Color(0xFFEF4444),
           size: 18,
         ),
+      ),
+    );
+  }
+
+  Widget _buildWeatherBar() {
+    final bool isAr = Get.locale?.languageCode == 'ar';
+    final List<Map<String, dynamic>> citiesWeather = [
+      {'nameAr': 'إسطنبول', 'nameEn': 'Istanbul', 'temp': '19°', 'icon': '🌤️'},
+      {'nameAr': 'طرابزون', 'nameEn': 'Trabzon', 'temp': '15°', 'icon': '🌧️'},
+      {'nameAr': 'أنطاليا', 'nameEn': 'Antalya', 'temp': '24°', 'icon': '☀️'},
+      {'nameAr': 'كبادوكيا', 'nameEn': 'Cappadocia', 'temp': '16°', 'icon': '⛅'},
+      {'nameAr': 'بورصة', 'nameEn': 'Bursa', 'temp': '17°', 'icon': '🌦️'},
+      {'nameAr': 'ريزا', 'nameEn': 'Rize', 'temp': '14°', 'icon': '🌲'},
+      {'nameAr': 'فتحية', 'nameEn': 'Fethiye', 'temp': '23°', 'icon': '🏖️'},
+    ];
+
+    return Container(
+      height: 27.h,
+      margin: EdgeInsets.only(top: 2.h, bottom: 2.h),
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 14.w),
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: citiesWeather.length,
+        itemBuilder: (context, index) {
+          final item = citiesWeather[index];
+          final String cityName = isAr ? item['nameAr']! : item['nameEn']!;
+          return Container(
+            margin: EdgeInsets.only(right: isAr ? 0 : 8.w, left: isAr ? 8.w : 0),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(color: Colors.blueGrey.withOpacity(0.12), width: 0.8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  item['icon']!,
+                  style: TextStyle(fontSize: 12.sp),
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  cityName,
+                  style: TextStyle(
+                    fontSize: 10.5.sp,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF334155),
+                  ),
+                ),
+                SizedBox(width: 4.w),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0284C7).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
+                  child: Text(
+                    item['temp']!,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0284C7),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
