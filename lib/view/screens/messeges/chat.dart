@@ -162,7 +162,7 @@ class _ChatState extends State<Chat> {
                             height: 10.h,
                           ),
                           SizedBox(
-                            height: 145.h,
+                            height: 165.h,
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: [

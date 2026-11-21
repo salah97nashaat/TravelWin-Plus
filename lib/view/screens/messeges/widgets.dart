@@ -132,14 +132,15 @@ class WelcomeSticker extends StatelessWidget {
                 blurRadius: 3)
           ], color: Colors.white, borderRadius: BorderRadius.circular(15)),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               SvgPicture.asset(
                 sticker,
-                height: 100.h,
+                height: 95.h,
                 width: 200.w,
               ),
               SizedBox(
-                height: 10.h,
+                height: 6.h,
               ),
               Text('$price \$'),
               SizedBox(

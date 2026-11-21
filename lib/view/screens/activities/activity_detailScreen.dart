@@ -106,14 +106,18 @@ class ActivityDetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildBadge(activity.status, isAr),
-            Text(
-              isAr ? activity.infoAr : activity.infoEn,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: mainColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 12.sp,
+            SizedBox(width: 10.w),
+            Expanded(
+              child: Text(
+                isAr ? activity.infoAr : activity.infoEn,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: isAr ? TextAlign.left : TextAlign.right,
+                style: TextStyle(
+                  color: mainColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12.sp,
+                ),
               ),
             ),
           ],
