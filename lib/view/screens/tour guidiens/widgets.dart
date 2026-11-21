@@ -20,14 +20,14 @@ class TourGuyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 353.w,
-      height: 304.h,
+      height: 324.h,
       child: Stack(
         children: [
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
               width: 353.w,
-              height: 272.h,
+              height: 290.h,
               decoration: ShapeDecoration(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
@@ -168,7 +168,7 @@ class TourGuyWidget extends StatelessWidget {
                   ),
                   SizedBox(
                     width: 281.w,
-                    height: 65.h,
+                    height: 58.h,
                     child: Text(
                       Get.locale == Locale('ar')
                           ? guidence.value.guidances![index].bioAR!
@@ -176,12 +176,12 @@ class TourGuyWidget extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 13.sp,
+                        fontSize: 12.sp,
                         fontFamily: 'Readex Pro',
                         fontWeight: FontWeight.w400,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 5,
+                      maxLines: 3,
                     ),
                   ),
                   Row(
@@ -230,7 +230,7 @@ class TourGuyWidget extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15.w),
                     child: SizedBox(
-                      height: 28.h,
+                      height: 35.h,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

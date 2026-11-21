@@ -103,9 +103,13 @@ class ActivityCard extends StatelessWidget {
                       children: [
                         Icon(Icons.calendar_today, color: Colors.white70, size: 12.sp),
                         SizedBox(width: 6.w),
-                        Text(
-                          isAr ? activity.infoAr : activity.infoEn,
-                          style: TextStyle(color: Colors.white70, fontSize: 11.sp),
+                        Expanded(
+                          child: Text(
+                            isAr ? activity.infoAr : activity.infoEn,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.white70, fontSize: 11.sp),
+                          ),
                         ),
                       ],
                     ),

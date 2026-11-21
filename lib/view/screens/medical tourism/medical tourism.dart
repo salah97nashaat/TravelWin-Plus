@@ -48,8 +48,9 @@ class MedicalTourism extends StatelessWidget {
         elevation: 0,
       ),
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.w),
             child: Divider(
@@ -259,10 +260,11 @@ class MedicalTourism extends StatelessWidget {
             fontColor: Colors.white,
           ),
           SizedBox(
-            height: 10.h,
+            height: 20.h,
           ),
         ],
       ),
+    ),
     );
   }
 }
@@ -284,22 +286,29 @@ class MedicalService extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-              width: 35.w,
+              width: 20.w,
             ),
             CircleAvatar(
               backgroundColor: chosen ? mainColor : Colors.grey.shade300,
               radius: 10.w,
             ),
             SizedBox(
-              width: 25.w,
+              width: 15.w,
             ),
-            Text(
-              name,
-              style: TextStyle(
-                  color: mainColor,
-                  fontSize: 12.w,
-                  fontWeight: FontWeight.w600),
-            )
+            Expanded(
+              child: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    color: mainColor,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            SizedBox(
+              width: 15.w,
+            ),
           ],
         ),
       ),
