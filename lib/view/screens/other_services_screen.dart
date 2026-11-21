@@ -5,6 +5,8 @@ import 'package:travelwin/helpers/helper.dart';
 import '../../../routes/routes.dart';
 import '../../logic/controllers/about_controller.dart';
 import '../../helpers/adv/admob_banner.dart';
+import '../../helpers/adv/admob_native.dart';
+import '../../logic/controllers/adController.dart';
 import '../widgets/card_ui.dart';
 
 class OtherServicesScreen extends StatelessWidget {
@@ -37,6 +39,11 @@ class OtherServicesScreen extends StatelessWidget {
                   image: 'assets/images/travel.svg',
                   text: 'Trips'.tr,
                   onTap: () {
+                    try {
+                      if (Get.isRegistered<AdController>()) {
+                        Get.find<AdController>().showInterstitialAd();
+                      }
+                    } catch (_) {}
                     Get.toNamed(Routes.ViewTripsScreen);
                   },
                 ),
@@ -56,6 +63,9 @@ class OtherServicesScreen extends StatelessWidget {
             ],
           ),
         ),
+
+        SizedBox(height: 15.h),
+        const AdmobNativeUi(),
 
         const Padding(padding: EdgeInsets.all(20)),
       ]),

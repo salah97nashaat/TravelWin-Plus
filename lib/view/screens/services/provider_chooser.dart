@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/logic/controllers/provider_controller.dart';
 import 'package:travelwin/logic/controllers/service_controller.dart';
+import 'package:travelwin/logic/controllers/adController.dart';
+import 'package:travelwin/helpers/adv/admob_native.dart';
 
 // import 'package:travelwin/models/service_model.dart';
 import 'package:travelwin/utils/constants.dart';
@@ -96,11 +98,17 @@ class ProviderChooser extends GetView<ProviderController> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12.0, vertical: 8.0),
                   children: [
+                    const AdmobNativeUi(),
                     ...controller.providers
                         .where(
                             (p) => p.serviceId == servicesController.service.id)
                         .map((e) => GestureDetector(
                               onTap: () {
+                                try {
+                                  if (Get.isRegistered<AdController>()) {
+                                    Get.find<AdController>().showInterstitialAd();
+                                  }
+                                } catch (_) {}
                                 Get.to(() => ProviderDetailsPage(provider: e));
                               },
                               child: ProviderListTile(

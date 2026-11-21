@@ -11,6 +11,8 @@ import 'package:travelwin/view/screens/services/state_chooser.dart';
 import 'package:travelwin/view/widgets/slider/carsoul_slider.dart';
 
 import '../../../logic/controllers/service_state_controller.dart';
+import '../../../logic/controllers/adController.dart';
+import '../../../helpers/adv/admob_native.dart';
 import '../../widgets/services/service_grid_tile.dart';
 import 'add_provider_page.dart';
 // import 'language_chooser.dart';
@@ -207,6 +209,10 @@ class ServiceChooser extends GetView<ServicesController> {
                         ),
                       ),
                     ),
+                  // Native Ad in Services
+                  const SliverToBoxAdapter(
+                    child: AdmobNativeUi(),
+                  ),
                   // 2. Service Grid
                   SliverPadding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -261,6 +267,11 @@ class ServiceChooser extends GetView<ServicesController> {
 
   void goToProviders(ServiceModel service) {
     controller.setService(service);
+    try {
+      if (Get.isRegistered<AdController>()) {
+        Get.find<AdController>().showInterstitialAd();
+      }
+    } catch (_) {}
     Get.toNamed(Routes.providerChooser);
   }
 

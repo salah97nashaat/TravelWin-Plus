@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:travelwin/view/widgets/upperContainerUi.dart';
 
 import '../../../helpers/adv/admob_banner.dart';
+import '../../../helpers/adv/admob_native.dart';
+import '../../../logic/controllers/adController.dart';
 import '../../../logic/controllers/state_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
@@ -37,6 +39,7 @@ class ChooseState extends StatelessWidget {
           UpperContainerUi(
             searchWidget: SearchFormState(),
           ),
+          const AdmobNativeUi(),
           Expanded(
             child: Obx(() {
               if (stateController.isLoading.value) {
@@ -64,6 +67,11 @@ class ChooseState extends StatelessWidget {
                               ),
                             ),
                             onTap: () {
+                              try {
+                                if (Get.isRegistered<AdController>()) {
+                                  Get.find<AdController>().showInterstitialAd();
+                                }
+                              } catch (_) {}
                               Get.toNamed(Routes.ChooseTypeTouristAreasScreen,
                                   arguments: [
                                     {
@@ -96,6 +104,11 @@ class ChooseState extends StatelessWidget {
                               ),
                             ),
                             onTap: () {
+                              try {
+                                if (Get.isRegistered<AdController>()) {
+                                  Get.find<AdController>().showInterstitialAd();
+                                }
+                              } catch (_) {}
                               Get.toNamed(Routes.ChooseTypeTouristAreasScreen,
                                   arguments: [
                                     {

@@ -6,6 +6,8 @@ import 'package:travelwin/utils/my_string.dart';
 // import 'package:travelwin/view/widgets/upperContainerUi.dart';
 // import '../../../helpers/adv/admob_banner.dart';
 import '../../../logic/controllers/tripe_controller.dart';
+import '../../../logic/controllers/adController.dart';
+import '../../../helpers/adv/admob_native.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
 // import '../../widgets/trip.dart/search_text_form.dart';
@@ -74,6 +76,11 @@ class ViewTripsScreen extends StatelessWidget {
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) => GestureDetector(
                             onTap: () {
+                              try {
+                                if (Get.isRegistered<AdController>()) {
+                                  Get.find<AdController>().showInterstitialAd();
+                                }
+                              } catch (_) {}
                               trip.value = tripModel.value!.trips![index];
                               Get.toNamed(Routes.ViewTripsDetailsScreen);
                             },
@@ -84,9 +91,14 @@ class ViewTripsScreen extends StatelessWidget {
                                     ? tripModel.value!.trips![index].nameAr!
                                     : tripModel.value!.trips![index].nameEn!),
                           ),
-                      separatorBuilder: (context, index) => SizedBox(
-                            height: 10.h,
-                          ),
+                      separatorBuilder: (context, index) {
+                        if (index == 0) {
+                          return const AdmobNativeUi();
+                        }
+                        return SizedBox(
+                          height: 10.h,
+                        );
+                      },
                       itemCount: tripModel.value!.trips!.length),
             )
           ],

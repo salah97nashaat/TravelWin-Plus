@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../helpers/adv/admob_banner.dart';
+import '../../../helpers/adv/admob_native.dart';
 import '../../../logic/controllers/tourPlace_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
@@ -41,6 +42,7 @@ class ViewTouristAreaScreen extends StatelessWidget {
           UpperContainerUi(
             searchWidget: SearchFormTourPlace(),
           ),
+          const AdmobNativeUi(),
           Expanded(
             child: Obx(() {
               if (tourPlaceController.isLoading.value) {

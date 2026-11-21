@@ -4,6 +4,8 @@ import '../../../logic/controllers/typeState_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
 import '../../../helpers/adv/admob_banner.dart';
+import '../../../helpers/adv/admob_native.dart';
+import '../../../logic/controllers/adController.dart';
 import '../../widgets/trip.dart/search_text_type_tourist.dart';
 import '../../widgets/upperContainerUi.dart';
 
@@ -38,6 +40,7 @@ class ChooseTypeTouristAreasScreen extends StatelessWidget {
           UpperContainerUi(
             searchWidget: SearchFormTypeTourist(),
           ),
+          const AdmobNativeUi(),
           Expanded(
             child: Obx(() {
               if (typeStateController.isLoading.value)
@@ -66,6 +69,11 @@ class ChooseTypeTouristAreasScreen extends StatelessWidget {
                                       : darkGreyClr2,
                                 )),
                             onTap: () {
+                              try {
+                                if (Get.isRegistered<AdController>()) {
+                                  Get.find<AdController>().showInterstitialAd();
+                                }
+                              } catch (_) {}
                               Get.toNamed(Routes.ViewTouristAreaScreen,
                                   arguments: [
                                     {
@@ -102,6 +110,11 @@ class ChooseTypeTouristAreasScreen extends StatelessWidget {
                                       : darkGreyClr2,
                                 )),
                             onTap: () {
+                              try {
+                                if (Get.isRegistered<AdController>()) {
+                                  Get.find<AdController>().showInterstitialAd();
+                                }
+                              } catch (_) {}
                               Get.toNamed(Routes.ViewTouristAreaScreen,
                                   arguments: [
                                     {

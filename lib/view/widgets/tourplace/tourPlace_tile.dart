@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/routes/routes.dart';
+import '../../../logic/controllers/adController.dart';
 
 import '../../../models/TourPlace_model.dart';
 // import '../../../models/tripe_model.dart';
@@ -39,6 +40,11 @@ class TourPlaceTile extends StatelessWidget {
                   ),
                 ),
                 onTap: () {
+                  try {
+                    if (Get.isRegistered<AdController>()) {
+                      Get.find<AdController>().showInterstitialAd();
+                    }
+                  } catch (_) {}
                   Get.toNamed(Routes.ViewTourPlaceDetailsScreen, arguments: [
                     {
                       "id": tourPlace.id.toString(),

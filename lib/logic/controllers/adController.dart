@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../helpers/helper.dart';
 
 class AdController extends GetxController {
   late BannerAd bannerAd;
@@ -9,13 +9,19 @@ class AdController extends GetxController {
   var isBannerAdLoaded = false.obs;
   var isInterstitialAdLoaded = false.obs;
 
-  final String _bannerAdUnitId = kReleaseMode
-      ? 'ca-app-pub-2737281186165752/7290750316'
-      : 'ca-app-pub-3940256099942544/6300978111'; // Banner Test
+  String get _bannerAdUnitId {
+    if (advUnitId.admobBannerAdUnitIdAndroid.isNotEmpty) {
+      return advUnitId.admobBannerAdUnitIdAndroid;
+    }
+    return 'ca-app-pub-3940256099942544/6300978111';
+  }
 
-  final String _interstitialAdUnitId = kReleaseMode
-      ? 'ca-app-pub-2737281186165752/7087344996'
-      : 'ca-app-pub-3940256099942544/1033173712'; // Interstitial Test
+  String get _interstitialAdUnitId {
+    if (advUnitId.admobInterstitialAdUnitIdAndroid.isNotEmpty) {
+      return advUnitId.admobInterstitialAdUnitIdAndroid;
+    }
+    return 'ca-app-pub-3940256099942544/1033173712';
+  }
 
   @override
   void onInit() {
@@ -71,7 +77,8 @@ class AdController extends GetxController {
       interstitialAd!.show();
       isInterstitialAdLoaded.value = false;
     } else {
-      print("Interstitial ad not ready");
+      print("Interstitial ad not ready, reloading...");
+      _loadInterstitialAd();
     }
   }
 
