@@ -7,13 +7,13 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../helpers/adv/admob_banner.dart';
 import 'package:travelwin/view/widgets/setting/delete_account_widget.dart';
 import 'package:travelwin/view/widgets/setting/language_widget.dart';
-import 'package:travelwin/view/widgets/setting/about_widget.dart';
+// import 'package:travelwin/view/widgets/setting/about_widget.dart';
 import 'package:travelwin/view/widgets/setting/logout_widget.dart';
 import 'package:travelwin/logic/controllers/settings_controller.dart';
 import 'package:travelwin/utils/theme.dart';
 import '../../routes/routes.dart';
 // import '../widgets/setting/delete_account_widget.dart';
-import '../widgets/setting/feedback_widget.dart';
+// import '../widgets/setting/feedback_widget.dart';
 import '../widgets/setting/login_widget.dart';
 // import '../widgets/setting/privacy_widget.dart';
 import '../widgets/setting/share_widget.dart';
@@ -366,14 +366,6 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            height: 15.h,
-          ),
-          FeedbackWidget(),
-          SizedBox(
-            height: 15.h,
-          ),
-          AboutWidget(),
           SizedBox(
             height: 15.h,
           ),

@@ -175,87 +175,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            // --- RIGHT: Favorite & Notification ---
+            // --- RIGHT: Tools, Favorite & Notification ---
             actions: [
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(Routes.travelAIAssistantScreen);
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(color: const Color(0xFF4285F4).withOpacity(0.4), width: 1.2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF4285F4).withOpacity(0.15),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ShaderMask(
-                        shaderCallback: (bounds) => googleGradient.createShader(bounds),
-                        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
-                      ),
-                      SizedBox(width: 5.w),
-                      ShaderMask(
-                        shaderCallback: (bounds) => googleGradient.createShader(bounds),
-                        child: Text(
-                          Get.locale?.languageCode == 'ar' ? 'المساعد الذكي' : 'AI Guide',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(Routes.currencyConverterScreen);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(5.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.currency_exchange_rounded,
-                    color: Color(0xFFD4AF37),
-                    size: 18,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(Routes.emergencyGuideScreen);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(5.w),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444).withOpacity(0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.emergency_outlined,
-                    color: Color(0xFFEF4444),
-                    size: 18,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
+              if (Get.locale?.languageCode == 'ar') ...[
+                // Arabic (RTL): Right is Emergency, Middle is AI, Left is Currency
+                _buildEmergencyButton(),
+                SizedBox(width: 6.w),
+                _buildAiButton(),
+                SizedBox(width: 6.w),
+                _buildCurrencyButton(),
+              ] else ...[
+                // English (LTR): Left is Currency, Middle is AI, Right is Emergency
+                _buildCurrencyButton(),
+                SizedBox(width: 6.w),
+                _buildAiButton(),
+                SizedBox(width: 6.w),
+                _buildEmergencyButton(),
+              ],
+              SizedBox(width: 6.w),
               _buildIconButton(
                 icon: 'assets/images/favorite.svg',
                 onTap: () {
@@ -266,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 6.w),
               _buildIconButton(
                 icon: 'assets/images/notification.svg',
                 onTap: () {
@@ -277,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
               ),
-              SizedBox(width: 15.w),
+              SizedBox(width: 12.w),
             ],
           ),
           // AppBar(
@@ -545,6 +482,92 @@ class _HomeScreenState extends State<HomeScreen> {
   //     ),
   //   );
   // }
+
+  Widget _buildAiButton() {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(Routes.travelAIAssistantScreen);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+              color: const Color(0xFF4285F4).withOpacity(0.4), width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF4285F4).withOpacity(0.15),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => googleGradient.createShader(bounds),
+              child: const Icon(Icons.auto_awesome, color: Colors.white, size: 15),
+            ),
+            SizedBox(width: 4.w),
+            ShaderMask(
+              shaderCallback: (bounds) => googleGradient.createShader(bounds),
+              child: Text(
+                Get.locale?.languageCode == 'ar' ? 'المساعد الذكي' : 'AI Guide',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 11.5.sp,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrencyButton() {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(Routes.currencyConverterScreen);
+      },
+      child: Container(
+        padding: EdgeInsets.all(5.w),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          Icons.currency_exchange_rounded,
+          color: Color(0xFFD4AF37),
+          size: 18,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmergencyButton() {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(Routes.emergencyGuideScreen);
+      },
+      child: Container(
+        padding: EdgeInsets.all(5.w),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEF4444).withOpacity(0.15),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          Icons.emergency_outlined,
+          color: Color(0xFFEF4444),
+          size: 18,
+        ),
+      ),
+    );
+  }
 
   Widget _buildIconButton({required String icon, required VoidCallback onTap}) {
     return GestureDetector(
