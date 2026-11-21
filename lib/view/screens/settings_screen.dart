@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import '../../helpers/adv/admob_banner.dart';
 import 'package:travelwin/view/widgets/setting/delete_account_widget.dart';
 import 'package:travelwin/view/widgets/setting/language_widget.dart';
 import 'package:travelwin/view/widgets/setting/about_widget.dart';
@@ -28,6 +29,7 @@ class SettingsScreen extends StatelessWidget {
     print(token);
     return Scaffold(
       backgroundColor: Colors.white,
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         leading: Container(),
         backgroundColor: Colors.white,
@@ -270,10 +272,10 @@ class SettingsScreen extends StatelessWidget {
           SizedBox(
             height: 15.h,
           ),
-          // Second Blog: Official Blogger Portal
+          // Second Blog: Official English Platform Blog
           InkWell(
             onTap: () async {
-              const url = 'https://travelwintr.blogspot.com';
+              const url = 'https://entravelwin.travelwin1.com/';
               if (await canLaunchUrlString(url)) {
                 await launchUrlString(url, mode: LaunchMode.externalApplication);
               }
@@ -293,7 +295,7 @@ class SettingsScreen extends StatelessWidget {
                       color: const Color(0xFFF97316),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.article_rounded, color: Colors.white, size: 20),
+                    child: const Icon(Icons.language_rounded, color: Colors.white, size: 20),
                   ),
                   SizedBox(width: 14.w),
                   Expanded(
@@ -301,7 +303,7 @@ class SettingsScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          Get.locale?.languageCode == 'ar' ? 'مدونة TravelWin السياحية (Blogger)' : 'TravelWin Travel Blog',
+                          Get.locale?.languageCode == 'ar' ? 'مدونة TravelWin الإنجليزية' : 'TravelWin English Blog',
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.bold,
@@ -310,7 +312,7 @@ class SettingsScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 2.h),
                         Text(
-                          'travelwintr.blogspot.com',
+                          'entravelwin.travelwin1.com',
                           style: TextStyle(
                             fontSize: 11.sp,
                             color: Colors.grey[600],

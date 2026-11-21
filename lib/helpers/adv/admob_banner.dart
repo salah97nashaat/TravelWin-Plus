@@ -12,66 +12,66 @@ class AdmobBannerUi extends StatefulWidget {
 }
 
 class _AdmobBannerUiState extends State<AdmobBannerUi> {
+  BannerAd? _bannerAd;
+  bool _isLoaded = false;
 
-    BannerAd? banner;
-
-    String get bannerAdUnitId  {
-       if (isRelease){
-        return isIos ? advUnitId.admobBannerAdUnitIdIos :advUnitId.admobBannerAdUnitIdAndroid;
-     }else{
-       return isIos ? "ca-app-pub-3940256099942544/2934735716" :  "ca-app-pub-3940256099942544/6300978111";
-     }
+  String get bannerAdUnitId {
+    if (isIos) {
+      return advUnitId.admobBannerAdUnitIdIos.isNotEmpty
+          ? advUnitId.admobBannerAdUnitIdIos
+          : "ca-app-pub-3940256099942544/2934735716";
+    } else {
+      return advUnitId.admobBannerAdUnitIdAndroid.isNotEmpty
+          ? advUnitId.admobBannerAdUnitIdAndroid
+          : "ca-app-pub-3940256099942544/6300978111";
     }
-
-
+  }
 
   @override
   void initState() {
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-
-      if (isIos){//!isRelease ||
-        banner = null;
-        return;
-      }
-
-      banner =
-      BannerAd(
-        listener: BannerAdListener(
-          onAdFailedToLoad: (Ad ad, LoadAdError error) {
-            p('============onAdLoaded ===========error: $error');
-          },
-          onAdLoaded: (_) {
-            p('============onAdLoaded===========ok');
-          },
-          onAdOpened: (Ad ad) =>
-              p(
-                  '-------------------------------Ad opened.-------------------------------------------'),
-        ),
-        size: AdSize.banner,
-        adUnitId:   bannerAdUnitId,
-        request: AdRequest(),
-      )..load();
-
-     if (context.mounted) setState(() {});
-
-    });
-
-
     super.initState();
+    _loadBanner();
+  }
+
+  void _loadBanner() {
+    _bannerAd = BannerAd(
+      adUnitId: bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          if (mounted) {
+            setState(() {
+              _isLoaded = true;
+            });
+          }
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          p('AdMob Banner Failed to Load: $error');
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
-    return SizedBox(
-      height: 50.h,
-      child:
-      banner==null ?
-      const SizedBox() :
-      AdWidget(
-        ad: banner!,
+    if (_bannerAd == null || !_isLoaded) {
+      return const SizedBox.shrink();
+    }
+    return SafeArea(
+      top: false,
+      child: Container(
+        alignment: Alignment.center,
+        width: _bannerAd!.size.width.toDouble(),
+        height: _bannerAd!.size.height.toDouble(),
+        child: AdWidget(ad: _bannerAd!),
       ),
     );
   }

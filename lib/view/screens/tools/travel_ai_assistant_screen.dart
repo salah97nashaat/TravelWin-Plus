@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/utils/theme.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 class TravelAIAssistantScreen extends StatefulWidget {
   const TravelAIAssistantScreen({Key? key}) : super(key: key);
@@ -144,6 +145,7 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
     final isDark = Get.isDarkMode;
 
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         title: Row(
           mainAxisSize: MainAxisSize.min,

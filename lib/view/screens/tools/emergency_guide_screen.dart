@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/utils/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 class EmergencyGuideScreen extends StatelessWidget {
   const EmergencyGuideScreen({Key? key}) : super(key: key);
@@ -38,6 +39,7 @@ class EmergencyGuideScreen extends StatelessWidget {
     ];
 
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         title: Text(
           'دليل الطوارئ والعبارات السياحية',

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/utils/theme.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 class CurrencyConverterScreen extends StatefulWidget {
   const CurrencyConverterScreen({Key? key}) : super(key: key);
@@ -118,6 +119,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
     final bool isDark = Get.isDarkMode;
 
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         title: Text(
           'محول العملات الذكي'.tr.isEmpty ? 'Travel Currency Converter' : 'محول العملات ومصاريف السفر',
