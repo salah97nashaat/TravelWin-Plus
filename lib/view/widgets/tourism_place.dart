@@ -5,8 +5,6 @@ import 'package:get/get.dart';
 import 'package:travelwin/logic/controllers/adController.dart';
 import 'package:travelwin/services/profile_services.dart';
 import 'package:travelwin/utils/my_string.dart';
-import 'package:travelwin/utils/theme.dart';
-
 import '../../models/NewHome.dart';
 import '../../routes/routes.dart';
 
@@ -136,17 +134,24 @@ class TourismPlace extends StatelessWidget {
         Get.toNamed(Routes.areaDetails);
       },
       child: Container(
-        margin: EdgeInsets.only(left: 15.w, bottom: 4.h),
-        width: Get.width * 0.85,
+        margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 4.h),
+        width: 168.w,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(20.r),
           color: Colors.grey.shade200,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Stack(
           children: [
             Positioned.fill(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(20.r),
                 child: !hasValidImage
                     ? _imageFallback()
                     : Image.network(
@@ -160,60 +165,108 @@ class TourismPlace extends StatelessWidget {
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(20.r),
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.7),
+                      Colors.black.withOpacity(0.2),
+                      Colors.black.withOpacity(0.85),
                     ],
+                    stops: const [0.4, 0.65, 1.0],
                   ),
                 ),
               ),
             ),
-            // Content
+            // Province Index Badge (e.g., #1, #2 ... #38)
+            Positioned(
+              top: 10.h,
+              left: 10.w,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 3.h),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.55),
+                  borderRadius: BorderRadius.circular(10.r),
+                  border: Border.all(
+                      color: Colors.white.withOpacity(0.35), width: 0.8),
+                ),
+                child: Text(
+                  '#${index + 1}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ),
+            // Floating Bookmark
+            Positioned(
+              top: 8.h,
+              right: 8.w,
+              child: Container(
+                padding: EdgeInsets.all(5.w),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.35),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.bookmark_border_rounded,
+                  color: Colors.white,
+                  size: 15.sp,
+                ),
+              ),
+            ),
+            // Bottom Content
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     Get.locale?.languageCode == 'ar'
-                        ? states.nameAr!
-                        : states.nameEn!,
+                        ? (states.nameAr ?? '')
+                        : (states.nameEn ?? ''),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 14.5.sp,
+                      fontWeight: FontWeight.w800,
+                      shadows: const [
+                        Shadow(
+                            color: Colors.black54,
+                            blurRadius: 4,
+                            offset: Offset(0, 1)),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 5.h),
+                  SizedBox(height: 3.h),
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: mainColor, size: 16.sp),
-                      SizedBox(width: 5.w),
-                      Text(
-                        "Discover more".tr,
-                        style:
-                            TextStyle(color: Colors.white70, fontSize: 12.sp),
+                      Icon(Icons.location_on,
+                          color: const Color(0xFF38BDF8), size: 12.sp),
+                      SizedBox(width: 3.w),
+                      Expanded(
+                        child: Text(
+                          Get.locale?.languageCode == 'ar'
+                              ? 'استكشف المعالم'
+                              : 'Explore places',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 10.5.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ],
-              ),
-            ),
-            // Floating Favorite Button
-            Positioned(
-              top: 15,
-              right: 15,
-              child: CircleAvatar(
-                backgroundColor: Colors.white.withOpacity(0.3),
-                child: IconButton(
-                  icon: const Icon(Icons.bookmark_border, color: Colors.white),
-                  onPressed: () {},
-                ),
               ),
             ),
           ],

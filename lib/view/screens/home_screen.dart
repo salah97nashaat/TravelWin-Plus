@@ -339,45 +339,49 @@ class _HomeScreenState extends State<HomeScreen> {
                 // 2. MIDDLE SECTION: Action Grid (Fixed 3x2 Grid)
                 Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 15.w, vertical: 6.h),
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(), // Important
                     crossAxisCount: 3,
                     mainAxisSpacing: 10.w,
                     crossAxisSpacing: 10.w,
-                    childAspectRatio:
-                        1.18, // Adjust this to make items shorter/taller
+                    childAspectRatio: 1.15, // Sleek modern proportion
                     children: [
                       HomeActionItem(
                         title: 'Flights',
-                        imagePath: 'assets/images/ticket-flight.png',
+                        icon: Icons.flight_takeoff_rounded,
+                        gradientColors: const [Color(0xFF2563EB), Color(0xFF38BDF8)],
                         onTap: () => launchURL('https://kiwi.com'),
                       ),
                       HomeActionItem(
                         title: 'Daily Trips',
-                        imagePath: 'assets/images/planning.png',
+                        icon: Icons.explore_rounded,
+                        gradientColors: const [Color(0xFF059669), Color(0xFF34D399)],
                         onTap: () => Get.toNamed(Routes.ViewTripsScreen),
                       ),
                       HomeActionItem(
                         title: 'Medical',
-                        imagePath: 'assets/images/tourist (2).png',
+                        icon: Icons.health_and_safety_rounded,
+                        gradientColors: const [Color(0xFFE11D48), Color(0xFFFB7185)],
                         onTap: () => Get.toNamed(Routes.MedicalTourism),
                       ),
                       HomeActionItem(
                         title: 'Activities',
-                        imagePath: 'assets/images/needs (1).png',
-                        onTap: () => Get.toNamed(
-                            Routes.ActivitiesScreen), // New Activities tab
+                        icon: Icons.attractions_rounded,
+                        gradientColors: const [Color(0xFFD97706), Color(0xFFFBBF24)],
+                        onTap: () => Get.toNamed(Routes.ActivitiesScreen),
                       ),
                       HomeActionItem(
                         title: 'Guide',
-                        imagePath: 'assets/images/tourist (3).png',
+                        icon: Icons.badge_rounded,
+                        gradientColors: const [Color(0xFF7C3AED), Color(0xFFA78BFA)],
                         onTap: () => Get.toNamed(Routes.SearchTour),
                       ),
                       HomeActionItem(
                         title: 'Pharmacies',
-                        imagePath: 'assets/images/pharmacy (1).png',
+                        icon: Icons.local_pharmacy_rounded,
+                        gradientColors: const [Color(0xFF0D9488), Color(0xFF2DD4BF)],
                         onTap: () => launchURL(eczanelerUrl),
                       ),
                     ],
@@ -387,27 +391,78 @@ class _HomeScreenState extends State<HomeScreen> {
                 // 3. BOTTOM SECTION HEADER
                 Obx(() {
                   final states = home.value?.data?.states ?? const [];
+                  final count = states.length;
                   return states.isEmpty
                       ? const SizedBox.shrink()
                       : Padding(
                           padding: EdgeInsets.symmetric(
-                              horizontal: 20.w, vertical: 5.h),
+                              horizontal: 16.w, vertical: 6.h),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Tourist areas'.tr,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold),
+                              Row(
+                                children: [
+                                  Text(
+                                    Get.locale?.languageCode == 'ar'
+                                        ? 'المناطق والولايات'
+                                        : 'Tourist Provinces',
+                                    style: TextStyle(
+                                        color: const Color(0xFF0F172A),
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w800),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w, vertical: 3.h),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE0F2FE),
+                                      borderRadius: BorderRadius.circular(20.r),
+                                      border: Border.all(
+                                          color: const Color(0xFF0284C7)
+                                              .withOpacity(0.3)),
+                                    ),
+                                    child: Text(
+                                      Get.locale?.languageCode == 'ar'
+                                          ? '$count ولاية 🇹🇷'
+                                          : '$count States 🇹🇷',
+                                      style: TextStyle(
+                                        color: const Color(0xFF0284C7),
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               InkWell(
                                 onTap: () => Get.toNamed(Routes.tourismAreas),
-                                child: Text(
-                                  'See All'.tr,
-                                  style: TextStyle(
-                                      color: mainColor, fontSize: 13.sp),
+                                borderRadius: BorderRadius.circular(8.r),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 6.w, vertical: 4.h),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        Get.locale?.languageCode == 'ar'
+                                            ? 'عرض الكل'
+                                            : 'See All',
+                                        style: TextStyle(
+                                            color: mainColor,
+                                            fontSize: 13.sp,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      SizedBox(width: 3.w),
+                                      Icon(
+                                        Get.locale?.languageCode == 'ar'
+                                            ? Icons.arrow_back_ios_new_rounded
+                                            : Icons.arrow_forward_ios_rounded,
+                                        size: 11.sp,
+                                        color: mainColor,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               )
                             ],
@@ -425,8 +480,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           : const SizedBox.shrink();
                     }
                     return ListView.builder(
-                      padding: EdgeInsets.only(
-                          left: 15.w, right: 15.w, bottom: 6.h),
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       itemCount: states.length,
                       itemBuilder: (context, index) => TourismPlace(
@@ -596,42 +651,88 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Modern Home Action Button
+// Modern Home Action Button (Colorful & Sleek)
 class HomeActionItem extends StatelessWidget {
   final String title;
-  final String imagePath;
+  final IconData icon;
+  final List<Color> gradientColors;
   final VoidCallback onTap;
 
-  const HomeActionItem(
-      {super.key,
-      required this.title,
-      required this.imagePath,
-      required this.onTap});
+  const HomeActionItem({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.gradientColors,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      elevation: 2,
-      shadowColor: Colors.black12,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(imagePath, height: 40.h),
-            SizedBox(height: 8.h),
-            Text(
-              title.tr,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87),
-            )
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(
+          color: gradientColors.first.withOpacity(0.12),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors.first.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16.r),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 4.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: gradientColors,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: gradientColors.first.withOpacity(0.32),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 19.sp,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Text(
+                  title.tr,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10.5.sp,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1E293B),
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
