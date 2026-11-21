@@ -19,7 +19,6 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   bool _isLive = false;
   bool _isFetching = false;
 
-  // Real-time fallback exchange rates relative to USD (updated benchmark)
   final Map<String, double> _rates = {
     'USD': 1.0,
     'EUR': 0.91,
@@ -33,17 +32,30 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
     'JOD': 0.71,
   };
 
-  final Map<String, String> _currencyNames = {
+  final Map<String, String> _currencyNamesAr = {
+    'USD': 'دولار أمريكي (\$)',
+    'EUR': 'يورو (€)',
+    'TRY': 'ليرة تركية (₺)',
+    'SAR': 'ريال سعودي (ر.س)',
+    'AED': 'درهم إماراتي (د.إ)',
+    'KWD': 'دينار كويتي (د.ك)',
+    'QAR': 'ريال قطري (ر.ق)',
+    'EGP': 'جنيه مصري (ج.م)',
+    'GBP': 'جنيه إسترليني (£)',
+    'JOD': 'دينار أردني (د.أ)',
+  };
+
+  final Map<String, String> _currencyNamesEn = {
     'USD': 'US Dollar (\$)',
     'EUR': 'Euro (€)',
     'TRY': 'Turkish Lira (₺)',
-    'SAR': 'Saudi Riyal (ر.س)',
-    'AED': 'UAE Dirham (د.إ)',
-    'KWD': 'Kuwaiti Dinar (د.ك)',
-    'QAR': 'Qatari Riyal (ر.ق)',
-    'EGP': 'Egyptian Pound (ج.م)',
+    'SAR': 'Saudi Riyal (SAR)',
+    'AED': 'UAE Dirham (AED)',
+    'KWD': 'Kuwaiti Dinar (KWD)',
+    'QAR': 'Qatari Riyal (QAR)',
+    'EGP': 'Egyptian Pound (EGP)',
     'GBP': 'British Pound (£)',
-    'JOD': 'Jordanian Dinar (د.أ)',
+    'JOD': 'Jordanian Dinar (JOD)',
   };
 
   double _convertedValue = 0.0;
@@ -95,8 +107,6 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
 
     final double fromRate = _rates[_fromCurrency] ?? 1.0;
     final double toRate = _rates[_toCurrency] ?? 1.0;
-
-    // Convert via USD baseline
     final double inUsd = amount / fromRate;
     final double result = inUsd * toRate;
 
@@ -117,12 +127,14 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   @override
   Widget build(BuildContext context) {
     final bool isDark = Get.isDarkMode;
+    final bool isAr = Get.locale?.languageCode == 'ar';
+    final currencyNames = isAr ? _currencyNamesAr : _currencyNamesEn;
 
     return Scaffold(
       bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         title: Text(
-          'محول العملات الذكي'.tr.isEmpty ? 'Travel Currency Converter' : 'محول العملات ومصاريف السفر',
+          isAr ? 'محول العملات ومصاريف السفر' : 'Travel Currency Converter',
           style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: mainColor,
@@ -189,7 +201,9 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                               ),
                               SizedBox(width: 4.w),
                               Text(
-                                _isFetching ? 'جاري التحديث...' : (_isLive ? 'أسعار حية مباشرة 🟢' : 'تحديث الأسعار 🔄'),
+                                isAr
+                                    ? (_isFetching ? 'جاري التحديث...' : (_isLive ? 'أسعار حية مباشرة 🟢' : 'تحديث الأسعار 🔄'))
+                                    : (_isFetching ? 'Updating...' : (_isLive ? 'Live Rates 🟢' : 'Refresh Rates 🔄')),
                                 style: TextStyle(
                                   color: _isLive ? Colors.greenAccent : goldAccent,
                                   fontSize: 10.sp,
@@ -240,7 +254,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'المبلغ المراد تحويله (Amount)',
+                    isAr ? 'المبلغ المراد تحويله' : 'Amount to Convert',
                     style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600, color: Colors.grey[700]),
                   ),
                   SizedBox(height: 8.h),
@@ -250,7 +264,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                     style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.calculate_outlined, color: mainColor),
-                      hintText: 'أدخل المبلغ...',
+                      hintText: isAr ? 'أدخل المبلغ...' : 'Enter amount...',
                       filled: true,
                       fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                       contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
@@ -295,8 +309,9 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                 children: [
                   // From Currency
                   _buildDropdownRow(
-                    label: 'من العملة (From)',
+                    label: isAr ? 'من العملة' : 'From Currency',
                     value: _fromCurrency,
+                    currencyNames: currencyNames,
                     onChanged: (val) {
                       if (val != null) {
                         setState(() {
@@ -329,8 +344,9 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
 
                   // To Currency
                   _buildDropdownRow(
-                    label: 'إلى العملة (To)',
+                    label: isAr ? 'إلى العملة' : 'To Currency',
                     value: _toCurrency,
+                    currencyNames: currencyNames,
                     onChanged: (val) {
                       if (val != null) {
                         setState(() {
@@ -359,7 +375,9 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
-                      'نصيحة للمسافرين: احتفظ دائماً بمبالغ نقدية بالعملة المحلية للمواصلات والتسوق السريع أثناء رحلتك.',
+                      isAr
+                          ? 'نصيحة للمسافرين: احتفظ دائماً بمبالغ نقدية بالعملة المحلية للمواصلات والتسوق السريع أثناء رحلتك.'
+                          : 'Traveler Tip: Keep some local cash handy for taxis, public transit, and local markets during your journey.',
                       style: TextStyle(
                         fontSize: 12.sp,
                         color: const Color(0xFF92400E),
@@ -379,6 +397,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   Widget _buildDropdownRow({
     required String label,
     required String value,
+    required Map<String, String> currencyNames,
     required ValueChanged<String?> onChanged,
   }) {
     return Column(
@@ -404,7 +423,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                       Text(curr, style: const TextStyle(fontWeight: FontWeight.bold)),
                       SizedBox(width: 8.w),
                       Text(
-                        '(${_currencyNames[curr] ?? ""})',
+                        '(${currencyNames[curr] ?? ""})',
                         style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
                       ),
                     ],

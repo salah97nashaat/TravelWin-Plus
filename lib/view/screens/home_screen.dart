@@ -206,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ShaderMask(
                         shaderCallback: (bounds) => googleGradient.createShader(bounds),
                         child: Text(
-                          'AI Guide',
+                          Get.locale?.languageCode == 'ar' ? 'المساعد الذكي' : 'AI Guide',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12.sp,
