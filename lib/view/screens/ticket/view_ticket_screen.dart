@@ -7,6 +7,7 @@ import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/view/widgets/normalButton.dart';
 import '../../../helpers/helper.dart';
 import '../../../logic/controllers/ticket_controller.dart';
+import '../../../helpers/adv/admob_banner.dart';
 // import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
 
@@ -45,7 +46,7 @@ class ViewTicketScreen extends StatelessWidget {
       backgroundColor:
           Get.isDarkMode ? Theme.of(context).colorScheme.surface : Colors.white,
       // drawer: MyDrawer(),
-      // bottomNavigationBar: const AdmobBannerUi(),
+      bottomNavigationBar: const AdmobBannerUi(),
       body: Column(
         children: [
           Obx(() => tickets.value.tickets == null

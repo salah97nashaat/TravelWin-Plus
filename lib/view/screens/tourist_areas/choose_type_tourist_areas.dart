@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../logic/controllers/typeState_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
+import '../../../helpers/adv/admob_banner.dart';
 import '../../widgets/trip.dart/search_text_type_tourist.dart';
 import '../../widgets/upperContainerUi.dart';
 
@@ -30,8 +31,7 @@ class ChooseTypeTouristAreasScreen extends StatelessWidget {
       backgroundColor:
           Get.isDarkMode ? Theme.of(context).colorScheme.surface : litmain,
       // drawer: MyDrawer(),
-      // bottomNavigationBar:
-      // const AdmobBannerUi(),
+      bottomNavigationBar: const AdmobBannerUi(),
 
       body: Column(
         children: [

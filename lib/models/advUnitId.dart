@@ -13,11 +13,7 @@ class AdvUnitId{
   final String admobBannerAdUnitIdIos ;
   final String admobInterstitialAdUnitIdAndroid ;
   final String admobInterstitialAdUnitIdIos ;
-
-
-
-
-
+  final String admobNativeAdUnitIdAndroid ;
 
   AdvUnitId({
       this.applovinSdkKey = "c_dxrgJpSAfOGTpUHsW9CMo_E0o7cg0LiFnMpEvtl42DqtkPAaOGoiBefAeRC_PU4JcHnMwqOVDqHdGIoKoUoS",
@@ -26,16 +22,15 @@ class AdvUnitId{
       this.applovinBannerAdUnitIdAndroid  = "29d42ebee9210dc9",
       this.applovinBannerAdUnitIdIos  = "IOS_REWARDED_AD_UNIT_ID",
 
-      this.admobBannerAdUnitIdAndroid  =  "ca-app-pub-9942567826980627/8773526213" ,
+      this.admobBannerAdUnitIdAndroid  =  "ca-app-pub-2737281186165752/7290750316" ,
       this.admobRewardedAdUnitIdAndroid  = "ca-app-pub-9942567826980627/5939495224",
 
       this.admobBannerAdUnitIdIos  = "" ,
       this.admobRewardedAdUnitIdIos  = "ca-app-pub-8563961374772488/3049630084",
 
-      this.admobInterstitialAdUnitIdAndroid  = "ca-app-pub-3940256099942544/1033173712",
+      this.admobInterstitialAdUnitIdAndroid  = "ca-app-pub-2737281186165752/7087344996",
       this.admobInterstitialAdUnitIdIos  = "ca-app-pub-3940256099942544/4411468910",
-
-
+      this.admobNativeAdUnitIdAndroid  = "ca-app-pub-2737281186165752/9915175542",
   });
 
 

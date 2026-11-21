@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import '../../helpers/adv/admob_banner.dart';
 // import '../../routes/routes.dart';
 // import '../../utils/theme.dart';
 
@@ -39,7 +40,7 @@ class ExtraPrizesScreen extends StatelessWidget {
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         //   drawer: MyDrawer(),
-        // bottomNavigationBar:  const AdmobBannerUi(),
+        bottomNavigationBar: const AdmobBannerUi(),
         body: Image.asset('assets/images/extraPrizes.png',
             height: 1.sh,
             width: MediaQuery.of(context).size.width,

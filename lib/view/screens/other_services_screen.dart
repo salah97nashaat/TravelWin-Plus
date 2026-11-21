@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:travelwin/helpers/helper.dart';
 import '../../../routes/routes.dart';
 import '../../logic/controllers/about_controller.dart';
+import '../../helpers/adv/admob_banner.dart';
 import '../widgets/card_ui.dart';
 
 class OtherServicesScreen extends StatelessWidget {
@@ -16,6 +17,7 @@ class OtherServicesScreen extends StatelessWidget {
     return SafeArea(
         child: Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+      bottomNavigationBar: const AdmobBannerUi(),
       body: Column(children: [
         // const Padding(padding: EdgeInsets.all(20)),
         // const AdmobBannerUi(),

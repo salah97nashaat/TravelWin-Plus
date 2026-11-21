@@ -6,6 +6,7 @@ import 'package:travelwin/utils/my_string.dart';
 // import '../../../routes/routes.dart';
 // import '../../../utils/theme.dart';
 import '../../logic/controllers/term_controller.dart';
+import '../../helpers/adv/admob_banner.dart';
 import '../widgets/term/term_title.dart';
 
 class ViewTermScreen extends StatelessWidget {
@@ -65,9 +66,7 @@ class ViewTermScreen extends StatelessWidget {
 
       backgroundColor: Colors.white,
       // drawer: MyDrawer(),
-      // bottomNavigationBar:
-      // const AdmobBannerUi(),
-      // const ApplovinBannerUi(),
+      bottomNavigationBar: const AdmobBannerUi(),
       body: Column(
         children: [
           Expanded(
