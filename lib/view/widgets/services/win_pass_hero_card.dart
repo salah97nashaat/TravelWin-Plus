@@ -71,6 +71,7 @@ class _WinPassHeroCardState extends State<WinPassHeroCard> {
     final progress = _program!.userProgress;
     final currentStep = progress?.currentStep ?? 0;
     final totalSteps = _program!.totalSteps;
+    final completedCycles = progress?.completedCycles ?? 0;
 
     return GestureDetector(
       onTap: _openSheet,
@@ -156,9 +157,9 @@ class _WinPassHeroCardState extends State<WinPassHeroCard> {
                                 ),
                               ),
                               Text(
-                                isAr
-                                    ? 'اجمع أختامك واحصل على خصومات فورية 🎁'
-                                    : 'Collect stamps & get instant discounts 🎁',
+                                _program!.minBillAmount > 0
+                                    ? (isAr ? 'حد أدنى للطلب: ${_program!.minBillAmount.toInt()} TL • اجمع أختامك 🎁' : 'Min order: ${_program!.minBillAmount.toInt()} TL • Collect stamps 🎁')
+                                    : (isAr ? 'اجمع أختامك واحصل على خصومات فورية 🎁' : 'Collect stamps & get instant discounts 🎁'),
                                 style: TextStyle(
                                   color: const Color(0xFF94A3B8),
                                   fontSize: 11.sp,
@@ -168,24 +169,56 @@ class _WinPassHeroCardState extends State<WinPassHeroCard> {
                           ),
                         ],
                       ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF00B67A).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20.r),
-                          border: Border.all(
-                            color: const Color(0xFF00B67A).withValues(alpha: 0.4),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (completedCycles > 0) ...[
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 3.h),
+                              margin: EdgeInsets.only(left: isAr ? 6.w : 0, right: isAr ? 0 : 6.w),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
+                                ),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.workspace_premium_rounded, color: Colors.white, size: 11.sp),
+                                  SizedBox(width: 2.w),
+                                  Text(
+                                    isAr ? 'الدورة ${completedCycles + 1}' : 'Cycle ${completedCycles + 1}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00B67A).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(20.r),
+                              border: Border.all(
+                                color: const Color(0xFF00B67A).withValues(alpha: 0.4),
+                              ),
+                            ),
+                            child: Text(
+                              '$currentStep / $totalSteps',
+                              style: TextStyle(
+                                color: const Color(0xFF34D399),
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'monospace',
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          '$currentStep / $totalSteps',
-                          style: TextStyle(
-                            color: const Color(0xFF34D399),
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'monospace',
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),

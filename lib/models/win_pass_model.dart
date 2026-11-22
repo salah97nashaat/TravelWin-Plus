@@ -72,6 +72,8 @@ class WinPassProgramModel {
   final int? programId;
   final int totalSteps;
   final int cooldownHours;
+  final int cooldownMinutes;
+  final double minBillAmount;
   final String currency;
   final List<WinPassStepModel> steps;
   final UserWinPassProgressModel? userProgress;
@@ -80,7 +82,9 @@ class WinPassProgramModel {
     required this.hasWinPass,
     this.programId,
     this.totalSteps = 10,
-    this.cooldownHours = 4,
+    this.cooldownHours = 1,
+    this.cooldownMinutes = 50,
+    this.minBillAmount = 0.0,
     this.currency = 'TL',
     this.steps = const [],
     this.userProgress,
@@ -100,7 +104,9 @@ class WinPassProgramModel {
       hasWinPass: true,
       programId: json['program_id'],
       totalSteps: json['total_steps'] ?? 10,
-      cooldownHours: json['cooldown_hours'] ?? 4,
+      cooldownHours: json['cooldown_hours'] ?? 1,
+      cooldownMinutes: json['cooldown_minutes'] ?? 50,
+      minBillAmount: (json['min_bill_amount'] != null) ? (json['min_bill_amount'] as num).toDouble() : 0.0,
       currency: json['currency'] ?? 'TL',
       steps: stepsList,
       userProgress: json['user_progress'] != null

@@ -208,6 +208,24 @@ class _WinPassStampSheetState extends State<WinPassStampSheet> {
                         ],
                       ),
                     ],
+                    if (_program.minBillAmount > 0) ...[
+                      SizedBox(height: 6.h),
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline_rounded, color: const Color(0xFF94A3B8), size: 12.sp),
+                          SizedBox(width: 4.w),
+                          Text(
+                            isAr
+                                ? 'الحد الأدنى لقيمة الطلب لاحتساب الختم: ${_program.minBillAmount.toInt()} TL'
+                                : 'Minimum bill for stamp: ${_program.minBillAmount.toInt()} TL',
+                            style: TextStyle(
+                              color: const Color(0xFF94A3B8),
+                              fontSize: 10.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

@@ -281,6 +281,32 @@ class _WinPassSuccessScreenState extends State<WinPassSuccessScreen>
                             ),
                             textAlign: TextAlign.center,
                           ),
+                          if (widget.result.stepNumber == (widget.result.totalSteps ?? 10)) ...[
+                            SizedBox(height: 8.h),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEF3C7),
+                                borderRadius: BorderRadius.circular(10.r),
+                                border: Border.all(color: const Color(0xFFFDE68A)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.emoji_events_rounded, color: const Color(0xFFD97706), size: 16.sp),
+                                  SizedBox(width: 4.w),
+                                  Text(
+                                    isAr ? 'أتممت الـ 10 أختام! ستبدأ دورتك الجديدة بطلبك القادم 🏆' : 'All 10 stamps completed! Next visit starts new cycle 🏆',
+                                    style: TextStyle(
+                                      color: const Color(0xFF92400E),
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ] else ...[
                           SizedBox(height: 10.h),
                           Text(
