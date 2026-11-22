@@ -11,6 +11,7 @@ import '../../widgets/slider/carsoul_slider.dart';
 import 'package:travelwin/utils/constants.dart';
 import 'package:travelwin/view/screens/services/favorites_page.dart';
 import 'package:travelwin/view/screens/services/provider_details.dart';
+import 'package:travelwin/services/win_pass_service.dart';
 import 'package:travelwin/view/widgets/services/provider_list_tile.dart';
 import 'package:travelwin/view/widgets/services/service_list_tile.dart';
 
@@ -40,6 +41,7 @@ class ProviderChooser extends GetView<ProviderController> {
 
   @override
   Widget build(BuildContext context) {
+    WinPassService.loadActiveProviderIds();
     return Scaffold(
       bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(

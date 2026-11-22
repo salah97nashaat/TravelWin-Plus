@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/logic/controllers/provider_controller.dart';
 import 'package:travelwin/models/provider_model.dart';
+import 'package:travelwin/services/win_pass_service.dart';
 import 'package:travelwin/utils/constants.dart';
 // import 'package:get_storage/get_storage.dart';
 import 'provider_avatar.dart';
@@ -89,30 +90,37 @@ class ProviderListTile extends StatelessWidget {
                                 secondaryTextStyle.copyWith(fontSize: 11.sp)),
                       ],
                     ),
-                    SizedBox(height: 5.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.5.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFECFDF5),
-                        borderRadius: BorderRadius.circular(6.r),
-                        border: Border.all(color: const Color(0xFFA7F3D0)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.confirmation_number_rounded, size: 11.sp, color: const Color(0xFF059669)),
-                          SizedBox(width: 4.w),
-                          Text(
-                            'كوبون الخصم (Win Pass) 🎫',
-                            style: TextStyle(
-                              color: const Color(0xFF047857),
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    Obx(() {
+                      final hasWinPass = WinPassService.hasWinPass(provider.id);
+                      if (!hasWinPass) return const SizedBox.shrink();
+
+                      return Padding(
+                        padding: EdgeInsets.only(top: 5.h),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.5.h),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFECFDF5),
+                            borderRadius: BorderRadius.circular(6.r),
+                            border: Border.all(color: const Color(0xFFA7F3D0)),
                           ),
-                        ],
-                      ),
-                    ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.confirmation_number_rounded, size: 11.sp, color: const Color(0xFF059669)),
+                              SizedBox(width: 4.w),
+                              Text(
+                                'كوبون الخصم (Win Pass) 🎫',
+                                style: TextStyle(
+                                  color: const Color(0xFF047857),
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),

@@ -16,6 +16,7 @@ import 'package:travelwin/logic/controllers/chat_controller.dart';
 // import 'package:travelwin/logic/controllers/chat_controller.dart';
 import 'package:travelwin/logic/controllers/theme_controller.dart';
 import 'package:travelwin/routes/routes.dart';
+import 'package:travelwin/services/win_pass_service.dart';
 // import 'package:travelwin/services/profile_services.dart';
 // import 'package:travelwin/services/notification_services.dart' as n;
 import 'package:travelwin/utils/my_string.dart';
@@ -83,6 +84,7 @@ Future<void> initializeServices() async {
   // Controller initializations can also happen here
   Get.put(ChatController());
   Get.put(AdController());
+  WinPassService.init();
 
   print("--- CORE SERVICES INITIALIZED SUCCESSFULLY ---");
 }
