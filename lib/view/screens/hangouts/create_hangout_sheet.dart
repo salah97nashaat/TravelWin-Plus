@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:travelwin/models/hangout_model.dart';
+import 'package:intl/intl.dart';
 import 'package:travelwin/routes/routes.dart';
 import 'package:travelwin/services/hangout_service.dart';
 import 'package:travelwin/utils/my_string.dart';
@@ -19,17 +19,25 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
   String _selectedCategory = 'coffee';
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _placeSearchController = TextEditingController();
-  final TextEditingController _timeController = TextEditingController(text: '8:00 مساءً');
+  final TextEditingController _customPlaceController = TextEditingController();
 
+  // Discount places list for dropdown
+  List<Map<String, dynamic>> _discountPlaces = [];
+  bool _isLoadingPlaces = true;
+  String _selectedPlaceMode = 'select'; // 'select' or 'custom'
   int? _selectedPlaceId;
   String? _selectedPlaceName;
   bool _hasWinPass = false;
+
+  // 3-Day Date Selection
+  int _selectedDayIndex = 0; // 0 = Today, 1 = Tomorrow, 2 = Day after tomorrow
+  late List<DateTime> _availableDates;
+
+  // Time Selection
+  TimeOfDay _selectedTime = const TimeOfDay(hour: 20, minute: 0);
+
   int _seatsNeeded = 1;
   bool _isLoading = false;
-
-  List<Map<String, dynamic>> _placeResults = [];
-  bool _isSearchingPlaces = false;
 
   final List<Map<String, dynamic>> _categories = [
     {'type': 'coffee', 'title': 'قهوة وتعارف', 'icon': Icons.local_cafe_rounded},
@@ -42,27 +50,82 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _availableDates = [
+      now,
+      now.add(const Duration(days: 1)),
+      now.add(const Duration(days: 2)),
+    ];
+    _fetchDiscountPlaces();
+  }
+
+  @override
   void dispose() {
     _titleController.dispose();
     _noteController.dispose();
-    _placeSearchController.dispose();
-    _timeController.dispose();
+    _customPlaceController.dispose();
     super.dispose();
   }
 
-  void _searchPlaces(String q) async {
-    if (q.trim().isEmpty) {
-      setState(() => _placeResults = []);
-      return;
-    }
-    setState(() => _isSearchingPlaces = true);
-    final results = await HangoutService.searchPlaces(q.trim());
+  Future<void> _fetchDiscountPlaces() async {
+    final places = await HangoutService.searchPlaces('');
     if (mounted) {
       setState(() {
-        _placeResults = results;
-        _isSearchingPlaces = false;
+        _discountPlaces = places;
+        _isLoadingPlaces = false;
+        // Pre-select first Win Pass partner if available
+        final firstWinPass = places.firstWhereOrNull((p) => p['has_win_pass'] == true) ??
+            (places.isNotEmpty ? places.first : null);
+        if (firstWinPass != null) {
+          _selectedPlaceId = firstWinPass['id'];
+          _selectedPlaceName = firstWinPass['name'];
+          _hasWinPass = firstWinPass['has_win_pass'] == true;
+        }
       });
     }
+  }
+
+  Future<void> _pickCustomTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: Color(0xFF8B5CF6),
+                onPrimary: Colors.white,
+                onSurface: Color(0xFF1E293B),
+              ),
+            ),
+            child: child!,
+          ),
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedTime = picked);
+    }
+  }
+
+  String _formatSelectedTime() {
+    final now = DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, _selectedTime.hour, _selectedTime.minute);
+    return DateFormat('h:mm a', 'ar').format(dt);
+  }
+
+  String _getDayTitle(int idx) {
+    if (idx == 0) return 'اليوم';
+    if (idx == 1) return 'غداً';
+    return 'بعد غد';
+  }
+
+  String _getDateFormatted(DateTime dt) {
+    return DateFormat('d MMMM', 'ar').format(dt);
   }
 
   Future<void> _submitHangout() async {
@@ -85,16 +148,40 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
       return;
     }
 
+    // 3. Resolve place
+    String placeName = '';
+    int? placeId;
+    if (_selectedPlaceMode == 'custom') {
+      placeName = _customPlaceController.text.trim();
+      placeId = null;
+      if (placeName.isEmpty) {
+        Get.snackbar(
+          'تنبيه',
+          'يرجى كتابة اسم المكان أو المنطقة',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFFEF4444),
+          colorText: Colors.white,
+        );
+        return;
+      }
+    } else {
+      placeName = _selectedPlaceName ?? '';
+      placeId = _selectedPlaceId;
+    }
+
+    final chosenDate = _availableDates[_selectedDayIndex];
+    final meetingDateStr = DateFormat('yyyy-MM-dd').format(chosenDate);
+    final meetingTimeStr = _formatSelectedTime();
+
     setState(() => _isLoading = true);
 
     final res = await HangoutService.createHangout(
       activityType: _selectedCategory,
       title: _titleController.text.trim(),
-      placeId: _selectedPlaceId,
-      placeName: _selectedPlaceName ?? _placeSearchController.text.trim(),
-      meetingTime: _timeController.text.trim().isEmpty
-          ? 'اليوم مساءً'
-          : _timeController.text.trim(),
+      placeId: placeId,
+      placeName: placeName,
+      meetingDate: meetingDateStr,
+      meetingTime: meetingTimeStr,
       seatsNeeded: _seatsNeeded,
       note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
     );
@@ -106,7 +193,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
       widget.onCreated();
       Get.snackbar(
         'تم بنجاح 🎉',
-        'تم نشر دعوتك! ستنتهي الدعوة تلقائياً بعد 24 ساعة.',
+        'تم نشر دعوتك! ستنتهي الدعوة تلقائياً بعد انتهاء موعد اللقاء.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
@@ -258,7 +345,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                           ),
                         ),
                         Text(
-                          'تنتهي صلاحية الدعوة تلقائياً بعد 24 ساعة',
+                          'يمكنك تحديد الموعد حتى 3 أيام قادمة',
                           style: TextStyle(
                             fontSize: 11.5.sp,
                             color: const Color(0xFF64748B),
@@ -358,169 +445,255 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               ),
               SizedBox(height: 14.h),
 
-              // 3. Place / Partner Linking
-              Text(
-                'المكان (اختر مكاناً مسجلاً للاستفادة من خصومات وين باس):',
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF334155),
-                ),
+              // 3. Place Selection (Dropdown of Discount Places + Custom Place)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'المكان:',
+                    style: TextStyle(
+                      fontSize: 13.5.sp,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF334155),
+                    ),
+                  ),
+                  if (_hasWinPass && _selectedPlaceMode == 'select')
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFECFDF5),
+                        borderRadius: BorderRadius.circular(6.r),
+                        border: Border.all(color: const Color(0xFFA7F3D0)),
+                      ),
+                      child: Text(
+                        'خصم Win Pass 🎫',
+                        style: TextStyle(
+                          fontSize: 10.5.sp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF065F46),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               SizedBox(height: 6.h),
-              TextField(
-                controller: _placeSearchController,
-                onChanged: _searchPlaces,
-                style: TextStyle(fontSize: 13.sp),
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.search_rounded,
-                      color: Color(0xFF94A3B8), size: 20),
-                  suffixIcon: _selectedPlaceName != null
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 18),
-                          onPressed: () {
-                            setState(() {
-                              _selectedPlaceId = null;
-                              _selectedPlaceName = null;
-                              _hasWinPass = false;
-                              _placeSearchController.clear();
-                              _placeResults = [];
-                            });
-                          },
-                        )
-                      : null,
-                  hintText: 'ابحث عن كافيه، مطعم، أو معلم مسجل...',
-                  hintStyle: TextStyle(
-                      fontSize: 12.sp, color: const Color(0xFF94A3B8)),
-                  filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+
+              // Dropdown Container
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12.r),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedPlaceMode == 'custom'
+                        ? 'custom_mode'
+                        : (_selectedPlaceId != null
+                            ? _selectedPlaceId.toString()
+                            : (_discountPlaces.isNotEmpty
+                                ? _discountPlaces.first['id'].toString()
+                                : 'custom_mode')),
+                    isExpanded: true,
+                    icon: const Icon(Icons.arrow_drop_down_rounded,
+                        color: Color(0xFF64748B)),
+                    items: [
+                      // List of Discount / Partner Places
+                      ..._discountPlaces.map((p) {
+                        final bool hasWP = p['has_win_pass'] == true;
+                        return DropdownMenuItem<String>(
+                          value: p['id'].toString(),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.storefront_rounded,
+                                size: 18,
+                                color: hasWP
+                                    ? const Color(0xFF059669)
+                                    : const Color(0xFF64748B),
+                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                child: Text(
+                                  p['name'] ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: hasWP
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: const Color(0xFF1E293B),
+                                  ),
+                                ),
+                              ),
+                              if (hasWP)
+                                Container(
+                                  margin: EdgeInsets.only(left: 4.w),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 6.w, vertical: 2.h),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFD1FAE5),
+                                    borderRadius: BorderRadius.circular(6.r),
+                                  ),
+                                  child: Text(
+                                    'Win Pass 🎫',
+                                    style: TextStyle(
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF065F46),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+
+                      // Option to write custom place
+                      DropdownMenuItem<String>(
+                        value: 'custom_mode',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.edit_location_alt_rounded,
+                                size: 18, color: Color(0xFF8B5CF6)),
+                            SizedBox(width: 8.w),
+                            Text(
+                              '✏️ مكان آخر (كتابة يدوية)',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF8B5CF6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    onChanged: (val) {
+                      if (val == null) return;
+                      if (val == 'custom_mode') {
+                        setState(() {
+                          _selectedPlaceMode = 'custom';
+                          _selectedPlaceId = null;
+                          _selectedPlaceName = null;
+                          _hasWinPass = false;
+                        });
+                      } else {
+                        final found = _discountPlaces.firstWhereOrNull(
+                            (p) => p['id'].toString() == val);
+                        if (found != null) {
+                          setState(() {
+                            _selectedPlaceMode = 'select';
+                            _selectedPlaceId = found['id'];
+                            _selectedPlaceName = found['name'];
+                            _hasWinPass = found['has_win_pass'] == true;
+                          });
+                        }
+                      }
+                    },
                   ),
                 ),
               ),
 
-              // Selected Place Win Pass Badge
-              if (_selectedPlaceName != null && _hasWinPass) ...[
-                SizedBox(height: 6.h),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFECFDF5),
-                    borderRadius: BorderRadius.circular(8.r),
-                    border: Border.all(color: const Color(0xFFA7F3D0)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.stars_rounded,
-                          color: Color(0xFF059669), size: 18),
-                      SizedBox(width: 6.w),
-                      Expanded(
-                        child: Text(
-                          'رائع! هذا المكان يقدم خصم حصري عبر بطاقة وين باس 🎫',
-                          style: TextStyle(
-                            fontSize: 11.5.sp,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF065F46),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-
-              // Autocomplete Results
-              if (_placeResults.isNotEmpty) ...[
-                SizedBox(height: 6.h),
-                Container(
-                  constraints: BoxConstraints(maxHeight: 160.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: _placeResults.length,
-                    separatorBuilder: (_, __) =>
-                        const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    itemBuilder: (context, idx) {
-                      final p = _placeResults[idx];
-                      final bool pHasWinPass = p['has_win_pass'] == true;
-                      return ListTile(
-                        dense: true,
-                        leading: Icon(
-                          Icons.location_on,
-                          color: pHasWinPass
-                              ? const Color(0xFF059669)
-                              : const Color(0xFF64748B),
-                          size: 20,
-                        ),
-                        title: Text(
-                          p['name'] ?? '',
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        subtitle: Text(
-                          p['address'] ?? '',
-                          style: TextStyle(fontSize: 11.sp),
-                        ),
-                        trailing: pHasWinPass
-                            ? Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 6.w, vertical: 2.h),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD1FAE5),
-                                  borderRadius: BorderRadius.circular(6.r),
-                                ),
-                                child: Text(
-                                  'وين باس 🎫',
-                                  style: TextStyle(
-                                    fontSize: 10.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF065F46),
-                                  ),
-                                ),
-                              )
-                            : null,
-                        onTap: () {
-                          setState(() {
-                            _selectedPlaceId = p['id'];
-                            _selectedPlaceName = p['name'];
-                            _hasWinPass = pHasWinPass;
-                            _placeSearchController.text = p['name'];
-                            _placeResults = [];
-                          });
-                        },
-                      );
-                    },
+              // Custom Place Text Field (if selected)
+              if (_selectedPlaceMode == 'custom') ...[
+                SizedBox(height: 8.h),
+                TextField(
+                  controller: _customPlaceController,
+                  style: TextStyle(fontSize: 13.sp),
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.location_on_outlined,
+                        color: Color(0xFF8B5CF6), size: 18),
+                    hintText: 'اكتب اسم المكان أو المنطقة (مثال: كافيه مادو تقسيم)...',
+                    hintStyle: TextStyle(
+                        fontSize: 12.sp, color: const Color(0xFF94A3B8)),
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    ),
                   ),
                 ),
               ],
               SizedBox(height: 14.h),
 
-              // 4. Meeting Time & Seats Row
+              // 4. DATE SELECTION (Up to 3 Days)
+              Text(
+                'اليوم والتاريخ (أقصى حد 3 أيام):',
+                style: TextStyle(
+                  fontSize: 13.5.sp,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF334155),
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Row(
+                children: List.generate(3, (idx) {
+                  final isSelected = _selectedDayIndex == idx;
+                  final dt = _availableDates[idx];
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedDayIndex = idx),
+                      child: Container(
+                        margin: EdgeInsets.only(left: idx < 2 ? 8.w : 0),
+                        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 6.w),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFF8B5CF6)
+                              : const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFF8B5CF6)
+                                : const Color(0xFFE2E8F0),
+                            width: isSelected ? 1.5 : 1,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              _getDayTitle(idx),
+                              style: TextStyle(
+                                fontSize: 12.5.sp,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF1E293B),
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              _getDateFormatted(dt),
+                              style: TextStyle(
+                                fontSize: 10.5.sp,
+                                color: isSelected
+                                    ? Colors.white.withOpacity(0.9)
+                                    : const Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              SizedBox(height: 14.h),
+
+              // 5. TIME & SEATS ROW
               Row(
                 children: [
-                  // Time
+                  // Time Selector
                   Expanded(
                     flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'الموعد / التوقيت:',
+                          'توقيت اللقاء (الساعة):',
                           style: TextStyle(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.bold,
@@ -528,19 +701,34 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                           ),
                         ),
                         SizedBox(height: 6.h),
-                        TextField(
-                          controller: _timeController,
-                          style: TextStyle(fontSize: 13.sp),
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.access_time_rounded,
-                                size: 18, color: Color(0xFF64748B)),
-                            hintText: '8:00 م',
-                            filled: true,
-                            fillColor: const Color(0xFFF8FAFC),
-                            border: OutlineInputBorder(
+                        GestureDetector(
+                          onTap: _pickCustomTime,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 12.h),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
                               borderRadius: BorderRadius.circular(12.r),
-                              borderSide:
-                                  const BorderSide(color: Color(0xFFE2E8F0)),
+                              border:
+                                  Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.access_time_rounded,
+                                    size: 18, color: Color(0xFF8B5CF6)),
+                                SizedBox(width: 8.w),
+                                Text(
+                                  _formatSelectedTime(),
+                                  style: TextStyle(
+                                    fontSize: 13.5.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF1E293B),
+                                  ),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.arrow_drop_down,
+                                    color: Color(0xFF94A3B8)),
+                              ],
                             ),
                           ),
                         ),
@@ -565,11 +753,13 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                         ),
                         SizedBox(height: 6.h),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 2.h),
                           decoration: BoxDecoration(
                             color: const Color(0xFFF8FAFC),
                             borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                            border:
+                                Border.all(color: const Color(0xFFE2E8F0)),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<int>(
@@ -599,7 +789,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               ),
               SizedBox(height: 14.h),
 
-              // 5. Note / Details
+              // 6. Note / Details
               Text(
                 'ملاحظة أو فكرة اللقاء (اختياري):',
                 style: TextStyle(
@@ -627,7 +817,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               ),
               SizedBox(height: 20.h),
 
-              // 6. Submit Button
+              // 7. Submit Button
               ElevatedButton.icon(
                 onPressed: _isLoading ? null : _submitHangout,
                 icon: _isLoading
@@ -644,7 +834,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                         ),
                       )
                     : Text(
-                        'نشر الدعوة الآن (سارية 24 ساعة) 🚀',
+                        'نشر الدعوة الآن 🚀',
                         style: TextStyle(
                           fontSize: 14.5.sp,
                           fontWeight: FontWeight.bold,

@@ -149,12 +149,26 @@ class HangoutModel {
     }
   }
 
+  /// Displays only the first name of creator as requested
+  String get firstName {
+    final parts = creatorName.trim().split(RegExp(r'\s+'));
+    return parts.isNotEmpty && parts.first.isNotEmpty ? parts.first : 'مستخدم';
+  }
+
   String get timeLeftFormatted {
     if (minutesLeft <= 0) return 'منتهي';
-    final hours = minutesLeft ~/ 60;
+    final days = minutesLeft ~/ (24 * 60);
+    final hours = (minutesLeft % (24 * 60)) ~/ 60;
     final mins = minutesLeft % 60;
+
+    if (days > 0) {
+      if (hours > 0) {
+        return '$days يوم و $hours س';
+      }
+      return '$days ${days == 1 ? "يوم متبقي" : "أيام متبقية"}';
+    }
     if (hours > 0) {
-      return '$hours ساعة و $mins دقيقة';
+      return '$hours ساعة و $mins د';
     }
     return '$mins دقيقة متبقية';
   }

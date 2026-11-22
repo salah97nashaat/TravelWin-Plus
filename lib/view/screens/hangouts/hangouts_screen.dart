@@ -325,7 +325,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
                                       SizedBox(width: 6.w),
                                       Expanded(
                                         child: Text(
-                                          h.creatorName,
+                                          h.firstName,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(

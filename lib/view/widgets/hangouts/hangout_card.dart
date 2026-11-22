@@ -67,7 +67,7 @@ class _HangoutCardState extends State<HangoutCard> {
               ),
               SizedBox(height: 12.h),
               Text(
-                'أرسل رسالة سريعة لصاحب النشاط (${widget.hangout.creatorName}):',
+                'أرسل رسالة سريعة لصاحب النشاط (${widget.hangout.firstName}):',
                 style: TextStyle(fontSize: 13.sp, color: const Color(0xFF64748B)),
               ),
               SizedBox(height: 10.h),
@@ -254,19 +254,19 @@ class _HangoutCardState extends State<HangoutCard> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.3),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. TOP BAR: Category + Countdown + Report Button
+          // 1. TOP BAR: Category + Countdown + Prominent Red Report Button
           Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
             decoration: BoxDecoration(
@@ -276,7 +276,7 @@ class _HangoutCardState extends State<HangoutCard> {
                 topRight: Radius.circular(18.r),
               ),
               border: const Border(
-                bottom: BorderSide(color: Color(0xFFF1F5F9)),
+                bottom: BorderSide(color: Color(0xFFE2E8F0)),
               ),
             ),
             child: Row(
@@ -336,18 +336,39 @@ class _HangoutCardState extends State<HangoutCard> {
                     ],
                   ),
                 ),
-                SizedBox(width: 6.w),
+                SizedBox(width: 8.w),
 
-                // Report button (شكوى / إبلاغ)
+                // Prominent Red Report / Complaint Button
                 InkWell(
                   onTap: _openReportDialog,
-                  borderRadius: BorderRadius.circular(20.r),
-                  child: Padding(
-                    padding: EdgeInsets.all(4.w),
-                    child: const Icon(
-                      Icons.flag_outlined,
-                      size: 18,
-                      color: Color(0xFF94A3B8),
+                  borderRadius: BorderRadius.circular(10.r),
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEF2F2),
+                      borderRadius: BorderRadius.circular(10.r),
+                      border: Border.all(
+                          color: const Color(0xFFFCA5A5), width: 1.1),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.flag_rounded,
+                          size: 13,
+                          color: Color(0xFFEF4444),
+                        ),
+                        SizedBox(width: 3.w),
+                        Text(
+                          'إبلاغ',
+                          style: TextStyle(
+                            fontSize: 10.5.sp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFFDC2626),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -417,7 +438,7 @@ class _HangoutCardState extends State<HangoutCard> {
                                   color: Colors.white, size: 12),
                               SizedBox(width: 3.w),
                               Text(
-                                'خصم وين باس',
+                                'خصم Win Pass 🎫',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 10.5.sp,
@@ -473,13 +494,13 @@ class _HangoutCardState extends State<HangoutCard> {
                     ),
                     SizedBox(width: 8.w),
 
-                    // Creator name & Time
+                    // Creator first name & Time
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.hangout.creatorName,
+                            widget.hangout.firstName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(

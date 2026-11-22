@@ -18,6 +18,7 @@ import 'package:travelwin/services/notification_services.dart' as n;
 import '../widgets/slider/carsoul_slider.dart';
 import '../widgets/tourism_place.dart';
 import 'hangouts/hangouts_screen.dart';
+import '../../services/weather_service.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final String eczanelerUrl = 'https://www.eczaneler.gen.tr/';
   @override
   void initState() {
+    WeatherService.init();
     FirebaseMessaging.onMessage.listen((event) async {
       showSnackBar(
         context,
@@ -669,29 +671,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildWeatherBar() {
     final bool isAr = Get.locale?.languageCode == 'ar';
-    final List<Map<String, dynamic>> citiesWeather = [
-      {'nameAr': 'إسطنبول', 'nameEn': 'Istanbul', 'temp': '19°', 'icon': '🌤️'},
-      {'nameAr': 'طرابزون', 'nameEn': 'Trabzon', 'temp': '15°', 'icon': '🌧️'},
-      {'nameAr': 'أنطاليا', 'nameEn': 'Antalya', 'temp': '24°', 'icon': '☀️'},
-      {'nameAr': 'كبادوكيا', 'nameEn': 'Cappadocia', 'temp': '16°', 'icon': '⛅'},
-      {'nameAr': 'بورصة', 'nameEn': 'Bursa', 'temp': '17°', 'icon': '🌦️'},
-      {'nameAr': 'ريزا', 'nameEn': 'Rize', 'temp': '14°', 'icon': '🌲'},
-      {'nameAr': 'فتحية', 'nameEn': 'Fethiye', 'temp': '23°', 'icon': '🏖️'},
-    ];
 
     return Container(
       height: 27.h,
       margin: EdgeInsets.only(top: 2.h, bottom: 2.h),
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 14.w),
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: citiesWeather.length,
-        itemBuilder: (context, index) {
-          final item = citiesWeather[index];
-          return AnimatedWeatherChip(item: item, isAr: isAr);
-        },
-      ),
+      child: Obx(() {
+        final citiesWeather = WeatherService.liveCitiesWeather;
+        return ListView.builder(
+          padding: EdgeInsets.symmetric(horizontal: 14.w),
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          itemCount: citiesWeather.length,
+          itemBuilder: (context, index) {
+            final item = citiesWeather[index];
+            return AnimatedWeatherChip(item: item, isAr: isAr);
+          },
+        );
+      }),
     );
   }
 
