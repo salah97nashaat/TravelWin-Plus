@@ -572,7 +572,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ShaderMask(
               shaderCallback: (bounds) => googleGradient.createShader(bounds),
               child: Text(
-                Get.locale?.languageCode == 'ar' ? 'المساعد الذكي' : 'AI Guide',
+                'AI Salo',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 11.5.sp,
@@ -649,57 +649,7 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: citiesWeather.length,
         itemBuilder: (context, index) {
           final item = citiesWeather[index];
-          final String cityName = isAr ? item['nameAr']! : item['nameEn']!;
-          return Container(
-            margin: EdgeInsets.only(right: isAr ? 0 : 8.w, left: isAr ? 8.w : 0),
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(14.r),
-              border: Border.all(color: Colors.blueGrey.withOpacity(0.12), width: 0.8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  item['icon']!,
-                  style: TextStyle(fontSize: 12.sp),
-                ),
-                SizedBox(width: 4.w),
-                Text(
-                  cityName,
-                  style: TextStyle(
-                    fontSize: 10.5.sp,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF334155),
-                  ),
-                ),
-                SizedBox(width: 4.w),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0284C7).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6.r),
-                  ),
-                  child: Text(
-                    item['temp']!,
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0284C7),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
+          return AnimatedWeatherChip(item: item, isAr: isAr);
         },
       ),
     );
@@ -732,8 +682,141 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Modern Home Action Button (Colorful & Sleek)
-class HomeActionItem extends StatelessWidget {
+// Animated Weather Chip with Dynamic Weather Micro-Animations
+class AnimatedWeatherChip extends StatefulWidget {
+  final Map<String, dynamic> item;
+  final bool isAr;
+
+  const AnimatedWeatherChip({
+    super.key,
+    required this.item,
+    required this.isAr,
+  });
+
+  @override
+  State<AnimatedWeatherChip> createState() => _AnimatedWeatherChipState();
+}
+
+class _AnimatedWeatherChipState extends State<AnimatedWeatherChip>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animController;
+  late Animation<double> _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 1800),
+      vsync: this,
+    )..repeat(reverse: true);
+    _anim = Tween<double>(begin: -1.5, end: 1.5).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String icon = widget.item['icon']!;
+    final bool isRain = icon.contains('🌧️') || icon.contains('🌦️');
+    final bool isSun = icon.contains('☀️') || icon.contains('🌤️');
+    final String cityName =
+        widget.isAr ? widget.item['nameAr']! : widget.item['nameEn']!;
+
+    return Container(
+      margin: EdgeInsets.only(
+          right: widget.isAr ? 0 : 8.w, left: widget.isAr ? 8.w : 0),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.92),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(
+          color: isSun
+              ? Colors.amber.withOpacity(0.3)
+              : (isRain
+                  ? Colors.blue.withOpacity(0.25)
+                  : Colors.blueGrey.withOpacity(0.12)),
+          width: 0.8,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isSun
+                ? Colors.amber.withOpacity(0.08)
+                : Colors.black.withOpacity(0.02),
+            blurRadius: 5,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedBuilder(
+            animation: _anim,
+            builder: (context, child) {
+              if (isSun) {
+                // Sun pulses with smooth scale
+                return Transform.scale(
+                  scale: 1.0 + (_anim.value.abs() * 0.1),
+                  child: child,
+                );
+              } else if (isRain) {
+                // Rain gently bobs up/down like falling droplets
+                return Transform.translate(
+                  offset: Offset(0, _anim.value),
+                  child: child,
+                );
+              } else {
+                // Clouds gently drift horizontally
+                return Transform.translate(
+                  offset: Offset(_anim.value, 0),
+                  child: child,
+                );
+              }
+            },
+            child: Text(
+              icon,
+              style: TextStyle(fontSize: 12.sp),
+            ),
+          ),
+          SizedBox(width: 4.w),
+          Text(
+            cityName,
+            style: TextStyle(
+              fontSize: 10.5.sp,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF334155),
+            ),
+          ),
+          SizedBox(width: 4.w),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0284C7).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(6.r),
+            ),
+            child: Text(
+              widget.item['temp']!,
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF0284C7),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Modern Animated Home Action Button (Pulse Glow & Spring Tap)
+class HomeActionItem extends StatefulWidget {
   final String title;
   final IconData icon;
   final List<Color> gradientColors;
@@ -748,70 +831,115 @@ class HomeActionItem extends StatelessWidget {
   });
 
   @override
+  State<HomeActionItem> createState() => _HomeActionItemState();
+}
+
+class _HomeActionItemState extends State<HomeActionItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 2200),
+      vsync: this,
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: gradientColors.first.withOpacity(0.12),
-          width: 1.2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: gradientColors.first.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
+    return AnimatedScale(
+      scale: _isPressed ? 0.93 : 1.0,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16.r),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 4.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(8.w),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: gradientColors,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+          border: Border.all(
+            color: widget.gradientColors.first.withOpacity(0.12),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: widget.gradientColors.first.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onTap,
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) => setState(() => _isPressed = false),
+            onTapCancel: () => setState(() => _isPressed = false),
+            borderRadius: BorderRadius.circular(16.r),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 4.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedBuilder(
+                    animation: _pulseAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _pulseAnimation.value,
+                        child: Container(
+                          padding: EdgeInsets.all(8.w),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: widget.gradientColors,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: widget.gradientColors.first
+                                    .withOpacity(0.35 * _pulseAnimation.value),
+                                blurRadius: 6 * _pulseAnimation.value,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            widget.icon,
+                            color: Colors.white,
+                            size: 19.sp,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 6.h),
+                  Text(
+                    widget.title.tr,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10.5.sp,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
+                      letterSpacing: 0.2,
                     ),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: gradientColors.first.withOpacity(0.32),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 19.sp,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  title.tr,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 10.5.sp,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF1E293B),
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

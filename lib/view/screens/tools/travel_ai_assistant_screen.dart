@@ -95,11 +95,11 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
 
     final welcomeText = _contextPlaceName != null
         ? (isAr
-            ? 'أهلاً بك! أنا رفيقك السياحي الذكي 🌟\nأنا جاهز لمساعدتك بكل ما يخص ($_contextPlaceName)!\nما الذي تود معرفته عن هذا المكان؟'
-            : 'Welcome! I am your AI Travel Concierge 🌟\nI am ready to help you with everything about ($_contextPlaceName)!\nWhat would you like to know about this spot?')
+            ? 'أهلاً بك! أنا AI Salo 🌟\nأنا جاهز لمساعدتك بكل ما يخص ($_contextPlaceName)!\nما الذي تود معرفته عن هذا المكان؟'
+            : 'Welcome! I am AI Salo 🌟\nI am ready to help you with everything about ($_contextPlaceName)!\nWhat would you like to know about this spot?')
         : (isAr
-            ? 'مرحباً بك! أنا رفيقك السياحي الذكي من TravelWin Plus 🌟\nكيف يمكنني مساعدتك في التخطيط لرحلتك، واقتراح أفضل الأماكن، أو نصائح السفر؟'
-            : 'Welcome! I am your AI Travel Concierge from TravelWin Plus 🌟\nHow can I help you plan your itinerary, recommend top attractions, or share essential travel tips?');
+            ? 'مرحباً بك! أنا AI Salo من TravelWin Plus 🌟\nكيف يمكنني مساعدتك في التخطيط لرحلتك، واقتراح أفضل الأماكن، أو نصائح السفر؟'
+            : 'Welcome! I am AI Salo from TravelWin Plus 🌟\nHow can I help you plan your itinerary, recommend top attractions, or share essential travel tips?');
 
     _messages = [
       _ChatMessage(
@@ -241,18 +241,9 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
               child: const Icon(Icons.auto_awesome, color: goldAccent, size: 18),
             ),
             SizedBox(width: 8.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isAr ? 'المساعد السياحي الذكي' : 'AI Travel Concierge',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                Text(
-                  isAr ? 'مدعوم بالذكاء الاصطناعي • متصل' : 'AI Powered • Online',
-                  style: TextStyle(fontSize: 10.sp, color: Colors.greenAccent),
-                ),
-              ],
+            Text(
+              'AI Salo',
+              style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ],
         ),
@@ -344,7 +335,7 @@ class _TravelAIAssistantScreenState extends State<TravelAIAssistantScreen> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: _sendMessage,
                       decoration: InputDecoration(
-                        hintText: isAr ? 'اسأل المساعد الذكي عن أي مكان...' : 'Ask the AI Guide anything...',
+                        hintText: isAr ? 'اسأل AI Salo عن أي مكان...' : 'Ask AI Salo anything...',
                         hintStyle: TextStyle(fontSize: 13.sp, color: Colors.grey),
                         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                         filled: true,

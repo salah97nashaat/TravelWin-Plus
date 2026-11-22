@@ -143,70 +143,67 @@ class _PlaceDetailsState extends State<PlaceDetails> {
 
   Widget _buildAskAiButton({required String placeName}) {
     final bool isAr = Get.locale?.languageCode == 'ar';
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.r),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2563EB), Color(0xFF7C3AED)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4F46E5).withOpacity(0.28),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22.r),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2563EB), Color(0xFF7C3AED)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Get.toNamed(
-              Routes.travelAIAssistantScreen,
-              arguments: {
-                'placeName': placeName,
-              },
-            );
-          },
-          borderRadius: BorderRadius.circular(16.r),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(5.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.auto_awesome,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-                SizedBox(width: 10.w),
-                Flexible(
-                  child: Text(
-                    isAr
-                        ? 'اسأل المساعد الذكي عن هذا المكان ✨'
-                        : 'Ask AI Guide About This Place ✨',
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF4F46E5).withOpacity(0.22),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Get.toNamed(
+                Routes.travelAIAssistantScreen,
+                arguments: {
+                  'placeName': placeName,
+                },
+              );
+            },
+            borderRadius: BorderRadius.circular(22.r),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 9.h, horizontal: 18.w),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(4.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.auto_awesome,
                       color: Colors.white,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
+                      size: 14,
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(width: 8.w),
+                  Text(
+                    isAr
+                        ? 'اسأل AI Salo عن هذا المكان ✨'
+                        : 'Ask AI Salo About This Place ✨',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.5.sp,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

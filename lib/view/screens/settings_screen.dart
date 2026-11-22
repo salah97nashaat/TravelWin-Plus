@@ -143,28 +143,13 @@ class SettingsScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 14.w),
                   Expanded(
-                    child: Row(
-                      children: [
-                        Text(
-                          Get.locale?.languageCode == 'ar' ? 'مساعد السفر الذكي ' : 'Travel AI ',
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Get.isDarkMode ? Colors.white : mainColor,
-                          ),
-                        ),
-                        ShaderMask(
-                          shaderCallback: (bounds) => googleGradient.createShader(bounds),
-                          child: Text(
-                            '(AI Guide)',
-                            style: TextStyle(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      'AI Salo',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Get.isDarkMode ? Colors.white : mainColor,
+                      ),
                     ),
                   ),
                   Icon(Icons.arrow_forward_ios, size: 16.sp, color: const Color(0xFF4285F4)),

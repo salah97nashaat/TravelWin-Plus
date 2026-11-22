@@ -179,25 +179,22 @@ class TourismPlace extends StatelessWidget {
                 ),
               ),
             ),
-            // Province Index Badge (e.g., #1, #2 ... #38)
+            // Province Index Badge (Clean number without #)
             Positioned(
               top: 10.h,
               left: 10.w,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 3.h),
+                padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.h),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.55),
-                  borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(
-                      color: Colors.white.withOpacity(0.35), width: 0.8),
+                  color: Colors.black.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Text(
-                  '#${index + 1}',
+                  '${index + 1}',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 10.sp,
+                    fontSize: 10.5.sp,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
                   ),
                 ),
               ),
