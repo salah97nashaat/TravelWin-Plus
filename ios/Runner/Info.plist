@@ -72,6 +72,8 @@
 	<string>Travel Win needs access to your location to show nearby services, activities, and navigation.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to your photos to allow uploading profile images and documents.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Travel Win needs camera access to scan QR coupons and discount codes (Win Pass) at partner restaurants and stores.</string>
 	<key>SKAdNetworkItems</key>
 	<array/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

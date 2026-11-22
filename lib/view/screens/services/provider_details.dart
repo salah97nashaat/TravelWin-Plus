@@ -11,6 +11,7 @@ import 'package:travelwin/models/provider_model.dart';
 import 'package:travelwin/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../helpers/adv/admob_banner.dart';
+import '../../widgets/services/win_pass_hero_card.dart';
 
 // class ProviderDetailsPage extends StatefulWidget {
 //   const ProviderDetailsPage({super.key, required this.provider});
@@ -443,6 +444,13 @@ class _ProviderDetailsPageState extends State<ProviderDetailsPage> {
                     ),
                     SizedBox(height: 15.h),
                     _buildQuickInfoBar(provider),
+
+                    // Win Pass Hero Card
+                    WinPassHeroCard(
+                      providerId: provider.id,
+                      providerName: name,
+                    ),
+
                     // Social Row
                     _buildSocialActionRow(provider),
 
