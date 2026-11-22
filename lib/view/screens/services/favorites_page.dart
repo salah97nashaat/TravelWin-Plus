@@ -4,6 +4,7 @@ import 'package:travelwin/logic/controllers/provider_controller.dart';
 import 'package:travelwin/utils/constants.dart';
 import 'package:travelwin/view/screens/services/provider_details.dart';
 import 'package:travelwin/view/widgets/services/provider_list_tile.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -22,6 +23,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     // var appBarForeColor2 = Colors.black;
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         surfaceTintColor: appBarBackColor,
         backgroundColor: appBarBackColor,

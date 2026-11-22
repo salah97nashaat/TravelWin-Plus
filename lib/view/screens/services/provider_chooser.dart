@@ -4,6 +4,8 @@ import 'package:travelwin/logic/controllers/provider_controller.dart';
 import 'package:travelwin/logic/controllers/service_controller.dart';
 import 'package:travelwin/logic/controllers/adController.dart';
 import 'package:travelwin/helpers/adv/admob_native.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
+import '../../widgets/slider/carsoul_slider.dart';
 
 // import 'package:travelwin/models/service_model.dart';
 import 'package:travelwin/utils/constants.dart';
@@ -39,6 +41,7 @@ class ProviderChooser extends GetView<ProviderController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         surfaceTintColor: appBarBackColor,
         backgroundColor: appBarBackColor,
@@ -98,6 +101,14 @@ class ProviderChooser extends GetView<ProviderController> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12.0, vertical: 8.0),
                   children: [
+                    if (servicesController.banners.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: MyCarsoulSlider(
+                          items: servicesController.banners,
+                          height: 0.16,
+                        ),
+                      ),
                     const AdmobNativeUi(),
                     ...controller.providers
                         .where(

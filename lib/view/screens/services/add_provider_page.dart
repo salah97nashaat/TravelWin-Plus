@@ -14,6 +14,7 @@ import 'package:travelwin/logic/controllers/service_state_controller.dart';
 import 'package:travelwin/models/provider_model.dart';
 import 'package:travelwin/models/service_state_model.dart';
 import 'package:travelwin/utils/constants.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 class AddProviderPage extends StatefulWidget {
   const AddProviderPage({super.key});
@@ -55,6 +56,7 @@ class _AddProviderPageState extends State<AddProviderPage> {
   Widget build(BuildContext context) {
     bool isAr = Get.locale!.languageCode == "ar";
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         title: Text("add_service".tr),
         backgroundColor: inversePrimaryColor,

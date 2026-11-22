@@ -8,6 +8,7 @@ import 'package:travelwin/routes/routes.dart';
 import 'package:travelwin/utils/constants.dart';
 // import 'package:travelwin/view/screens/services/service_chooser.dart';
 import 'package:travelwin/view/widgets/services/state_grid_tile.dart';
+import '../../../helpers/adv/admob_banner.dart';
 // import 'package:get_storage/get_storage.dart';
 // import 'package:get_storage/get_storage.dart';
 
@@ -18,6 +19,7 @@ class StateChooser extends GetView<ServiceStateController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       backgroundColor: const Color(0xFFF8F9FD), // Modern soft background
       appBar: AppBar(
         backgroundColor: Colors.white,

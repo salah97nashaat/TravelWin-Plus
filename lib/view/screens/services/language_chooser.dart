@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:travelwin/utils/constants.dart';
 import 'package:travelwin/view/screens/services/service_chooser.dart';
 import 'package:travelwin/view/screens/services/state_chooser.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 /*
 unused page
@@ -14,6 +15,7 @@ class LanguageChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: inversePrimaryColor2,
         foregroundColor: primaryColor2,

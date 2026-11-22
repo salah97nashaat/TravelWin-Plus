@@ -10,6 +10,7 @@ import 'package:travelwin/logic/controllers/provider_controller.dart';
 import 'package:travelwin/models/provider_model.dart';
 import 'package:travelwin/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 // class ProviderDetailsPage extends StatefulWidget {
 //   const ProviderDetailsPage({super.key, required this.provider});
@@ -340,6 +341,7 @@ class _ProviderDetailsPageState extends State<ProviderDetailsPage> {
         (provider.lat != 0 || provider.long != 0);
 
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       backgroundColor: Colors.white,
       body: Stack(
         children: [

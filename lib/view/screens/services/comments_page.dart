@@ -7,6 +7,7 @@ import 'package:travelwin/models/comments_model.dart';
 import 'package:travelwin/models/provider_model.dart';
 import 'package:travelwin/utils/constants.dart';
 import 'package:travelwin/view/widgets/services/comment_card.dart';
+import '../../../helpers/adv/admob_banner.dart';
 // import 'package:get_storage/get_storage.dart';
 
 class CommentsPage extends StatefulWidget {
@@ -44,6 +45,7 @@ class _CommentsPageState extends State<CommentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: mainColor3,
         foregroundColor: colorScheme2.onPrimary,

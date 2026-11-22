@@ -13,6 +13,7 @@ import 'package:travelwin/view/widgets/slider/carsoul_slider.dart';
 import '../../../logic/controllers/service_state_controller.dart';
 import '../../../logic/controllers/adController.dart';
 import '../../../helpers/adv/admob_native.dart';
+import '../../../helpers/adv/admob_banner.dart';
 import '../../widgets/services/service_grid_tile.dart';
 import 'add_provider_page.dart';
 // import 'language_chooser.dart';
@@ -165,6 +166,7 @@ class ServiceChooser extends GetView<ServicesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       backgroundColor: const Color(0xFFF8F9FD), // Soft background
       appBar: AppBar(
         backgroundColor: Colors.white,

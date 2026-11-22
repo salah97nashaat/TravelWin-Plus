@@ -11,6 +11,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:travelwin/logic/controllers/provider_controller.dart';
 import 'package:travelwin/models/service_model.dart';
 import 'package:travelwin/utils/constants.dart';
+import '../../../helpers/adv/admob_banner.dart';
 
 class OnTheMapPage extends StatelessWidget {
   const OnTheMapPage({super.key, required this.service});
@@ -33,6 +34,7 @@ class OnTheMapPage extends StatelessWidget {
         : const LatLng(41.0082, 28.9784); // Default to Istanbul
 
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
