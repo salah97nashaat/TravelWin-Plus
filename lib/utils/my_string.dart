@@ -31,6 +31,24 @@ String validationAge = r'^[a-z A-Z]+$';
 String baseUrl = 'https://travelwin1.com/new-travelwin/public/api';
 String baseUrlApi = 'https://travelwin1.com/new-travelwin/public/api';
 Rx<Profile> profile = Rx(Profile());
+
+/// Checks if the current user profile is missing any mandatory fields
+/// (Name, valid Mobile/Phone, and uploaded Profile Picture)
+bool isUserProfileIncomplete() {
+  final d = profile.value.data;
+  if (d == null) return true;
+  final hasName = d.name.trim().isNotEmpty && d.name != 'null';
+  final hasPhone = d.mobile != 0 &&
+      d.mobile.toString().trim().isNotEmpty &&
+      d.mobile.toString() != 'null';
+  final imageUrl = d.image.trim();
+  final hasImage = imageUrl.isNotEmpty &&
+      imageUrl != 'null' &&
+      !imageUrl.endsWith('/public/') &&
+      imageUrl != '/' &&
+      (Uri.tryParse(imageUrl)?.hasScheme ?? false);
+  return !(hasName && hasPhone && hasImage);
+}
 Rx<Guidence> guidence = Rx(Guidence());
 Rx<Chats?> chats = Rx(Chats());
 Rx<ChatMessages> chatMessages = Rx(ChatMessages());

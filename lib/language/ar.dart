@@ -132,6 +132,7 @@ const Map<String, String> ar = {
   "Activities": "الأنشطة",
   "Guide": "المرشد السياحي",
   "Pharmacies": "الصيدليات",
+  "Hangouts": "شريك النشاط والطاولة",
   "Unable to load activities": "تعذر تحميل الأنشطة",
   "No activities available": "لا توجد أنشطة متاحة حالياً",
   "Retry": "إعادة المحاولة",

@@ -16,6 +16,7 @@ const Map<String, String> en = {
   "Activities": "Activities",
   "Guide": "Tour Guide",
   "Pharmacies": "Pharmacies",
+  "Hangouts": "Hangout Partner",
   "Email": "Email",
   "Mobile Number": "Mobile Number",
   "Point": "Point",

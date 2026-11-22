@@ -4,6 +4,7 @@ import '../../../utils/theme.dart';
 import '../../logic/controllers/auth_controller.dart';
 import '../../routes/routes.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../utils/my_string.dart';
 class MyDrawer extends StatelessWidget {
   MyDrawer({Key? key}) : super(key: key);
   final authController = Get.find<AuthController>();
@@ -15,20 +16,59 @@ class MyDrawer extends StatelessWidget {
         child: ListView(
           children: <Widget>[
 
-            ListTile(
-              title: Text(
-                "Profile".tr,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
-              ),
-              leading: const Icon(
-                Icons.person_pin_rounded,
-                color: Colors.white,
-                size: 25,
-              ),
-              onTap: () async {
-                Get.toNamed(Routes.ProfileScreen);
-              },
-            ),
+            Obx(() {
+              final incomplete = isUserProfileIncomplete();
+              return ListTile(
+                title: Row(
+                  children: [
+                    Text(
+                      "Profile".tr,
+                      style: const TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                    if (incomplete) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF4444),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'غير مكتمل',
+                          style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                leading: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(
+                      Icons.person_pin_rounded,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                    if (incomplete)
+                      Positioned(
+                        right: -1,
+                        top: -1,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFEF4444),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                onTap: () async {
+                  Get.toNamed(Routes.ProfileScreen);
+                },
+              );
+            }),
             ListTile(
               title: Row(
                 children: [

@@ -17,6 +17,7 @@ import 'package:travelwin/services/notification_services.dart' as n;
 // import '../widgets/card_ui.dart';
 import '../widgets/slider/carsoul_slider.dart';
 import '../widgets/tourism_place.dart';
+import 'hangouts/hangouts_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -132,39 +133,72 @@ class _HomeScreenState extends State<HomeScreen> {
             leading: Row(
               children: [
                 SizedBox(width: 15.w),
-                // 1. Profile with Static Fallback
+                // 1. Profile with Static Fallback & Incomplete Badge
                 Visibility(
                   visible: token.toString() != 'null',
                   child: GestureDetector(
                     onTap: () => Get.toNamed(Routes.ProfileScreen),
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: mainColor.withOpacity(0.3), width: 1.5),
-                      ),
-                      child: Obx(() {
-                        final imageUrl = profile.value.data?.image;
-                        final profileImageUri =
-                            imageUrl == null ? null : Uri.tryParse(imageUrl);
-                        final bool hasImage = profileImageUri != null &&
-                            profileImageUri.hasScheme &&
-                            profileImageUri.host.isNotEmpty &&
-                            !profileImageUri.path.endsWith('/public/') &&
-                            profileImageUri.path != '/';
+                    child: Obx(() {
+                      final imageUrl = profile.value.data?.image;
+                      final profileImageUri =
+                          imageUrl == null ? null : Uri.tryParse(imageUrl);
+                      final bool hasImage = profileImageUri != null &&
+                          profileImageUri.hasScheme &&
+                          profileImageUri.host.isNotEmpty &&
+                          !profileImageUri.path.endsWith('/public/') &&
+                          profileImageUri.path != '/';
+                      final bool incomplete = isUserProfileIncomplete();
 
-                        return CircleAvatar(
-                          radius: 20.w,
-                          backgroundColor: Colors.white,
-                          // If hasImage is true, use NetworkImage, else use static Asset
-                          backgroundImage: hasImage
-                              ? NetworkImage(imageUrl!)
-                              : const AssetImage('assets/images/user.png')
-                                  as ImageProvider, // <-- Your static user image path
-                        );
-                      }),
-                    ),
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: incomplete
+                                    ? const Color(0xFFEF4444)
+                                    : mainColor.withOpacity(0.3),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 20.w,
+                              backgroundColor: Colors.white,
+                              // If hasImage is true, use NetworkImage, else use static Asset
+                              backgroundImage: hasImage
+                                  ? NetworkImage(imageUrl!)
+                                  : const AssetImage('assets/images/user.png')
+                                      as ImageProvider,
+                            ),
+                          ),
+                          if (incomplete)
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: Container(
+                                width: 11.w,
+                                height: 11.w,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEF4444),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: Colors.white, width: 2),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFEF4444)
+                                          .withOpacity(0.6),
+                                      blurRadius: 4,
+                                      spreadRadius: 0.5,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    }),
                   ),
                 ),
                 SizedBox(width: 12.w),
@@ -339,17 +373,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 // --- SLIM WEATHER MICRO TICKER (Non-cluttering) ---
                 _buildWeatherBar(),
 
-                // 2. MIDDLE SECTION: Action Grid (Fixed 3x2 Grid)
+                // 2. MIDDLE SECTION: Action Grid (Fixed 4-Column Balanced Grid - 7 Items)
                 Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 4.h),
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(), // Important
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 10.w,
-                    crossAxisSpacing: 10.w,
-                    childAspectRatio: 1.15, // Sleek modern proportion
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 8.w,
+                    crossAxisSpacing: 8.w,
+                    childAspectRatio: 0.94, // Sleek, slightly smaller modern proportion
                     children: [
                       HomeActionItem(
                         title: 'Flights',
@@ -386,6 +420,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.local_pharmacy_rounded,
                         gradientColors: const [Color(0xFF0D9488), Color(0xFF2DD4BF)],
                         onTap: () => launchURL(eczanelerUrl),
+                      ),
+                      HomeActionItem(
+                        title: 'Hangouts',
+                        icon: Icons.groups_rounded,
+                        gradientColors: const [Color(0xFF8B5CF6), Color(0xFFEC4899)],
+                        onTap: () => Get.to(() => const HangoutsScreen()),
                       ),
                     ],
                   ),
@@ -867,16 +907,16 @@ class _HomeActionItemState extends State<HomeActionItem>
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
+          borderRadius: BorderRadius.circular(14.r),
           border: Border.all(
             color: widget.gradientColors.first.withOpacity(0.12),
-            width: 1.2,
+            width: 1.1,
           ),
           boxShadow: [
             BoxShadow(
-              color: widget.gradientColors.first.withOpacity(0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
+              color: widget.gradientColors.first.withOpacity(0.07),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -887,9 +927,9 @@ class _HomeActionItemState extends State<HomeActionItem>
             onTapDown: (_) => setState(() => _isPressed = true),
             onTapUp: (_) => setState(() => _isPressed = false),
             onTapCancel: () => setState(() => _isPressed = false),
-            borderRadius: BorderRadius.circular(16.r),
+            borderRadius: BorderRadius.circular(14.r),
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 4.w),
+              padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 2.w),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -899,7 +939,7 @@ class _HomeActionItemState extends State<HomeActionItem>
                       return Transform.scale(
                         scale: _pulseAnimation.value,
                         child: Container(
-                          padding: EdgeInsets.all(8.w),
+                          padding: EdgeInsets.all(6.w),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: widget.gradientColors,
@@ -910,8 +950,8 @@ class _HomeActionItemState extends State<HomeActionItem>
                             boxShadow: [
                               BoxShadow(
                                 color: widget.gradientColors.first
-                                    .withOpacity(0.35 * _pulseAnimation.value),
-                                blurRadius: 6 * _pulseAnimation.value,
+                                    .withOpacity(0.32 * _pulseAnimation.value),
+                                blurRadius: 5 * _pulseAnimation.value,
                                 offset: const Offset(0, 2),
                               ),
                             ],
@@ -919,23 +959,24 @@ class _HomeActionItemState extends State<HomeActionItem>
                           child: Icon(
                             widget.icon,
                             color: Colors.white,
-                            size: 19.sp,
+                            size: 16.5.sp,
                           ),
                         ),
                       );
                     },
                   ),
-                  SizedBox(height: 6.h),
+                  SizedBox(height: 3.h),
                   Text(
                     widget.title.tr,
                     textAlign: TextAlign.center,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 10.5.sp,
+                      fontSize: 8.8.sp,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF1E293B),
-                      letterSpacing: 0.2,
+                      letterSpacing: 0.1,
+                      height: 1.15,
                     ),
                   ),
                 ],
