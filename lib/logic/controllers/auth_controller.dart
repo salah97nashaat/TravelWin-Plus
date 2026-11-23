@@ -67,6 +67,9 @@ class AuthController extends GetxController {
     // // displayUserPhoto.value =    (userProfiloe != null ? userProfiloe!.photoURL : "")!;
     // displayUserEmail.value = (userProfiloe != null ? userProfiloe!.email : "")!;
     googleSignIn.initialize();
+    if (authBox.read("auth") == true || authBox.read("token") != null) {
+      _updateFCMToken();
+    }
     super.onInit();
   }
 

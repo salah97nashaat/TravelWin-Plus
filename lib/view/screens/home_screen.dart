@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -82,6 +83,21 @@ class _HomeScreenState extends State<HomeScreen> {
           updateUnreadNotificationCount();
         }
         Get.toNamed(Routes.ViewNotificationScreen);
+      });
+
+      // Poll every 25 seconds for instant notification updates
+      Timer.periodic(const Duration(seconds: 25), (timer) async {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        try {
+          final notifs = await n.RemoteServices.fetchNotifications('1');
+          if (notifs != null) {
+            notification.value = notifs;
+            updateUnreadNotificationCount();
+          }
+        } catch (_) {}
       });
     } catch (e) {
       print('Error in _initNotifications: $e');
