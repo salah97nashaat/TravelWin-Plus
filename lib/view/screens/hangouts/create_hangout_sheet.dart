@@ -123,7 +123,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
     return 'In 2 Days'.tr;
   }
 
-  // Pure, crash-free date formatting
+  // Pure, crash-free date formatting with Gregorian year
   String _getDateFormatted(DateTime dt) {
     final isAr = Get.locale?.languageCode == 'ar';
     const arMonths = [
@@ -135,7 +135,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     final monthName = isAr ? arMonths[dt.month - 1] : enMonths[dt.month - 1];
-    return '${dt.day} $monthName';
+    return '${dt.day} $monthName ${dt.year}';
   }
 
   Future<void> _submitHangout() async {
