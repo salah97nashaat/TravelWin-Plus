@@ -217,7 +217,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
               InkWell(
                 onTap: () async {
                   final url = Uri.parse(
-                      'https://wa.me/905391234567?text=${Uri.encodeComponent('إبلاغ عاجل بخصوص نشاط: ${widget.hangoutTitle}')}');
+                      'https://wa.me/905526750481?text=${Uri.encodeComponent('إبلاغ عاجل بخصوص نشاط: ${widget.hangoutTitle}')}');
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url, mode: LaunchMode.externalApplication);
                   }

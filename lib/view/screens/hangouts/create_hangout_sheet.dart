@@ -22,7 +22,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
 
   // Discount places list for dropdown
   List<Map<String, dynamic>> _discountPlaces = [];
-  String _selectedPlaceMode = 'select'; // 'select' or 'custom'
+  String _selectedPlaceMode = 'custom'; // 'custom' or 'select'
   int? _selectedPlaceId;
   String? _selectedPlaceName;
   bool _hasWinPass = false;
@@ -72,15 +72,8 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
       final places = await HangoutService.searchPlaces('');
       if (mounted) {
         setState(() {
-          _discountPlaces = places;
-          // Pre-select first Win Pass partner if available
-          final firstWinPass = places.firstWhereOrNull((p) => p['has_win_pass'] == true) ??
-              (places.isNotEmpty ? places.first : null);
-          if (firstWinPass != null) {
-            _selectedPlaceId = firstWinPass['id'];
-            _selectedPlaceName = firstWinPass['name'];
-            _hasWinPass = firstWinPass['has_win_pass'] == true;
-          }
+          // Strictly filter ONLY places that have active Win Pass discount
+          _discountPlaces = places.where((p) => p['has_win_pass'] == true).toList();
         });
       }
     } catch (_) {
@@ -504,7 +497,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               ),
               SizedBox(height: 14.h),
 
-              // 3. Place Selection (Dropdown of Discount Places + Custom Place)
+              // 3. Place Selection: Manual input FIRST + Arrow dropdown for Win Pass places ONLY
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -516,7 +509,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                       color: const Color(0xFF334155),
                     ),
                   ),
-                  if (_hasWinPass && _selectedPlaceMode == 'select')
+                  if (_hasWinPass)
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.h),
                       decoration: BoxDecoration(
@@ -537,109 +530,112 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               ),
               SizedBox(height: 6.h),
 
-              // Dropdown Container
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+              // 1. Manual Text Input (Available first as requested)
+              TextField(
+                controller: _customPlaceController,
+                style: TextStyle(fontSize: 13.sp),
+                onChanged: (text) {
+                  if (_selectedPlaceMode != 'custom' && text.trim() != _selectedPlaceName) {
+                    setState(() {
+                      _selectedPlaceMode = 'custom';
+                      _selectedPlaceId = null;
+                      _selectedPlaceName = null;
+                      _hasWinPass = false;
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.location_on_outlined,
+                      color: Color(0xFF8B5CF6), size: 18),
+                  hintText: 'Custom Venue Hint'.tr,
+                  hintStyle: TextStyle(
+                      fontSize: 12.sp, color: const Color(0xFF94A3B8)),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FAFC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  ),
                 ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedPlaceMode == 'custom'
-                        ? 'custom_mode'
-                        : (_selectedPlaceId != null
-                            ? _selectedPlaceId.toString()
-                            : (_discountPlaces.isNotEmpty
-                                ? _discountPlaces.first['id'].toString()
-                                : 'custom_mode')),
-                    isExpanded: true,
-                    icon: const Icon(Icons.arrow_drop_down_rounded,
-                        color: Color(0xFF64748B)),
-                    items: [
-                      // List of Discount / Partner Places
-                      ..._discountPlaces.map((p) {
-                        final bool hasWP = p['has_win_pass'] == true;
+              ),
+
+              // 2. Win Pass partner selection with dropdown arrow (Only Win Pass places)
+              if (_discountPlaces.isNotEmpty) ...[
+                SizedBox(height: 8.h),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0FDF4),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: const Color(0xFFBBF7D0)),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      hint: Row(
+                        children: [
+                          const Icon(Icons.confirmation_num_rounded,
+                              size: 16, color: Color(0xFF059669)),
+                          SizedBox(width: 6.w),
+                          Expanded(
+                            child: Text(
+                              'Select Partner Venue'.tr,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF065F46),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      value: _selectedPlaceMode == 'select'
+                          ? _selectedPlaceId?.toString()
+                          : null,
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                          color: Color(0xFF059669), size: 24),
+                      items: _discountPlaces.map((p) {
                         return DropdownMenuItem<String>(
                           value: p['id'].toString(),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.storefront_rounded,
-                                size: 18,
-                                color: hasWP
-                                    ? const Color(0xFF059669)
-                                    : const Color(0xFF64748B),
-                              ),
-                              SizedBox(width: 8.w),
+                              const Icon(Icons.storefront_rounded,
+                                  size: 16, color: Color(0xFF059669)),
+                              SizedBox(width: 6.w),
                               Expanded(
                                 child: Text(
                                   p['name'] ?? '',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontWeight: hasWP
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                    fontSize: 12.5.sp,
+                                    fontWeight: FontWeight.bold,
                                     color: const Color(0xFF1E293B),
                                   ),
                                 ),
                               ),
-                              if (hasWP)
-                                Container(
-                                  margin: EdgeInsets.only(left: 4.w),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 6.w, vertical: 2.h),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFD1FAE5),
-                                    borderRadius: BorderRadius.circular(6.r),
-                                  ),
-                                  child: const Text(
-                                    'Win Pass 🎫',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF065F46),
-                                    ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 6.w, vertical: 2.h),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD1FAE5),
+                                  borderRadius: BorderRadius.circular(6.r),
+                                ),
+                                child: const Text(
+                                  'Win Pass 🎫',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF065F46),
                                   ),
                                 ),
+                              ),
                             ],
                           ),
                         );
-                      }),
-
-                      // Option to write custom place
-                      DropdownMenuItem<String>(
-                        value: 'custom_mode',
-                        child: Row(
-                          children: [
-                            const Icon(Icons.edit_location_alt_rounded,
-                                size: 18, color: Color(0xFF8B5CF6)),
-                            SizedBox(width: 8.w),
-                            Text(
-                              'Other Venue Manual'.tr,
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF8B5CF6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                    onChanged: (val) {
-                      if (val == null) return;
-                      if (val == 'custom_mode') {
-                        setState(() {
-                          _selectedPlaceMode = 'custom';
-                          _selectedPlaceId = null;
-                          _selectedPlaceName = null;
-                          _hasWinPass = false;
-                        });
-                      } else {
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val == null) return;
                         final found = _discountPlaces.firstWhereOrNull(
                             (p) => p['id'].toString() == val);
                         if (found != null) {
@@ -647,32 +643,11 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                             _selectedPlaceMode = 'select';
                             _selectedPlaceId = found['id'];
                             _selectedPlaceName = found['name'];
-                            _hasWinPass = found['has_win_pass'] == true;
+                            _hasWinPass = true;
+                            _customPlaceController.text = found['name'] ?? '';
                           });
                         }
-                      }
-                    },
-                  ),
-                ),
-              ),
-
-              // Custom Place Text Field (if selected)
-              if (_selectedPlaceMode == 'custom') ...[
-                SizedBox(height: 8.h),
-                TextField(
-                  controller: _customPlaceController,
-                  style: TextStyle(fontSize: 13.sp),
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.location_on_outlined,
-                        color: Color(0xFF8B5CF6), size: 18),
-                    hintText: 'Custom Venue Hint'.tr,
-                    hintStyle: TextStyle(
-                        fontSize: 12.sp, color: const Color(0xFF94A3B8)),
-                    filled: true,
-                    fillColor: const Color(0xFFF8FAFC),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                      },
                     ),
                   ),
                 ),
