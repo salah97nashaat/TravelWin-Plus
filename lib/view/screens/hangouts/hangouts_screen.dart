@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:travelwin/models/hangout_model.dart';
 import 'package:travelwin/services/hangout_service.dart';
 import 'package:travelwin/view/screens/hangouts/create_hangout_sheet.dart';
@@ -438,6 +439,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const AdmobBannerUi(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreateSheet,
         backgroundColor: const Color(0xFF8B5CF6),

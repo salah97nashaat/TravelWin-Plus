@@ -456,14 +456,6 @@ class _HangoutCardState extends State<HangoutCard> {
                                             color: const Color(0xFF1E293B),
                                           ),
                                         ),
-                                        if (r.applicantPhone.isNotEmpty)
-                                          Text(
-                                            r.applicantPhone,
-                                            style: TextStyle(
-                                              fontSize: 11.sp,
-                                              color: const Color(0xFF64748B),
-                                            ),
-                                          ),
                                       ],
                                     ),
                                   ),

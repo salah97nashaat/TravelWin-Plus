@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:travelwin/models/Notification.dart';
 import 'package:travelwin/services/notification_services.dart' as n;
 import 'package:travelwin/utils/my_string.dart';
@@ -380,6 +381,7 @@ class _ViewNotificationScreenState extends State<ViewNotificationScreen> {
           );
         }),
       ),
+      bottomNavigationBar: const AdmobBannerUi(),
     );
   }
 }

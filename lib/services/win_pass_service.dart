@@ -75,17 +75,49 @@ class WinPassService {
 
   /// Retrieve persistent unique user/device identifier
   static String getUserIdentifier() {
+    // 1. Check permanent account user ID
+    var accountUserId = _box.read('win_pass_account_user_id')?.toString();
+    if (accountUserId != null &&
+        accountUserId.isNotEmpty &&
+        accountUserId != 'null' &&
+        accountUserId != '0') {
+      return 'user_$accountUserId';
+    }
+
     var userId = _box.read('userid')?.toString();
-    if (userId != null && userId.isNotEmpty && userId != 'null') {
+    if (userId != null &&
+        userId.isNotEmpty &&
+        userId != 'null' &&
+        userId != '0') {
       return 'user_$userId';
     }
 
+    // 2. Fallback to persistent guest UUID
     var guestId = _box.read('win_pass_guest_uuid')?.toString();
     if (guestId == null || guestId.isEmpty) {
-      guestId = 'guest_${DateTime.now().millisecondsSinceEpoch}_${(1000 + (DateTime.now().microsecond % 9000))}';
+      guestId =
+          'guest_${DateTime.now().millisecondsSinceEpoch}_${(1000 + (DateTime.now().microsecond % 9000))}';
       _box.write('win_pass_guest_uuid', guestId);
     }
     return guestId;
+  }
+
+  /// Sync guest stamps & redeemed coupons with user account upon login/profile fetch
+  static Future<void> syncAccountWithGuest(String userId) async {
+    try {
+      final guestId = _box.read('win_pass_guest_uuid')?.toString();
+      _box.write('userid', userId);
+      _box.write('win_pass_account_user_id', userId);
+
+      if (guestId != null &&
+          guestId.isNotEmpty &&
+          guestId.startsWith('guest_')) {
+        await _dio.post('/win-pass/sync-user', data: {
+          'guest_id': guestId,
+          'user_id': 'user_$userId',
+        });
+      }
+    } catch (_) {}
   }
 
   /// Fetch Win Pass details and steps for a specific provider

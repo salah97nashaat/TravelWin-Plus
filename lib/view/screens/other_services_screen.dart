@@ -19,7 +19,6 @@ class OtherServicesScreen extends StatelessWidget {
     return SafeArea(
         child: Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      bottomNavigationBar: const AdmobBannerUi(),
       body: Column(children: [
         // const Padding(padding: EdgeInsets.all(20)),
         // const AdmobBannerUi(),

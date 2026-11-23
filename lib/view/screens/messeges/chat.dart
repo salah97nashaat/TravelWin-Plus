@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:travelwin/models/ChatMessages.dart';
 import 'package:travelwin/services/profile_services.dart';
 import 'package:travelwin/utils/my_string.dart';
@@ -227,6 +228,9 @@ class _ChatState extends State<Chat> {
               );
             }),
           ),
+
+          // Ad Banner
+          const AdmobBannerUi(),
 
           // Message Input Field
           Container(

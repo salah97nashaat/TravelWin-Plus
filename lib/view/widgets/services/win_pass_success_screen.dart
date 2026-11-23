@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:travelwin/models/win_pass_model.dart';
 
 class WinPassSuccessScreen extends StatefulWidget {
@@ -370,6 +371,7 @@ class _WinPassSuccessScreenState extends State<WinPassSuccessScreen>
           ],
         ),
       ),
+      bottomNavigationBar: const AdmobBannerUi(),
     );
   }
 }

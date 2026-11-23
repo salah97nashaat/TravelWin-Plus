@@ -19,6 +19,7 @@ import 'package:travelwin/models/TripModel.dart';
 import 'package:travelwin/models/Whatappnumbers.dart';
 import 'package:travelwin/models/activity_model.dart';
 import 'package:travelwin/routes/routes.dart';
+import 'package:travelwin/services/win_pass_service.dart';
 import 'package:travelwin/utils/my_string.dart';
 
 import '../models/Chats.dart';
@@ -50,7 +51,14 @@ class RemoteServices {
     if (response.statusCode == 200) {
       var jsonString = response.body;
       print(jsonString);
-      return profileFromJson(jsonString);
+      final prof = profileFromJson(jsonString);
+      if (prof.data?.id != null) {
+        final uid = prof.data!.id.toString();
+        authBox.write('userid', uid);
+        authBox.write('win_pass_account_user_id', uid);
+        WinPassService.syncAccountWithGuest(uid);
+      }
+      return prof;
     } else {
       //show error message
       return null;

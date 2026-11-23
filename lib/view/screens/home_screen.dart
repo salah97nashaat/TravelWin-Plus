@@ -417,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisCount: 4,
                     mainAxisSpacing: 8.w,
                     crossAxisSpacing: 8.w,
-                    childAspectRatio: 0.94, // Sleek, slightly smaller modern proportion
+                    childAspectRatio: 0.86, // Optimized height to perfectly fit larger icons without overflow
                     children: [
                       HomeActionItem(
                         title: 'Flights',
@@ -967,7 +967,7 @@ class _HomeActionItemState extends State<HomeActionItem>
                       return Transform.scale(
                         scale: _pulseAnimation.value,
                         child: Container(
-                          padding: EdgeInsets.all(6.w),
+                          padding: EdgeInsets.all(7.5.w),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: widget.gradientColors,
@@ -987,7 +987,7 @@ class _HomeActionItemState extends State<HomeActionItem>
                           child: Icon(
                             widget.icon,
                             color: Colors.white,
-                            size: 16.5.sp,
+                            size: 20.sp,
                           ),
                         ),
                       );
