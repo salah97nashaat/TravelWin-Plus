@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:travelwin/logic/controllers/chat_controller.dart';
 import 'package:travelwin/logic/controllers/guidence_controller.dart';
 import 'package:travelwin/routes/routes.dart';
@@ -32,7 +31,6 @@ class Messeges extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const AdmobBannerUi(),
       body: Obx(() {
         if (token.value == 'null' || token.value.isEmpty) {
           return Center(
