@@ -333,7 +333,14 @@ class TourGuyWidget extends StatelessWidget {
                               guidenceId.value = guidence
                                   .value.guidances![index].user!.id!
                                   .toInt();
-                              print(chatMessages.value.data!.length);
+                              chatSubtitle.value =
+                                  Get.locale?.languageCode == 'ar'
+                                      ? 'مرشد سياحي'
+                                      : 'Tourist Guide';
+                              final chatCtrl = Get.isRegistered<ChatController>()
+                                  ? Get.find<ChatController>()
+                                  : Get.put(ChatController());
+                              chatCtrl.loadMessages();
                               Get.toNamed(Routes.ChatScreen);
                             });
                           } else {

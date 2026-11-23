@@ -54,6 +54,7 @@ Rx<Chats?> chats = Rx(Chats());
 Rx<ChatMessages> chatMessages = Rx(ChatMessages());
 Rx<String> guideName = Rx('');
 Rx<String> guideImage = Rx('');
+Rx<String> chatSubtitle = Rx('');
 Rx<NewHome?> home = Rx(NewHome());
 Rx<StatePlaces?> statePlacesForState = Rx(StatePlaces());
 Rx<s.Data> statePlaces = Rx(s.Data());

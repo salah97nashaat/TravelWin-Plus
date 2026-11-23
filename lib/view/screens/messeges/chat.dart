@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-// import 'package:pay/pay.dart';
 import 'package:travelwin/models/ChatMessages.dart';
 import 'package:travelwin/services/profile_services.dart';
 import 'package:travelwin/utils/my_string.dart';
@@ -13,315 +11,265 @@ import 'package:travelwin/view/screens/messeges/widgets.dart';
 import '../../../logic/controllers/chat_controller.dart';
 import '../../../utils/theme.dart';
 
-// import 'payment_configration.dart' as payment_configurations;
 class Chat extends StatefulWidget {
-  Chat({Key? key}) : super(key: key);
+  const Chat({Key? key}) : super(key: key);
+
   @override
   State<Chat> createState() => _ChatState();
 }
 
 class _ChatState extends State<Chat> {
-  TextEditingController controller = TextEditingController();
-  ChatController chatController = Get.put(ChatController());
+  final TextEditingController controller = TextEditingController();
+  late final ChatController chatController;
+  final ScrollController _scrollController = ScrollController();
+  Timer? _pollTimer;
 
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  List<ProductDetails> _products = [];
-  late StreamSubscription<List<PurchaseDetails>> subscription;
-  late InAppPurchase _iap;
-  initState() {
+  @override
+  void initState() {
     super.initState();
-    _iap = InAppPurchase.instance;
-    subscription = _iap.purchaseStream.listen((event) {});
-    _iap.queryProductDetails({'product1', 'product2', 'product3'}).then((e) {
-      if (e.error == null) {
-        _products.addAll(e.productDetails);
+    chatController = Get.isRegistered<ChatController>()
+        ? Get.find<ChatController>()
+        : Get.put(ChatController());
+    chatController.loadMessages();
+    _scrollToBottom();
+
+    // Live polling every 3 seconds to keep chat updated without manual refresh
+    _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
+      if (!mounted || guidenceId.value <= 0) return;
+      try {
+        final res = await RemoteServices.fetchChatMessages(guidenceId.value.toString());
+        if (res != null && res.data != null && mounted) {
+          if (res.data!.length != chatController.messages.length) {
+            chatController.loadMessages();
+            _scrollToBottom();
+          }
+        }
+      } catch (_) {}
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
       }
     });
   }
 
-  dispose() {
-    subscription.cancel();
-    super.dispose();
+  void _sendMessage() {
+    final text = controller.text.trim();
+    if (text.isEmpty || guidenceId.value <= 0) return;
+    controller.clear();
+
+    final newMsg = Data(
+      id: guidenceId.value,
+      type: 'text',
+      byMe: true,
+      createdAt: DateTime.now().toIso8601String(),
+      message: text,
+    );
+    chatController.messages.add(newMsg);
+    _scrollToBottom();
+
+    RemoteServices.SendMessage(guidenceId.value, text, 'text').then((val) {
+      RemoteServices.fetchChats();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    (RemoteServices.fetchChats());
+    final bool isAr = Get.locale?.languageCode == 'ar';
+
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: Column(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        titleSpacing: 0,
+        title: Obx(() {
+          final title = guideName.value.isNotEmpty
+              ? guideName.value
+              : (isAr ? 'محادثة' : 'Chat');
+          final subtitle = chatSubtitle.value.isNotEmpty
+              ? chatSubtitle.value
+              : (isAr ? 'محادثة مباشرة' : 'Direct Chat');
+
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                guideName.value,
+                title,
                 style: TextStyle(
-                    fontSize: 15.w,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(
-                height: 5.h,
-              ),
-              Text(
-                'مرشد سياحي',
-                style: TextStyle(color: Colors.grey.shade400, fontSize: 12.w),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              )
-            ],
-          ),
-          actions: [
-            Padding(
-              padding: Get.locale == Locale('ar')
-                  ? EdgeInsets.only(left: 25.w, top: 5.h)
-                  : EdgeInsets.only(right: 25.w, top: 5.h),
-              child: InkWell(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Transform.flip(
-                    flipX: Get.locale == Locale('ar') ? false : true,
-                    child: SvgPicture.asset(
-                      'assets/images/back.svg',
-                      height: 30,
-                    ),
-                  )),
-            ),
-          ],
-          leading: Padding(
-            padding: Get.locale == Locale('ar')
-                ? EdgeInsets.only(right: 15.w, top: 5.h)
-                : EdgeInsets.only(left: 15.w, top: 5.h),
-            child: Stack(
-              children: [
-                CircleAvatar(
-                  radius: 25.w,
-                  backgroundColor: Colors.white,
-                  backgroundImage: NetworkImage(guideImage.value),
+                  fontSize: 15.sp,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
-                Positioned(
-                  bottom: 5,
-                  left: 3,
-                  child: CircleAvatar(
-                    backgroundColor: Color(0xff92A63D),
-                    radius: 5,
-                  ),
-                )
-              ],
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(height: 2.h),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: const Color(0xFF64748B),
+                  fontSize: 11.5.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ],
+          );
+        }),
+        leading: Obx(() {
+          final imgUrl = guideImage.value;
+          final hasValidUrl =
+              imgUrl.isNotEmpty && Uri.tryParse(imgUrl)?.hasScheme == true;
+
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+            child: CircleAvatar(
+              radius: 18.r,
+              backgroundColor: const Color(0xFFE2E8F0),
+              backgroundImage: hasValidUrl
+                  ? NetworkImage(imgUrl)
+                  : const AssetImage('assets/images/user.png') as ImageProvider,
             ),
-          )),
+          );
+        }),
+        actions: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            child: InkWell(
+              onTap: () => Get.back(),
+              borderRadius: BorderRadius.circular(20.r),
+              child: Transform.flip(
+                flipX: !isAr,
+                child: SvgPicture.asset(
+                  'assets/images/back.svg',
+                  height: 26.h,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.w),
-            child: Divider(
-              color: Colors.grey.withOpacity(0.35),
-              thickness: 1,
-            ),
-          ),
-          // GooglePayButton(
-          //   paymentConfigurationAsset: 'gpay.json',
-          //   onError: (e){
-          //     print(e.toString());
-          //   },
-          //   paymentItems: [
-          //     PaymentItem(
-          //       label: 'Total',
-          //       amount: '1.99',
-          //       status: PaymentItemStatus.final_price,
-          //     )
-          //   ],
-          //   type: GooglePayButtonType.pay,
-          //   margin: const EdgeInsets.only(top: 15.0),
-          //   onPaymentResult: (resul){
-          //     print(resul);
-          //   },
-          //   loadingIndicator: const Center(
-          //     child: CircularProgressIndicator(),
-          //   ),
-          // ),
+          // Messages List
           Expanded(
-            child: Obx(
-              () => (chatController.sticker.value.isEmpty)
-                  ? Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 25.w),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'There is no messages in this chat yet choose one of the welcome stickers to start the chat'
-                                .tr,
-                            style: TextStyle(color: mainColor, fontSize: 15.w),
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          SizedBox(
-                            height: 165.h,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                WelcomeSticker(
-                                  sticker: 'assets/images/Hello-bro.svg',
-                                  price: '1.99',
-                                  onTap: () {
-                                    if (_products.isNotEmpty) {
-                                      _iap.buyNonConsumable(
-                                        purchaseParam: PurchaseParam(
-                                            productDetails: _products[0]),
-                                      );
-                                    } else {
-                                      showSnackBar(context,
-                                          'Product not available yet, please try again later.');
-                                    }
-                                  },
-                                ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                WelcomeSticker(
-                                  sticker: 'assets/images/Hello-rafiki 1.svg',
-                                  price: '1.99',
-                                ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                WelcomeSticker(
-                                  sticker: 'assets/images/rose flower-bro.svg',
-                                  price: '1.99',
-                                ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
+            child: Obx(() {
+              if (chatController.messages.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        size: 54.sp,
+                        color: Colors.grey.shade300,
                       ),
-                    )
-                  : ListView(children: [
-                      RefreshIndicator(
-                      onRefresh: () async {
-                        (await RemoteServices.fetchChats());
-                      },
-                        child: Obx(
-                          () => Align(
-                            alignment: Alignment.centerRight,
-                            child: Visibility(
-                                visible: chatController.sticker.isNotEmpty,
-                                child: SvgPicture.asset(
-                                  chatController.sticker.value,
-                                  height: 140.h,
-                                  width: 200,
-                                )),
-                          ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        isAr
+                            ? 'لا توجد رسائل سابقة.\nابدأ المحادثة الآن! 👋'
+                            : 'No messages yet.\nStart the conversation now! 👋',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFF64748B),
+                          fontSize: 13.5.sp,
+                          height: 1.4,
                         ),
                       ),
-                      Obx(                          
-                        () => ListView.separated(
-                          shrinkWrap: true,
-                          separatorBuilder: (context, index) => SizedBox(
-                            height: 15.h,
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 25.w),
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            //chatController.messages.refresh();
-                            return Message(
-                                message: chatController
-                                        .messages[index].message ??
-                                    '',
-                                messageType:
-                                    chatController.messages[index].byMe!
-                                        ? 'me'
-                                        : 'other');
-                          },
-                          itemCount: chatController.messages.length,
-                        ),
-                      ),
-                    ]),
-            ),
+                    ],
+                  ),
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: () async {
+                  if (guidenceId.value > 0) {
+                    await RemoteServices.fetchChatMessages(
+                        guidenceId.value.toString());
+                    chatController.loadMessages();
+                  }
+                },
+                child: ListView.separated(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  itemBuilder: (context, index) {
+                    final msg = chatController.messages[index];
+                    return Message(
+                      message: msg.message ?? '',
+                      messageType:
+                          (msg.byMe == true) ? 'me' : 'other',
+                    );
+                  },
+                  separatorBuilder: (context, index) =>
+                      SizedBox(height: 10.h),
+                  itemCount: chatController.messages.length,
+                ),
+              );
+            }),
           ),
+
+          // Message Input Field
           Container(
-            decoration: BoxDecoration(color: Theme.of(context).cardColor),
-            child: IconTheme(
-              data: IconThemeData(color: mainColor),
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(color: Colors.grey.shade200, width: 1),
+              ),
+            ),
+            child: SafeArea(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                 decoration: BoxDecoration(
-                    color: Color(0xffF6F6Ff),
-                    borderRadius: BorderRadius.circular(25)),
+                  color: const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(24.r),
+                ),
                 child: Row(
-                  children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: IconButton(
-                          icon: SvgPicture.asset(
-                            'assets/images/send 2.svg',
-                            width: 25,
-                            // color: mainColor,
-                            colorFilter:
-                                ColorFilter.mode(mainColor, BlendMode.srcIn),
-                          ),
-                          onPressed: () {
-                            if (chatController.sticker.value.isEmpty) {
-                            } else {
-                              if (controller.text.isEmpty) {
-                              } else {
-                                RemoteServices.SendMessage(guidenceId.value,
-                                        controller.text, 'text')
-                                    .then((value) async {
-                                  if (value == 'sended successfully') {
-                                    //chatMessages.value=(await  RemoteServices.fetchChatMessages(guidenceId.value))!;
-                                    chatController.messages.add(Data(
-                                        id: guidenceId.value,
-                                        type: 'text',
-                                        byMe: true,
-                                        createdAt: '',
-                                        message: controller.text));
-                                    setState(() {});
-                                    controller.clear();
-                                    chats.value =
-                                        (await RemoteServices.fetchChats())!;
-                                  }
-                                });
-                              }
-                            }
-                          }),
+                  children: [
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/images/send 2.svg',
+                        width: 22.sp,
+                        colorFilter:
+                            ColorFilter.mode(mainColor, BlendMode.srcIn),
+                      ),
+                      onPressed: _sendMessage,
                     ),
-                    Flexible(
+                    Expanded(
                       child: TextField(
                         controller: controller,
-                        onSubmitted: (c) {
-                          if (chatController.sticker.value.isNotEmpty) {
-                          } else {
-                            if (controller.text.isEmpty) {
-                            } else {
-                              RemoteServices.SendMessage(
-                                      guidenceId.value, controller.text, 'text')
-                                  .then((value) async {
-                                if (value == 'sended successfully') {
-                                  chatMessages.value =
-                                      (await RemoteServices.fetchChatMessages(
-                                          guidenceId.value))!;
-                                }
-                              });
-                              controller.clear();
-                              setState(() {});
-                            }
-                          }
-                        },
-                        decoration: InputDecoration.collapsed(
-                            hintText: "Send a message".tr,
-                            hintStyle: TextStyle(color: Colors.grey)),
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => _sendMessage(),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: isAr ? 'اكتب رسالتك هنا...' : 'Type a message...',
+                          hintStyle: TextStyle(
+                            color: const Color(0xFF94A3B8),
+                            fontSize: 13.sp,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 8.h),
+                        ),
                       ),
                     ),
                   ],

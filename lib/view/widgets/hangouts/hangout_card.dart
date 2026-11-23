@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:travelwin/models/hangout_model.dart';
 import 'package:travelwin/routes/routes.dart';
 import 'package:travelwin/services/hangout_service.dart';
+import 'package:travelwin/services/profile_services.dart';
+import 'package:travelwin/logic/controllers/chat_controller.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/view/widgets/hangouts/hangout_report_dialog.dart';
 
@@ -114,7 +116,11 @@ class _HangoutCardState extends State<HangoutCard> {
 
                         Get.snackbar(
                           res['success'] == true ? 'Success'.tr : 'Alert'.tr,
-                          res['message'] ?? '',
+                          res['success'] == true
+                              ? (isAr
+                                  ? 'تم إرسال طلبك بنجاح! انتظر تواصل صاحب النشاط معك عبر الرسائل للتنسيق.'
+                                  : 'Request sent! Please wait for the host to contact you in chat.')
+                              : (res['message'] ?? ''),
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: res['success'] == true
                               ? const Color(0xFF10B981)
@@ -122,6 +128,7 @@ class _HangoutCardState extends State<HangoutCard> {
                           colorText: Colors.white,
                           margin: EdgeInsets.all(12.w),
                           borderRadius: 12.r,
+                          duration: const Duration(seconds: 4),
                         );
 
                         if (res['success'] == true && widget.onRefresh != null) {
@@ -513,8 +520,19 @@ class _HangoutCardState extends State<HangoutCard> {
                                 children: [
                                   // Chat button
                                   OutlinedButton.icon(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       Get.back();
+                                      showLoaderDialog();
+                                      guideName.value = r.applicantName;
+                                      guideImage.value = r.applicantImage;
+                                      guidenceId.value = r.userId;
+                                      chatSubtitle.value = isAr ? 'شريك النشاط' : 'Activity Partner';
+                                      await RemoteServices.fetchChatMessages(r.userId.toString());
+                                      Get.back();
+                                      final chatCtrl = Get.isRegistered<ChatController>()
+                                          ? Get.find<ChatController>()
+                                          : Get.put(ChatController());
+                                      chatCtrl.loadMessages();
                                       Get.toNamed(Routes.ChatScreen);
                                     },
                                     icon: const Icon(Icons.chat_outlined,

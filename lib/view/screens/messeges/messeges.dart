@@ -162,7 +162,11 @@ class ChatWidget extends StatelessWidget {
           guideName.value = name;
           guideImage.value = image;
           guidenceId.value = int.parse(id);
-          print(chatMessages.value.data!.length);
+          chatSubtitle.value = '';
+          final chatCtrl = Get.isRegistered<ChatController>()
+              ? Get.find<ChatController>()
+              : Get.put(ChatController());
+          chatCtrl.loadMessages();
           Get.toNamed(Routes.ChatScreen);
         });
       },
