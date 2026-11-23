@@ -368,8 +368,12 @@ const Map<String, String> en = {
   "Stay Here": "Stay Here",
   "Continue": "Continue",
 
-  // Hangouts (Activity & Table Partner) Translations
-  "Activity & Table Partner": "Activity & Table Partner",
+  // Hangouts (Who's Around) Translations
+  "Activity & Table Partner": "Who's Around",
+  "Whos Around": "Who's Around",
+  "Duty Pharmacies": "Duty Pharmacies",
+  "No notifications yet": "No notifications yet",
+  "Notification Details": "Notification Details",
   "Today's Hangouts Near You": "Today's Hangouts Near You",
   "No active hangouts": "No active activities in this section right now",
   "Be first hangout": "Be the first to create an activity or find a partner today!",

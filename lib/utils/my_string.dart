@@ -174,6 +174,30 @@ Rx<Ticket> tickets = Rx(Ticket());
 Rx<int> stateid = Rx(0);
 Rx<TicketTerm> ticketsTerm = Rx(TicketTerm());
 Rx<n.Notification> notification = Rx(n.Notification());
+RxInt unreadNotificationCount = 0.obs;
+
+void updateUnreadNotificationCount() {
+  final list = notification.value.notifications;
+  if (list == null || list.isEmpty) {
+    unreadNotificationCount.value = 0;
+    return;
+  }
+  final lastReadId = GetStorage().read<int>('last_read_notification_id') ?? 0;
+  unreadNotificationCount.value =
+      list.where((item) => (item.id ?? 0) > lastReadId).length;
+}
+
+void markNotificationsAsRead() {
+  final list = notification.value.notifications;
+  if (list != null && list.isNotEmpty) {
+    int maxId = 0;
+    for (var item in list) {
+      if ((item.id ?? 0) > maxId) maxId = item.id!;
+    }
+    GetStorage().write('last_read_notification_id', maxId);
+  }
+  unreadNotificationCount.value = 0;
+}
 
 void showSnackBar(BuildContext context, content) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(

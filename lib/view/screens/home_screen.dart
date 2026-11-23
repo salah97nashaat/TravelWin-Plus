@@ -11,7 +11,6 @@ import 'package:upgrader/upgrader.dart';
 import '../../helpers/helper.dart';
 import '../../logic/controllers/home_controller.dart';
 import '../../routes/routes.dart';
-import '../../services/profile_services.dart';
 import '../../utils/theme.dart';
 import 'package:travelwin/services/notification_services.dart' as n;
 // import '../widgets/card_ui.dart';
@@ -35,40 +34,58 @@ class _HomeScreenState extends State<HomeScreen> {
   final String eczanelerUrl = 'https://www.eczaneler.gen.tr/';
   @override
   void initState() {
-    WeatherService.init();
-    FirebaseMessaging.onMessage.listen((event) async {
-      showSnackBar(
-        context,
-        event.notification!.title! + '\n' + event.notification!.body!,
-      );
-      chatMessages.value =
-          (await RemoteServices.fetchChatMessages(guidenceId.value))!;
-      notification.value = (await n.RemoteServices.fetchNotifications('1'))!;
-      print(
-          'Got a message whilst in the foreground!----------------------------------------');
-      print('Message data: ${event.data}');
-
-      if (event.notification != null) {
-        print('Message also contained a notification: ${event.notification}');
-      }
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((event) async {
-      showSnackBar(
-        context,
-        event.notification!.title! + '\n' + event.notification!.body!,
-      );
-      chatMessages.value =
-          (await RemoteServices.fetchChatMessages(guidenceId.value))!;
-      notification.value = (await n.RemoteServices.fetchNotifications('1'))!;
-      print(
-          'Got a message whilst in the foreground!----------------------------------------');
-      print('Message data: ${event.data}');
-
-      if (event.notification != null) {
-        print('Message also contained a notification: ${event.notification}');
-      }
-    });
     super.initState();
+    WeatherService.init();
+    _initNotifications();
+  }
+
+  Future<void> _initNotifications() async {
+    try {
+      final messaging = FirebaseMessaging.instance;
+      await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+        provisional: false,
+      );
+      await messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      // Fetch initial notifications and update unread count
+      final notifs = await n.RemoteServices.fetchNotifications('1');
+      if (notifs != null) {
+        notification.value = notifs;
+        updateUnreadNotificationCount();
+      }
+
+      FirebaseMessaging.onMessage.listen((event) async {
+        final notifs = await n.RemoteServices.fetchNotifications('1');
+        if (notifs != null) {
+          notification.value = notifs;
+          updateUnreadNotificationCount();
+        }
+        if (event.notification != null && mounted) {
+          showSnackBar(
+            context,
+            '${event.notification!.title ?? ""}\n${event.notification!.body ?? ""}',
+          );
+        }
+      });
+
+      FirebaseMessaging.onMessageOpenedApp.listen((event) async {
+        final notifs = await n.RemoteServices.fetchNotifications('1');
+        if (notifs != null) {
+          notification.value = notifs;
+          updateUnreadNotificationCount();
+        }
+        Get.toNamed(Routes.ViewNotificationScreen);
+      });
+    } catch (e) {
+      print('Error in _initNotifications: $e');
+    }
   }
 
   final AdController adController = Get.find();
@@ -111,12 +128,12 @@ class _HomeScreenState extends State<HomeScreen> {
       onWillPop: showExitPopup, //call function on back button press
       child: UpgradeAlert(
         showIgnore: false,
-        showLater: false,
+        showLater: true,
         dialogStyle: UpgradeDialogStyle.material,
         shouldPopScope: () => false,
         upgrader: Upgrader(
-            //debugDisplayAlways: true, // remove this in production
-            ),
+          durationUntilAlertAgain: const Duration(hours: 1),
+        ),
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
           appBar: AppBar(
@@ -240,8 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               SizedBox(width: 6.w),
-              _buildIconButton(
-                icon: 'assets/images/notification.svg',
+              AnimatedNotificationBell(
                 onTap: () {
                   if (token != 'null') {
                     Get.toNamed(Routes.ViewNotificationScreen);
@@ -418,13 +434,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () => Get.toNamed(Routes.SearchTour),
                       ),
                       HomeActionItem(
-                        title: 'Pharmacies',
+                        title: 'Duty Pharmacies',
                         icon: Icons.local_pharmacy_rounded,
                         gradientColors: const [Color(0xFF0D9488), Color(0xFF2DD4BF)],
                         onTap: () => launchURL(eczanelerUrl),
                       ),
                       HomeActionItem(
-                        title: 'Hangouts',
+                        title: 'Whos Around',
                         icon: Icons.groups_rounded,
                         gradientColors: const [Color(0xFF8B5CF6), Color(0xFFEC4899)],
                         onTap: () => Get.to(() => const HangoutsScreen()),
@@ -982,5 +998,142 @@ class _HomeActionItemState extends State<HomeActionItem>
         ),
       ),
     );
+  }
+}
+
+// Modern Animated Notification Bell with Swing Oscillation and Red Unread Badge
+class AnimatedNotificationBell extends StatefulWidget {
+  final VoidCallback onTap;
+  const AnimatedNotificationBell({Key? key, required this.onTap}) : super(key: key);
+
+  @override
+  State<AnimatedNotificationBell> createState() => _AnimatedNotificationBellState();
+}
+
+class _AnimatedNotificationBellState extends State<AnimatedNotificationBell>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _bellAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _bellAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    );
+  }
+
+  @override
+  void dispose() {
+    _bellAnim.dispose();
+    super.dispose();
+  }
+
+  void _triggerRing() {
+    if (!_bellAnim.isAnimating && mounted) {
+      _bellAnim.forward(from: 0).then((_) {
+        if (mounted && unreadNotificationCount.value > 0) {
+          Future.delayed(const Duration(seconds: 3), () {
+            if (mounted && unreadNotificationCount.value > 0) {
+              _triggerRing();
+            }
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final unread = unreadNotificationCount.value;
+      if (unread > 0 && !_bellAnim.isAnimating) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _triggerRing());
+      }
+
+      return GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: 38.w,
+          height: 38.w,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: unread > 0 ? const Color(0xFFFCA5A5) : Colors.grey.shade200,
+              width: 1.1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: unread > 0
+                    ? const Color(0xFFEF4444).withOpacity(0.15)
+                    : Colors.black.withOpacity(0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              AnimatedBuilder(
+                animation: _bellAnim,
+                builder: (context, child) {
+                  final angle = (_bellAnim.value <= 0.5)
+                      ? (_bellAnim.value * 2) * 0.28 - 0.14
+                      : (1.0 - _bellAnim.value) * 2 * 0.28 - 0.14;
+                  return Transform.rotate(
+                    angle: unread > 0 ? angle : 0.0,
+                    child: Icon(
+                      unread > 0
+                          ? Icons.notifications_active_rounded
+                          : Icons.notifications_outlined,
+                      size: 20.sp,
+                      color: unread > 0 ? const Color(0xFFDC2626) : const Color(0xFF334155),
+                    ),
+                  );
+                },
+              ),
+              if (unread > 0)
+                Positioned(
+                  top: -3.h,
+                  right: -3.w,
+                  child: Container(
+                    padding: EdgeInsets.all(unread > 9 ? 2.5.w : 4.w),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFEF4444).withOpacity(0.4),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 14.w,
+                      minHeight: 14.w,
+                    ),
+                    child: Center(
+                      child: Text(
+                        unread > 99 ? '99+' : unread.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 8.5.sp,
+                          fontWeight: FontWeight.w900,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

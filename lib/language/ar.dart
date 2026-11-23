@@ -441,8 +441,12 @@ const Map<String, String> ar = {
   "Stay Here": "البقاء هنا",
   "Continue": "متابعة",
 
-  // Hangouts (شريك النشاط والطاولة) Translations
-  "Activity & Table Partner": "شريك النشاط والطاولة",
+  // Hangouts (مين قريب / Who's Around) Translations
+  "Activity & Table Partner": "مين قريب",
+  "Whos Around": "مين قريب",
+  "Duty Pharmacies": "الصيدليات المناوبة",
+  "No notifications yet": "لا توجد إشعارات جديدة حالياً",
+  "Notification Details": "تفاصيل الإشعار",
   "Today's Hangouts Near You": "طلعات وأنشطة اليوم القريبة منك",
   "No active hangouts": "لا توجد أنشطة نشطة حالياً في هذا القسم",
   "Be first hangout": "كن أول من ينشئ دعوة نشاط أو يبحث عن شريك لطاولة أو رحلة اليوم!",
