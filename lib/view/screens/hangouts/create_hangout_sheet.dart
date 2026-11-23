@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:travelwin/routes/routes.dart';
 import 'package:travelwin/services/hangout_service.dart';
 import 'package:travelwin/utils/my_string.dart';
@@ -23,14 +22,13 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
 
   // Discount places list for dropdown
   List<Map<String, dynamic>> _discountPlaces = [];
-  bool _isLoadingPlaces = true;
   String _selectedPlaceMode = 'select'; // 'select' or 'custom'
   int? _selectedPlaceId;
   String? _selectedPlaceName;
   bool _hasWinPass = false;
 
   // 3-Day Date Selection
-  int _selectedDayIndex = 0; // 0 = Today, 1 = Tomorrow, 2 = Day after tomorrow
+  int _selectedDayIndex = 0; // 0 = Today, 1 = Tomorrow, 2 = In 2 Days
   late List<DateTime> _availableDates;
 
   // Time Selection
@@ -39,14 +37,14 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
   int _seatsNeeded = 1;
   bool _isLoading = false;
 
-  final List<Map<String, dynamic>> _categories = [
-    {'type': 'coffee', 'title': 'قهوة وتعارف', 'icon': Icons.local_cafe_rounded},
-    {'type': 'billiard', 'title': 'بلياردو وألعاب', 'icon': Icons.sports_esports_rounded},
-    {'type': 'tour', 'title': 'جولة سياحية', 'icon': Icons.photo_camera_rounded},
-    {'type': 'camp', 'title': 'تخييم ورحلات', 'icon': Icons.forest_rounded},
-    {'type': 'business', 'title': 'لقاء أعمال', 'icon': Icons.business_center_rounded},
-    {'type': 'sport', 'title': 'رياضة وتمارين', 'icon': Icons.sports_soccer_rounded},
-    {'type': 'food', 'title': 'طعام ومطاعم', 'icon': Icons.restaurant_rounded},
+  List<Map<String, dynamic>> get _categories => [
+    {'type': 'coffee', 'title': 'Coffee & Meet'.tr, 'icon': Icons.local_cafe_rounded},
+    {'type': 'billiard', 'title': 'Billiards & Games'.tr, 'icon': Icons.sports_esports_rounded},
+    {'type': 'tour', 'title': 'City Tour'.tr, 'icon': Icons.photo_camera_rounded},
+    {'type': 'camp', 'title': 'Camping & Trips'.tr, 'icon': Icons.forest_rounded},
+    {'type': 'business', 'title': 'Business Meet'.tr, 'icon': Icons.business_center_rounded},
+    {'type': 'sport', 'title': 'Sports & Workout'.tr, 'icon': Icons.sports_soccer_rounded},
+    {'type': 'food', 'title': 'Food & Dining'.tr, 'icon': Icons.restaurant_rounded},
   ];
 
   @override
@@ -70,20 +68,23 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
   }
 
   Future<void> _fetchDiscountPlaces() async {
-    final places = await HangoutService.searchPlaces('');
-    if (mounted) {
-      setState(() {
-        _discountPlaces = places;
-        _isLoadingPlaces = false;
-        // Pre-select first Win Pass partner if available
-        final firstWinPass = places.firstWhereOrNull((p) => p['has_win_pass'] == true) ??
-            (places.isNotEmpty ? places.first : null);
-        if (firstWinPass != null) {
-          _selectedPlaceId = firstWinPass['id'];
-          _selectedPlaceName = firstWinPass['name'];
-          _hasWinPass = firstWinPass['has_win_pass'] == true;
-        }
-      });
+    try {
+      final places = await HangoutService.searchPlaces('');
+      if (mounted) {
+        setState(() {
+          _discountPlaces = places;
+          // Pre-select first Win Pass partner if available
+          final firstWinPass = places.firstWhereOrNull((p) => p['has_win_pass'] == true) ??
+              (places.isNotEmpty ? places.first : null);
+          if (firstWinPass != null) {
+            _selectedPlaceId = firstWinPass['id'];
+            _selectedPlaceName = firstWinPass['name'];
+            _hasWinPass = firstWinPass['has_win_pass'] == true;
+          }
+        });
+      }
+    } catch (_) {
+      // Ignore network errors on places fetch
     }
   }
 
@@ -112,26 +113,41 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
     }
   }
 
+  // Pure, crash-free time formatting without depending on intl locale tables
   String _formatSelectedTime() {
-    final now = DateTime.now();
-    final dt = DateTime(now.year, now.month, now.day, _selectedTime.hour, _selectedTime.minute);
-    return DateFormat('h:mm a', 'ar').format(dt);
+    final hour = _selectedTime.hourOfPeriod == 0 ? 12 : _selectedTime.hourOfPeriod;
+    final minute = _selectedTime.minute.toString().padLeft(2, '0');
+    final isAr = Get.locale?.languageCode == 'ar';
+    final period = _selectedTime.period == DayPeriod.am
+        ? (isAr ? 'ص' : 'AM')
+        : (isAr ? 'م' : 'PM');
+    return '$hour:$minute $period';
   }
 
   String _getDayTitle(int idx) {
-    if (idx == 0) return 'اليوم';
-    if (idx == 1) return 'غداً';
-    return 'بعد غد';
+    if (idx == 0) return 'Today'.tr;
+    if (idx == 1) return 'Tomorrow'.tr;
+    return 'In 2 Days'.tr;
   }
 
+  // Pure, crash-free date formatting
   String _getDateFormatted(DateTime dt) {
-    return DateFormat('d MMMM', 'ar').format(dt);
+    final isAr = Get.locale?.languageCode == 'ar';
+    const arMonths = [
+      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+    ];
+    const enMonths = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    final monthName = isAr ? arMonths[dt.month - 1] : enMonths[dt.month - 1];
+    return '${dt.day} $monthName';
   }
 
   Future<void> _submitHangout() async {
     // 1. Profile Completion Check
     if (isUserProfileIncomplete()) {
-      Navigator.of(context).pop();
       _showIncompleteProfileAlert();
       return;
     }
@@ -139,8 +155,8 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
     // 2. Title Validation
     if (_titleController.text.trim().isEmpty) {
       Get.snackbar(
-        'تنبيه',
-        'يرجى كتابة عنوان مختصر للنشاط (مثلاً: شرب قهوة في كافيه)',
+        'Error'.tr,
+        'Title Hint'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
@@ -156,8 +172,8 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
       placeId = null;
       if (placeName.isEmpty) {
         Get.snackbar(
-          'تنبيه',
-          'يرجى كتابة اسم المكان أو المنطقة',
+          'Error'.tr,
+          'Custom Venue Hint'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: const Color(0xFFEF4444),
           colorText: Colors.white,
@@ -170,7 +186,8 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
     }
 
     final chosenDate = _availableDates[_selectedDayIndex];
-    final meetingDateStr = DateFormat('yyyy-MM-dd').format(chosenDate);
+    final meetingDateStr =
+        '${chosenDate.year}-${chosenDate.month.toString().padLeft(2, '0')}-${chosenDate.day.toString().padLeft(2, '0')}';
     final meetingTimeStr = _formatSelectedTime();
 
     setState(() => _isLoading = true);
@@ -192,16 +209,16 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
       if (mounted) Navigator.of(context).pop();
       widget.onCreated();
       Get.snackbar(
-        'تم بنجاح 🎉',
-        'تم نشر دعوتك! ستنتهي الدعوة تلقائياً بعد انتهاء موعد اللقاء.',
+        'Success'.tr,
+        'تم نشر دعوتك بنجاح!'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
     } else {
       Get.snackbar(
-        'خطأ',
-        res['message'] ?? 'فشل إنشاء النشاط',
+        'Error'.tr,
+        res['message'] ?? 'Error'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
@@ -232,7 +249,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               ),
               SizedBox(height: 14.h),
               Text(
-                'الملف الشخصي غير مكتمل ⚠️',
+                'Profile Incomplete'.tr,
                 style: TextStyle(
                   fontSize: 16.5.sp,
                   fontWeight: FontWeight.bold,
@@ -241,7 +258,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               ),
               SizedBox(height: 8.h),
               Text(
-                'لضمان أمان وموثوقية مجتمع Travel Win، لا يمكن إنشاء نشاط أو البحث عن شريك قبل إكمال بياناتك الشخصية (الاسم، رقم الهاتف، والصورة الشخصية).',
+                'Profile Incomplete Desc'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13.sp,
@@ -257,7 +274,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                 },
                 icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
                 label: Text(
-                  'إكمال الملف الشخصي الآن',
+                  'Complete Profile Now'.tr,
                   style: TextStyle(
                     fontSize: 13.5.sp,
                     fontWeight: FontWeight.bold,
@@ -278,7 +295,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
               TextButton(
                 onPressed: () => Get.back(),
                 child: Text(
-                  'إلغاء',
+                  'Cancel'.tr,
                   style: TextStyle(fontSize: 13.sp, color: const Color(0xFF94A3B8)),
                 ),
               ),
@@ -291,6 +308,8 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isProfileIncomp = isUserProfileIncomplete();
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -337,7 +356,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'أنشئ دعوة نشاط أو طلعة 🤝',
+                          'Create Activity Title'.tr,
                           style: TextStyle(
                             fontSize: 17.sp,
                             fontWeight: FontWeight.bold,
@@ -345,7 +364,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                           ),
                         ),
                         Text(
-                          'يمكنك تحديد الموعد حتى 3 أيام قادمة',
+                          'Schedule up to 3 days'.tr,
                           style: TextStyle(
                             fontSize: 11.5.sp,
                             color: const Color(0xFF64748B),
@@ -360,11 +379,51 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                   ),
                 ],
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 12.h),
+
+              // Incomplete Profile Top Alert Banner
+              if (isProfileIncomp)
+                Container(
+                  padding: EdgeInsets.all(10.w),
+                  margin: EdgeInsets.only(bottom: 12.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: const Color(0xFFFCA5A5)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning_amber_rounded,
+                          color: Color(0xFFDC2626), size: 20),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          'Profile Incomplete Desc'.tr,
+                          style: TextStyle(
+                              fontSize: 11.sp, color: const Color(0xFF991B1B)),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Get.toNamed(Routes.ProfileScreen);
+                        },
+                        child: Text(
+                          'Complete Profile Now'.tr,
+                          style: TextStyle(
+                            fontSize: 11.5.sp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFFDC2626),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
               // 1. Choose Category
               Text(
-                'نوع النشاط:',
+                'Activity Type:'.tr,
                 style: TextStyle(
                   fontSize: 13.5.sp,
                   fontWeight: FontWeight.bold,
@@ -420,7 +479,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
 
               // 2. Activity Title
               Text(
-                'عنوان النشاط:',
+                'Activity Title:'.tr,
                 style: TextStyle(
                   fontSize: 13.5.sp,
                   fontWeight: FontWeight.bold,
@@ -432,7 +491,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                 controller: _titleController,
                 style: TextStyle(fontSize: 13.5.sp),
                 decoration: InputDecoration(
-                  hintText: 'مثال: قهوة ودردشة في باشاك شهير، بلياردو اليوم...',
+                  hintText: 'Title Hint'.tr,
                   hintStyle: TextStyle(
                       fontSize: 12.sp, color: const Color(0xFF94A3B8)),
                   filled: true,
@@ -450,7 +509,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'المكان:',
+                    'Venue:'.tr,
                     style: TextStyle(
                       fontSize: 13.5.sp,
                       fontWeight: FontWeight.bold,
@@ -466,7 +525,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                         border: Border.all(color: const Color(0xFFA7F3D0)),
                       ),
                       child: Text(
-                        'خصم Win Pass 🎫',
+                        'Win Pass Discount'.tr,
                         style: TextStyle(
                           fontSize: 10.5.sp,
                           fontWeight: FontWeight.bold,
@@ -537,12 +596,12 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                                     color: const Color(0xFFD1FAE5),
                                     borderRadius: BorderRadius.circular(6.r),
                                   ),
-                                  child: Text(
+                                  child: const Text(
                                     'Win Pass 🎫',
                                     style: TextStyle(
-                                      fontSize: 10.sp,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF065F46),
+                                      color: Color(0xFF065F46),
                                     ),
                                   ),
                                 ),
@@ -560,7 +619,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                                 size: 18, color: Color(0xFF8B5CF6)),
                             SizedBox(width: 8.w),
                             Text(
-                              '✏️ مكان آخر (كتابة يدوية)',
+                              'Other Venue Manual'.tr,
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
@@ -606,7 +665,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.location_on_outlined,
                         color: Color(0xFF8B5CF6), size: 18),
-                    hintText: 'اكتب اسم المكان أو المنطقة (مثال: كافيه مادو تقسيم)...',
+                    hintText: 'Custom Venue Hint'.tr,
                     hintStyle: TextStyle(
                         fontSize: 12.sp, color: const Color(0xFF94A3B8)),
                     filled: true,
@@ -622,7 +681,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
 
               // 4. DATE SELECTION (Up to 3 Days)
               Text(
-                'اليوم والتاريخ (أقصى حد 3 أيام):',
+                'Date Selection Label'.tr,
                 style: TextStyle(
                   fontSize: 13.5.sp,
                   fontWeight: FontWeight.bold,
@@ -693,7 +752,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'توقيت اللقاء (الساعة):',
+                          'Meeting Time Label'.tr,
                           style: TextStyle(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.bold,
@@ -744,7 +803,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'المقاعد المطلوبة:',
+                          'Seats Needed Label'.tr,
                           style: TextStyle(
                             fontSize: 13.sp,
                             fontWeight: FontWeight.bold,
@@ -769,7 +828,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                                 return DropdownMenuItem<int>(
                                   value: count,
                                   child: Text(
-                                    '$count ${count == 1 ? "شخص" : "أشخاص"}',
+                                    '$count ${count == 1 ? "Person".tr : "Persons".tr}',
                                     style: TextStyle(fontSize: 13.sp),
                                   ),
                                 );
@@ -791,7 +850,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
 
               // 6. Note / Details
               Text(
-                'ملاحظة أو فكرة اللقاء (اختياري):',
+                'Note Label'.tr,
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
@@ -804,7 +863,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                 maxLines: 2,
                 style: TextStyle(fontSize: 13.sp),
                 decoration: InputDecoration(
-                  hintText: 'مثال: الحساب عليّ، حابب نتعرف وندردش بمجال العمل...',
+                  hintText: 'Note Hint'.tr,
                   hintStyle: TextStyle(
                       fontSize: 12.sp, color: const Color(0xFF94A3B8)),
                   filled: true,
@@ -834,7 +893,7 @@ class _CreateHangoutSheetState extends State<CreateHangoutSheet> {
                         ),
                       )
                     : Text(
-                        'نشر الدعوة الآن 🚀',
+                        'Publish Hangout Now'.tr,
                         style: TextStyle(
                           fontSize: 14.5.sp,
                           fontWeight: FontWeight.bold,

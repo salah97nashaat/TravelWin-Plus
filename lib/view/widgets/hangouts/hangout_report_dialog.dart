@@ -19,16 +19,16 @@ class HangoutReportDialog extends StatefulWidget {
 }
 
 class _HangoutReportDialogState extends State<HangoutReportDialog> {
-  String _selectedReason = 'احتيال أو طلب أموال مشبوه';
+  String _selectedReason = 'Fraud or suspicious money';
   final TextEditingController _detailsController = TextEditingController();
   bool _isLoading = false;
 
   final List<String> _reasons = [
-    'احتيال أو طلب أموال مشبوه',
-    'سلوك غير لائق أو مضايقة',
-    'إعلان وهمي أو غير حقيقي',
-    'عدم الحضور أو انتحال شخصية',
-    'أخرى (يرجى التوضيح)',
+    'Fraud or suspicious money',
+    'Inappropriate behavior',
+    'Fake activity',
+    'No-show or impersonation',
+    'Other reason',
   ];
 
   @override
@@ -41,7 +41,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
     setState(() => _isLoading = true);
     final res = await HangoutService.reportHangout(
       widget.hangoutId,
-      reason: _selectedReason,
+      reason: _selectedReason.tr,
       details: _detailsController.text.trim(),
     );
     setState(() => _isLoading = false);
@@ -49,8 +49,8 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
     if (mounted) {
       Navigator.of(context).pop();
       Get.snackbar(
-        res['success'] == true ? 'تم استلام البلاغ' : 'تنبيه',
-        res['message'],
+        res['success'] == true ? 'Success'.tr : 'Error'.tr,
+        res['message'] ?? '',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: res['success'] == true
             ? const Color(0xFF10B981)
@@ -96,7 +96,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'تقديم شكوى أو إبلاغ',
+                          'Submit Complaint'.tr,
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
@@ -105,7 +105,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
                         ),
                         SizedBox(height: 2.h),
                         Text(
-                          'نظام حماية المجتمع والأنشطة',
+                          'Safety Protection System'.tr,
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: const Color(0xFF64748B),
@@ -119,7 +119,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
               SizedBox(height: 16.h),
 
               Text(
-                'ما هو سبب الإبلاغ عن هذا النشاط؟',
+                'Report Reason Prompt'.tr,
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
@@ -163,7 +163,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
                         SizedBox(width: 10.w),
                         Expanded(
                           child: Text(
-                            reason,
+                            reason.tr,
                             style: TextStyle(
                               fontSize: 13.sp,
                               fontWeight: isSelected
@@ -189,7 +189,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
                 maxLines: 3,
                 style: TextStyle(fontSize: 13.sp),
                 decoration: InputDecoration(
-                  hintText: 'ملاحظات أو تفاصيل إضافية (اختياري)...',
+                  hintText: 'Report Notes Hint'.tr,
                   hintStyle: TextStyle(
                     fontSize: 12.sp,
                     color: const Color(0xFF94A3B8),
@@ -236,7 +236,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
                       SizedBox(width: 8.w),
                       Expanded(
                         child: Text(
-                          'للحالات العاجلة: تحدث مع الإدارة مباشرة عبر واتساب',
+                          'WhatsApp Urgent Support'.tr,
                           style: TextStyle(
                             fontSize: 11.5.sp,
                             fontWeight: FontWeight.w600,
@@ -265,7 +265,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
                         side: const BorderSide(color: Color(0xFFCBD5E1)),
                       ),
                       child: Text(
-                        'إلغاء',
+                        'Cancel'.tr,
                         style: TextStyle(
                           fontSize: 13.sp,
                           color: const Color(0xFF64748B),
@@ -295,7 +295,7 @@ class _HangoutReportDialogState extends State<HangoutReportDialog> {
                               ),
                             )
                           : Text(
-                              'إرسال البلاغ',
+                              'Send Report'.tr,
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,

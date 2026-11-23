@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -50,7 +49,7 @@ void main() {
       print("-----------------------------------------");
       runApp(ErrorScreen(error: error.toString()));
     });
-  } catch (e, stackTrace) {
+  } catch (e) {
     print("--- FATAL SYNCHRONOUS ERROR IN MAIN ---");
     print("ERROR: $e");
     print("---------------------------------------");
@@ -148,11 +147,11 @@ class MyApp extends StatelessWidget {
           title: 'travel win',
           debugShowCheckedModeBanner: false,
           locale: GetStorage().read<String>('lang') == null
-              ? Locale(ene)
+              ? Locale(ara)
               : Locale(GetStorage().read<String>('lang').toString()),
         
           translations: LocaliztionApp(),
-          fallbackLocale:GetStorage().read<String>('lang').toString()==null? (Get.deviceLocale=='ar_GB'?Locale(ara):Locale(ene)) :Locale(GetStorage().read<String>('lang').toString()) ,
+          fallbackLocale: Locale(ara),
           builder: (context, child) => child!,
           theme: ThemesApp.light,
           darkTheme: ThemesApp.dark,

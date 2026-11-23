@@ -55,7 +55,7 @@ class _HangoutCardState extends State<HangoutCard> {
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
-                      'طلب انضمام للنشاط',
+                      'Join Request'.tr,
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
@@ -67,7 +67,7 @@ class _HangoutCardState extends State<HangoutCard> {
               ),
               SizedBox(height: 12.h),
               Text(
-                'أرسل رسالة سريعة لصاحب النشاط (${widget.hangout.firstName}):',
+                '${'Send quick msg to'.tr} (${widget.hangout.firstName}):',
                 style: TextStyle(fontSize: 13.sp, color: const Color(0xFF64748B)),
               ),
               SizedBox(height: 10.h),
@@ -76,7 +76,7 @@ class _HangoutCardState extends State<HangoutCard> {
                 maxLines: 2,
                 style: TextStyle(fontSize: 13.sp),
                 decoration: InputDecoration(
-                  hintText: 'مرحباً، يسعدني الانضمام إليك...',
+                  hintText: 'Join hint'.tr,
                   hintStyle: TextStyle(fontSize: 12.sp, color: const Color(0xFF94A3B8)),
                   filled: true,
                   fillColor: const Color(0xFFF8FAFC),
@@ -97,7 +97,7 @@ class _HangoutCardState extends State<HangoutCard> {
                             borderRadius: BorderRadius.circular(12.r)),
                         padding: EdgeInsets.symmetric(vertical: 11.h),
                       ),
-                      child: Text('إلغاء', style: TextStyle(fontSize: 13.sp)),
+                      child: Text('Cancel'.tr, style: TextStyle(fontSize: 13.sp)),
                     ),
                   ),
                   SizedBox(width: 10.w),
@@ -113,8 +113,8 @@ class _HangoutCardState extends State<HangoutCard> {
                         setState(() => _isJoining = false);
 
                         Get.snackbar(
-                          res['success'] == true ? 'تم بنجاح' : 'تنبيه',
-                          res['message'],
+                          res['success'] == true ? 'Success'.tr : 'Alert'.tr,
+                          res['message'] ?? '',
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: res['success'] == true
                               ? const Color(0xFF10B981)
@@ -135,7 +135,7 @@ class _HangoutCardState extends State<HangoutCard> {
                         padding: EdgeInsets.symmetric(vertical: 11.h),
                         elevation: 0,
                       ),
-                      child: Text('إرسال الطلب',
+                      child: Text('Send Request'.tr,
                           style: TextStyle(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.bold,
@@ -174,7 +174,7 @@ class _HangoutCardState extends State<HangoutCard> {
               ),
               SizedBox(height: 14.h),
               Text(
-                'الملف الشخصي غير مكتمل ⚠️',
+                'Profile Incomplete'.tr,
                 style: TextStyle(
                   fontSize: 16.5.sp,
                   fontWeight: FontWeight.bold,
@@ -183,7 +183,7 @@ class _HangoutCardState extends State<HangoutCard> {
               ),
               SizedBox(height: 8.h),
               Text(
-                'لضمان أمان وموثوقية مجتمع Travel Win، لا يمكن إنشاء نشاط أو الانضمام للأنشطة قبل إكمال بياناتك الشخصية (الاسم، رقم الهاتف، والصورة الشخصية).',
+                'Profile Incomplete Desc'.tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13.sp,
@@ -199,7 +199,7 @@ class _HangoutCardState extends State<HangoutCard> {
                 },
                 icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
                 label: Text(
-                  'إكمال الملف الشخصي الآن',
+                  'Complete Profile Now'.tr,
                   style: TextStyle(
                     fontSize: 13.5.sp,
                     fontWeight: FontWeight.bold,
@@ -220,7 +220,7 @@ class _HangoutCardState extends State<HangoutCard> {
               TextButton(
                 onPressed: () => Get.back(),
                 child: Text(
-                  'إلغاء',
+                  'Cancel'.tr,
                   style: TextStyle(fontSize: 13.sp, color: const Color(0xFF94A3B8)),
                 ),
               ),
@@ -361,7 +361,7 @@ class _HangoutCardState extends State<HangoutCard> {
                         ),
                         SizedBox(width: 3.w),
                         Text(
-                          'إبلاغ',
+                          'Report'.tr,
                           style: TextStyle(
                             fontSize: 10.5.sp,
                             fontWeight: FontWeight.bold,
@@ -438,7 +438,7 @@ class _HangoutCardState extends State<HangoutCard> {
                                   color: Colors.white, size: 12),
                               SizedBox(width: 3.w),
                               Text(
-                                'خصم Win Pass 🎫',
+                                'Win Pass Discount'.tr,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 10.5.sp,
@@ -527,7 +527,7 @@ class _HangoutCardState extends State<HangoutCard> {
                                   size: 13, color: Color(0xFF64748B)),
                               SizedBox(width: 3.w),
                               Text(
-                                '${widget.hangout.seatsJoined}/${widget.hangout.seatsNeeded} مقاعد',
+                                '${widget.hangout.seatsJoined}/${widget.hangout.seatsNeeded} ${'Seats Label'.tr}',
                                 style: TextStyle(
                                   fontSize: 11.5.sp,
                                   color: const Color(0xFF64748B),
@@ -563,7 +563,7 @@ class _HangoutCardState extends State<HangoutCard> {
                               ),
                             )
                           : Text(
-                              isFull ? 'المقاعد مكتملة' : 'طلب انضمام',
+                              isFull ? 'Seats Full'.tr : 'Join Request'.tr,
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,

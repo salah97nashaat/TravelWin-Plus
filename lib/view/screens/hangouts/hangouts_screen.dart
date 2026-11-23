@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/models/hangout_model.dart';
-import 'package:travelwin/routes/routes.dart';
 import 'package:travelwin/services/hangout_service.dart';
-import 'package:travelwin/utils/my_string.dart';
-import 'package:travelwin/utils/theme.dart';
 import 'package:travelwin/view/screens/hangouts/create_hangout_sheet.dart';
 import 'package:travelwin/view/widgets/hangouts/hangout_card.dart';
 
@@ -21,15 +18,15 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
   List<HangoutModel> _hangouts = [];
   bool _isLoading = true;
 
-  final List<Map<String, String>> _filterCategories = [
-    {'type': 'all', 'title': 'الكل'},
-    {'type': 'coffee', 'title': '☕ قهوة'},
-    {'type': 'billiard', 'title': '🎱 بلياردو'},
-    {'type': 'tour', 'title': '📸 جولات'},
-    {'type': 'camp', 'title': '🏕️ تخييم'},
-    {'type': 'business', 'title': '💼 أعمال'},
-    {'type': 'sport', 'title': '⚽ رياضة'},
-    {'type': 'food', 'title': '🍔 طعام'},
+  List<Map<String, String>> get _filterCategories => [
+    {'type': 'all', 'title': 'All'.tr},
+    {'type': 'coffee', 'title': 'Coffee & Meet'.tr},
+    {'type': 'billiard', 'title': 'Billiards & Games'.tr},
+    {'type': 'tour', 'title': 'City Tour'.tr},
+    {'type': 'camp', 'title': 'Camping & Trips'.tr},
+    {'type': 'business', 'title': 'Business Meet'.tr},
+    {'type': 'sport', 'title': 'Sports & Workout'.tr},
+    {'type': 'food', 'title': 'Food & Dining'.tr},
   ];
 
   @override
@@ -52,97 +49,12 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
   }
 
   void _openCreateSheet() {
-    if (isUserProfileIncomplete()) {
-      _showIncompleteProfileAlert();
-      return;
-    }
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => CreateHangoutSheet(
         onCreated: _loadHangouts,
-      ),
-    );
-  }
-
-  void _showIncompleteProfileAlert() {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
-        child: Padding(
-          padding: EdgeInsets.all(22.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(14.w),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFEF2F2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.person_off_rounded,
-                  color: Color(0xFFEF4444),
-                  size: 34,
-                ),
-              ),
-              SizedBox(height: 14.h),
-              Text(
-                'الملف الشخصي غير مكتمل ⚠️',
-                style: TextStyle(
-                  fontSize: 16.5.sp,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1E293B),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                'لضمان أمان وموثوقية مجتمع Travel Win، لا يمكن إنشاء نشاط أو البحث عن شريك قبل إكمال بياناتك الشخصية (الاسم، رقم الهاتف، والصورة الشخصية).',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  color: const Color(0xFF64748B),
-                  height: 1.4,
-                ),
-              ),
-              SizedBox(height: 20.h),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Get.back();
-                  Get.toNamed(Routes.ProfileScreen);
-                },
-                icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
-                label: Text(
-                  'إكمال الملف الشخصي الآن',
-                  style: TextStyle(
-                    fontSize: 13.5.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  elevation: 0,
-                  minimumSize: Size(double.infinity, 44.h),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              TextButton(
-                onPressed: () => Get.back(),
-                child: Text(
-                  'إلغاء',
-                  style: TextStyle(fontSize: 13.sp, color: const Color(0xFF94A3B8)),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -163,7 +75,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
-                      'أمانك وثقتك أولويتنا 🛡️',
+                      'Safety Priority'.tr,
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
@@ -175,10 +87,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
               ),
               SizedBox(height: 12.h),
               Text(
-                '• جميع الأنشطة مرتبطة بمستخدمين موثقين بهواتفهم وصورهم الحقيقية.\n'
-                '• الدعوات مؤقتة وتنتهي تلقائياً بعد 24 ساعة.\n'
-                '• نوصي دائماً باللقاء في الأماكن العامة والمقاهي الشريكة المسجلة.\n'
-                '• يمكنك الإبلاغ عن أي سلوك أو نشاط مشبوه بنقرة زر وسيتم مراجعته فوراً.',
+                'Safety Details Text'.tr,
                 style: TextStyle(
                   fontSize: 12.5.sp,
                   color: const Color(0xFF475569),
@@ -195,7 +104,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
                   ),
                 ),
                 child: Text(
-                  'فهمت ذلك',
+                  'I Understand'.tr,
                   style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
@@ -235,7 +144,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
             ),
             SizedBox(width: 8.w),
             Text(
-              'شريك النشاط والطاولة',
+              'Activity & Table Partner'.tr,
               style: TextStyle(
                 fontSize: 16.5.sp,
                 fontWeight: FontWeight.bold,
@@ -249,7 +158,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
             icon: const Icon(Icons.shield_outlined,
                 color: Color(0xFF10B981), size: 22),
             onPressed: _showSafetyInfo,
-            tooltip: 'معايير الأمان',
+            tooltip: 'Safety Standards'.tr,
           ),
         ],
       ),
@@ -273,7 +182,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
                             const Text('🔥', style: TextStyle(fontSize: 16)),
                             SizedBox(width: 6.w),
                             Text(
-                              'طلعات وأنشطة اليوم القريبة منك',
+                              'Today\'s Hangouts Near You'.tr,
                               style: TextStyle(
                                 fontSize: 13.5.sp,
                                 fontWeight: FontWeight.bold,
@@ -466,7 +375,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'لا توجد أنشطة نشطة حالياً في هذا القسم',
+                          'No active hangouts'.tr,
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.bold,
@@ -475,7 +384,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
                         ),
                         SizedBox(height: 6.h),
                         Text(
-                          'كن أول من ينشئ دعوة نشاط أو يبحث عن شريك لطاولة أو رحلة اليوم!',
+                          'Be first hangout'.tr,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 12.5.sp,
@@ -489,7 +398,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
                           icon: const Icon(Icons.add_rounded,
                               color: Colors.white, size: 20),
                           label: Text(
-                            'أنشئ دعوة نشاط الآن',
+                            'Create Activity Now'.tr,
                             style: TextStyle(
                               fontSize: 13.5.sp,
                               fontWeight: FontWeight.bold,
@@ -534,7 +443,7 @@ class _HangoutsScreenState extends State<HangoutsScreen> {
         backgroundColor: const Color(0xFF8B5CF6),
         icon: const Icon(Icons.add_rounded, color: Colors.white),
         label: Text(
-          'أنشئ طلعة / ابحث عن شريك',
+          'Create Hangout'.tr,
           style: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.bold,

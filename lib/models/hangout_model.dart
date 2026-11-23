@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HangoutModel {
   final int id;
@@ -110,21 +111,21 @@ class HangoutModel {
   static String getCategoryTitle(String type) {
     switch (type.toLowerCase()) {
       case 'coffee':
-        return 'قهوة وتعارف';
+        return 'Coffee & Meet'.tr;
       case 'billiard':
-        return 'بلياردو وألعاب';
+        return 'Billiards & Games'.tr;
       case 'tour':
-        return 'جولة سياحية';
+        return 'City Tour'.tr;
       case 'camp':
-        return 'تخييم ورحلات';
+        return 'Camping & Trips'.tr;
       case 'business':
-        return 'لقاء أعمال';
+        return 'Business Meet'.tr;
       case 'sport':
-        return 'رياضة وتمارين';
+        return 'Sports & Workout'.tr;
       case 'food':
-        return 'طعام ومطاعم';
+        return 'Food & Dining'.tr;
       default:
-        return 'نشاط حر';
+        return 'Free Activity'.tr;
     }
   }
 
@@ -156,20 +157,22 @@ class HangoutModel {
   }
 
   String get timeLeftFormatted {
-    if (minutesLeft <= 0) return 'منتهي';
+    final isAr = Get.locale?.languageCode == 'ar';
+    if (minutesLeft <= 0) return isAr ? 'منتهي' : 'Expired';
     final days = minutesLeft ~/ (24 * 60);
     final hours = (minutesLeft % (24 * 60)) ~/ 60;
     final mins = minutesLeft % 60;
 
+    final prefix = isAr ? 'متبقي: ' : 'Left: ';
     if (days > 0) {
       if (hours > 0) {
-        return '$days يوم و $hours س';
+        return isAr ? '$prefix$days يوم و $hours س' : '$prefix${days}d ${hours}h';
       }
-      return '$days ${days == 1 ? "يوم متبقي" : "أيام متبقية"}';
+      return isAr ? '$prefix$days ${days == 1 ? "يوم" : "أيام"}' : '$prefix${days}d';
     }
     if (hours > 0) {
-      return '$hours ساعة و $mins د';
+      return isAr ? '$prefix$hours س و $mins د' : '$prefix${hours}h ${mins}m';
     }
-    return '$mins دقيقة متبقية';
+    return isAr ? '$prefix$mins دقيقة' : '$prefix${mins}m';
   }
 }
