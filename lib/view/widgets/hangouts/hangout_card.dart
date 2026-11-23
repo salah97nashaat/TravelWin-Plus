@@ -241,6 +241,402 @@ class _HangoutCardState extends State<HangoutCard> {
     );
   }
 
+  void _showCreatorRequestsSheet() {
+    final isAr = Get.locale?.languageCode == 'ar';
+    final requests = widget.hangout.requests;
+    final isFull = widget.hangout.seatsJoined >= widget.hangout.seatsNeeded;
+
+    Get.bottomSheet(
+      Container(
+        constraints: BoxConstraints(
+          maxHeight: 0.8.sh,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBD5E1),
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+            ),
+            SizedBox(height: 12.h),
+
+            // Sheet Title & Close
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(7.w),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEDE9FE),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: const Icon(Icons.people_alt_rounded,
+                      color: Color(0xFF7C3AED), size: 20),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isAr ? 'إدارة مقاعد طلعتك' : 'Manage Hangout Seats',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1E293B),
+                        ),
+                      ),
+                      Text(
+                        widget.hangout.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, color: Color(0xFF64748B)),
+                  onPressed: () => Get.back(),
+                ),
+              ],
+            ),
+            SizedBox(height: 10.h),
+
+            // Seats Status Banner
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: isFull ? const Color(0xFFEFF6FF) : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: isFull ? const Color(0xFFBFDBFE) : const Color(0xFFE2E8F0),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    isFull ? Icons.check_circle_rounded : Icons.info_outline_rounded,
+                    color: isFull ? const Color(0xFF2563EB) : const Color(0xFF64748B),
+                    size: 18,
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Text(
+                      isAr
+                          ? 'المقاعد المؤكدة: ${widget.hangout.seatsJoined} من ${widget.hangout.seatsNeeded} مقاعد • نسّق مع المهتمين بالرسائل، وعندما تتفق مع شخص اضغط (تأكيد وحجز المقعد).'
+                          : 'Confirmed: ${widget.hangout.seatsJoined}/${widget.hangout.seatsNeeded} seats • Chat with applicants and confirm the agreed ones.',
+                      style: TextStyle(
+                        fontSize: 11.5.sp,
+                        color: const Color(0xFF334155),
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 14.h),
+
+            // Applicants List
+            Expanded(
+              child: requests.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.forum_outlined,
+                              size: 44, color: const Color(0xFFCBD5E1)),
+                          SizedBox(height: 8.h),
+                          Text(
+                            isAr
+                                ? 'لم يتواصل معك أحد بخصوص هذا النشاط حتى الآن'
+                                : 'No applicants have contacted you yet',
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              color: const Color(0xFF94A3B8),
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            isAr
+                                ? 'عندما يرسل لك أي مستخدم رسالة، ستظهر تفاصيله هنا لتأكيد مقعده'
+                                : 'When someone contacts you, they will appear here to confirm their seat',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11.sp,
+                              color: const Color(0xFFCBD5E1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      itemCount: requests.length,
+                      separatorBuilder: (_, __) => SizedBox(height: 10.h),
+                      itemBuilder: (context, index) {
+                        final r = requests[index];
+                        final isAccepted = (r.status == 'accepted');
+
+                        return Container(
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            color: isAccepted
+                                ? const Color(0xFFF0FDF4)
+                                : const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(14.r),
+                            border: Border.all(
+                              color: isAccepted
+                                  ? const Color(0xFFBBF7D0)
+                                  : const Color(0xFFE2E8F0),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18.r,
+                                    backgroundColor: const Color(0xFFE2E8F0),
+                                    backgroundImage: (r.applicantImage.isNotEmpty &&
+                                            Uri.tryParse(r.applicantImage)
+                                                    ?.hasScheme ==
+                                                true)
+                                        ? NetworkImage(r.applicantImage)
+                                        : null,
+                                    child: (r.applicantImage.isEmpty ||
+                                            Uri.tryParse(r.applicantImage)
+                                                    ?.hasScheme !=
+                                                true)
+                                        ? Text(
+                                            r.applicantName.isNotEmpty
+                                                ? r.applicantName[0]
+                                                : 'U',
+                                            style: TextStyle(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color(0xFF475569)),
+                                          )
+                                        : null,
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          r.applicantName,
+                                          style: TextStyle(
+                                            fontSize: 13.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: const Color(0xFF1E293B),
+                                          ),
+                                        ),
+                                        if (r.applicantPhone.isNotEmpty)
+                                          Text(
+                                            r.applicantPhone,
+                                            style: TextStyle(
+                                              fontSize: 11.sp,
+                                              color: const Color(0xFF64748B),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Status Badge
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w, vertical: 3.h),
+                                    decoration: BoxDecoration(
+                                      color: isAccepted
+                                          ? const Color(0xFFDCFCE7)
+                                          : const Color(0xFFFEF3C7),
+                                      borderRadius:
+                                          BorderRadius.circular(8.r),
+                                      border: Border.all(
+                                        color: isAccepted
+                                            ? const Color(0xFF86EFAC)
+                                            : const Color(0xFFFDE68A),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      isAccepted
+                                          ? (isAr
+                                              ? 'تم حجز المقعد ✅'
+                                              : 'Confirmed ✅')
+                                          : (isAr
+                                              ? 'تواصل جاري'
+                                              : 'Chatting'),
+                                      style: TextStyle(
+                                        fontSize: 10.5.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: isAccepted
+                                            ? const Color(0xFF15803D)
+                                            : const Color(0xFFB45309),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (r.message.isNotEmpty) ...[
+                                SizedBox(height: 6.h),
+                                Text(
+                                  '"${r.message}"',
+                                  style: TextStyle(
+                                    fontSize: 11.5.sp,
+                                    color: const Color(0xFF475569),
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                              SizedBox(height: 10.h),
+
+                              // Actions Row
+                              Row(
+                                children: [
+                                  // Chat button
+                                  OutlinedButton.icon(
+                                    onPressed: () {
+                                      Get.back();
+                                      Get.toNamed(Routes.ChatScreen);
+                                    },
+                                    icon: const Icon(Icons.chat_outlined,
+                                        size: 14),
+                                    label: Text(
+                                      isAr ? 'محادثة' : 'Chat',
+                                      style: TextStyle(fontSize: 11.5.sp),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.w, vertical: 6.h),
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.r),
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(),
+
+                                  // Confirm seat or Cancel seat
+                                  if (!isAccepted)
+                                    ElevatedButton.icon(
+                                      onPressed: isFull
+                                          ? null
+                                          : () async {
+                                              final res = await HangoutService
+                                                  .respondToRequest(
+                                                r.id,
+                                                action: 'accept',
+                                              );
+                                              Get.back();
+                                              Get.snackbar(
+                                                res['success'] == true
+                                                    ? (isAr ? 'تم بنجاح' : 'Success')
+                                                    : (isAr ? 'تنبيه' : 'Alert'),
+                                                res['message'] ?? '',
+                                                backgroundColor: res['success'] == true
+                                                    ? const Color(0xFF10B981)
+                                                    : const Color(0xFFEF4444),
+                                                colorText: Colors.white,
+                                              );
+                                              if (res['success'] == true) {
+                                                widget.onRefresh?.call();
+                                              }
+                                            },
+                                      icon: const Icon(Icons.chair_rounded,
+                                          size: 14),
+                                      label: Text(
+                                        isAr
+                                            ? 'تأكيد وحجز المقعد'
+                                            : 'Confirm Seat',
+                                        style: TextStyle(
+                                          fontSize: 11.5.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color(0xFF16A34A),
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w, vertical: 6.h),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.r),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                    )
+                                  else
+                                    TextButton(
+                                      onPressed: () async {
+                                        final res = await HangoutService
+                                            .respondToRequest(
+                                          r.id,
+                                          action: 'reject',
+                                        );
+                                        Get.back();
+                                        Get.snackbar(
+                                          isAr ? 'تم الإلغاء' : 'Unbooked',
+                                          res['message'] ?? '',
+                                          backgroundColor: const Color(0xFF64748B),
+                                          colorText: Colors.white,
+                                        );
+                                        widget.onRefresh?.call();
+                                      },
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8.w, vertical: 4.h),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: Text(
+                                        isAr ? 'إلغاء المقعد' : 'Cancel Seat',
+                                        style: TextStyle(
+                                          fontSize: 11.sp,
+                                          color: const Color(0xFFEF4444),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final gradient = HangoutModel.getCategoryGradient(widget.hangout.activityType);
@@ -248,6 +644,10 @@ class _HangoutCardState extends State<HangoutCard> {
     final categoryTitle = HangoutModel.getCategoryTitle(widget.hangout.activityType);
 
     final bool isFull = widget.hangout.availableSeats <= 0;
+    final currentUserId = profile.value.data?.id;
+    final bool isCreator = (currentUserId != null &&
+        currentUserId != 0 &&
+        currentUserId == widget.hangout.userId);
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
@@ -539,38 +939,62 @@ class _HangoutCardState extends State<HangoutCard> {
                       ),
                     ),
 
-                    // Join Action Button
-                    ElevatedButton(
-                      onPressed: (isFull || _isJoining) ? null : _handleJoin,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isFull
-                            ? const Color(0xFF94A3B8)
-                            : const Color(0xFF2563EB),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 14.w, vertical: 8.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: _isJoining
-                          ? SizedBox(
-                              width: 14.w,
-                              height: 14.w,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : Text(
-                              isFull ? 'Seats Full'.tr : 'Join Request'.tr,
+                    // Action Button: Creator manages seats, others connect to join
+                    isCreator
+                        ? ElevatedButton.icon(
+                            onPressed: _showCreatorRequestsSheet,
+                            icon: const Icon(Icons.people_alt_rounded,
+                                size: 14, color: Colors.white),
+                            label: Text(
+                              'Manage Seats'.tr,
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
-                    ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF7C3AED),
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w, vertical: 8.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              elevation: 0,
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: (isFull || _isJoining) ? null : _handleJoin,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isFull
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF2563EB),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 14.w, vertical: 8.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: _isJoining
+                                ? SizedBox(
+                                    width: 14.w,
+                                    height: 14.w,
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    isFull ? 'Seats Full'.tr : 'Join Request'.tr,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
                   ],
                 ),
               ],

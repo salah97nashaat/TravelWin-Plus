@@ -459,6 +459,7 @@ const Map<String, String> ar = {
   "Report": "إبلاغ",
   "Win Pass Discount": "خصم Win Pass 🎫",
   "Seats Label": "مقاعد",
+  "Manage Seats": "إدارة المقاعد 👥",
   "Join Request": "تواصل للانضمام",
   "Seats Full": "المقاعد مكتملة",
   "Send quick msg to": "تواصل ونسّق مع",

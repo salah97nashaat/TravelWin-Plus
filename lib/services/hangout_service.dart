@@ -204,8 +204,35 @@ class HangoutService {
     try {
       final res = await _dio.post('/hangouts/$hangoutId/cancel');
       return res.data['success'] == true;
-    } catch (_) {
+      } catch (_) {
       return false;
+    }
+  }
+
+  /// Creator accepts/confirms or rejects a join request
+  static Future<Map<String, dynamic>> respondToRequest(
+    int requestId, {
+    required String action, // 'accept' or 'reject'
+  }) async {
+    try {
+      final res = await _dio.post(
+        '/hangouts/requests/$requestId/respond',
+        data: {'action': action},
+      );
+      return {
+        'success': res.data['success'] == true,
+        'message': res.data['message'] ?? (action == 'accept' ? 'تم تأكيد حجز المقعد بنجاح!' : 'تم رفض الطلب'),
+      };
+    } on DioException catch (e) {
+      return {
+        'success': false,
+        'message': e.response?.data?['message'] ?? 'فشل الاتصال بالخادم',
+      };
+    } catch (_) {
+      return {
+        'success': false,
+        'message': 'حدث خطأ غير متوقع',
+      };
     }
   }
 }

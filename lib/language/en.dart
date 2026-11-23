@@ -386,6 +386,7 @@ const Map<String, String> en = {
   "Report": "Report",
   "Win Pass Discount": "Win Pass Discount 🎫",
   "Seats Label": "seats",
+  "Manage Seats": "Manage Seats 👥",
   "Join Request": "Connect to Join",
   "Seats Full": "Seats Full",
   "Send quick msg to": "Coordinate with",

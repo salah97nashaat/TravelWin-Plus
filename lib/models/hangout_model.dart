@@ -26,6 +26,7 @@ class HangoutModel {
   final DateTime? expiresAt;
   final int minutesLeft;
   final int requestsCount;
+  final List<HangoutApplicantModel> requests;
   final DateTime? createdAt;
 
   HangoutModel({
@@ -53,10 +54,20 @@ class HangoutModel {
     this.expiresAt,
     this.minutesLeft = 1440,
     this.requestsCount = 0,
+    this.requests = const [],
     this.createdAt,
   });
 
   factory HangoutModel.fromJson(Map<String, dynamic> json) {
+    var rawRequests = json['requests'];
+    List<HangoutApplicantModel> parsedRequests = [];
+    if (rawRequests is List) {
+      parsedRequests = rawRequests
+          .whereType<Map<String, dynamic>>()
+          .map((r) => HangoutApplicantModel.fromJson(r))
+          .toList();
+    }
+
     return HangoutModel(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       userId: json['user_id'] is int ? json['user_id'] : int.tryParse(json['user_id']?.toString() ?? '0') ?? 0,
@@ -82,6 +93,7 @@ class HangoutModel {
       expiresAt: json['expires_at'] != null ? DateTime.tryParse(json['expires_at'].toString()) : null,
       minutesLeft: json['minutes_left'] is int ? json['minutes_left'] : int.tryParse(json['minutes_left']?.toString() ?? '0') ?? 0,
       requestsCount: json['requests_count'] is int ? json['requests_count'] : int.tryParse(json['requests_count']?.toString() ?? '0') ?? 0,
+      requests: parsedRequests,
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
     );
   }
@@ -174,5 +186,40 @@ class HangoutModel {
       return isAr ? '$prefix$hours س و $mins د' : '$prefix${hours}h ${mins}m';
     }
     return isAr ? '$prefix$mins دقيقة' : '$prefix${mins}m';
+  }
+}
+
+class HangoutApplicantModel {
+  final int id;
+  final int applicantId;
+  final String applicantName;
+  final String applicantImage;
+  final String applicantPhone;
+  final String status; // 'pending', 'accepted', 'rejected'
+  final String message;
+  final DateTime? createdAt;
+
+  HangoutApplicantModel({
+    required this.id,
+    required this.applicantId,
+    required this.applicantName,
+    required this.applicantImage,
+    required this.applicantPhone,
+    required this.status,
+    required this.message,
+    this.createdAt,
+  });
+
+  factory HangoutApplicantModel.fromJson(Map<String, dynamic> json) {
+    return HangoutApplicantModel(
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      applicantId: json['applicant_id'] is int ? json['applicant_id'] : int.tryParse(json['applicant_id']?.toString() ?? '0') ?? 0,
+      applicantName: json['applicant_name'] ?? 'مستخدم',
+      applicantImage: json['applicant_image'] ?? '',
+      applicantPhone: json['applicant_phone'] ?? '',
+      status: json['status'] ?? 'pending',
+      message: json['message'] ?? '',
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
+    );
   }
 }
