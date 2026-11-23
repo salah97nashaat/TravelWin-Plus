@@ -516,9 +516,7 @@ class _HangoutCardState extends State<HangoutCard> {
                                   size: 13, color: Color(0xFF64748B)),
                               SizedBox(width: 3.w),
                               Text(
-                                widget.hangout.meetingDate != null && widget.hangout.meetingDate!.isNotEmpty
-                                    ? '${widget.hangout.meetingDate} • ${widget.hangout.meetingTime}'
-                                    : widget.hangout.meetingTime,
+                                widget.hangout.meetingTime,
                                 style: TextStyle(
                                   fontSize: 11.5.sp,
                                   color: const Color(0xFF64748B),
