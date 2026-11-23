@@ -9,6 +9,7 @@ import 'package:travelwin/services/profile_services.dart';
 import 'package:travelwin/utils/my_string.dart';
 
 import '../../../logic/controllers/tourguy_controller.dart';
+import '../../../logic/controllers/chat_controller.dart';
 import '../../../routes/routes.dart';
 
 class TourGuyWidget extends StatelessWidget {

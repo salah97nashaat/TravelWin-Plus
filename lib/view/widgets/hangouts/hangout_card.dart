@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/models/hangout_model.dart';
@@ -113,6 +113,7 @@ class _HangoutCardState extends State<HangoutCard> {
                           message: noteCtrl.text.trim(),
                         );
                         setState(() => _isJoining = false);
+                        final isAr = Get.locale?.languageCode == 'ar';
 
                         Get.snackbar(
                           res['success'] == true ? 'Success'.tr : 'Alert'.tr,
@@ -517,9 +518,9 @@ class _HangoutCardState extends State<HangoutCard> {
                                       showLoaderDialog();
                                       guideName.value = r.applicantName;
                                       guideImage.value = r.applicantImage;
-                                      guidenceId.value = r.userId;
+                                      guidenceId.value = r.applicantId;
                                       chatSubtitle.value = isAr ? 'شريك النشاط' : 'Activity Partner';
-                                      await RemoteServices.fetchChatMessages(r.userId.toString());
+                                      await RemoteServices.fetchChatMessages(r.applicantId.toString());
                                       Get.back();
                                       final chatCtrl = Get.isRegistered<ChatController>()
                                           ? Get.find<ChatController>()
