@@ -55,7 +55,7 @@ class OtherServicesScreen extends StatelessWidget {
                   image: 'assets/images/pharmacy.svg',
                   text: 'Duty pharmacy'.tr,
                   onTap: () {
-                    launchURL(eczanelerUrl);
+                    Get.toNamed(Routes.DutyPharmaciesScreen);
                   },
                 ),
               ),

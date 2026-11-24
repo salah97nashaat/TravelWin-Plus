@@ -453,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: 'Duty Pharmacies',
                         icon: Icons.local_pharmacy_rounded,
                         gradientColors: const [Color(0xFF0D9488), Color(0xFF2DD4BF)],
-                        onTap: () => launchURL(eczanelerUrl),
+                        onTap: () => Get.toNamed(Routes.DutyPharmaciesScreen),
                       ),
                       HomeActionItem(
                         title: 'Whos Around',
