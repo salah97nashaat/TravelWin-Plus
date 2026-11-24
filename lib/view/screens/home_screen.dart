@@ -423,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: 'Flights',
                         icon: Icons.flight_takeoff_rounded,
                         gradientColors: const [Color(0xFF2563EB), Color(0xFF38BDF8)],
-                        onTap: () => launchURL('https://kiwi.com'),
+                        onTap: () => Get.toNamed(Routes.FlightsScreen),
                       ),
                       HomeActionItem(
                         title: 'Daily Trips',

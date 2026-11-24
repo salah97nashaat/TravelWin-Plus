@@ -13,6 +13,7 @@ const Map<String, String> en = {
   "Daily Trips": "Daily Trips",
   "Medical": "Medical Tourism",
   "Flights": "Flights",
+  "Flight Booking": "Flight Booking",
   "Activities": "Activities",
   "Guide": "Tour Guide",
   "Pharmacies": "Pharmacies",

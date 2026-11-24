@@ -23,6 +23,7 @@ import 'package:travelwin/view/screens/tour%20guidiens/sign_as_guide.dart';
 import 'package:travelwin/view/screens/tourism_areas/area_details.dart';
 import 'package:travelwin/view/screens/tourism_areas/place_details.dart';
 import 'package:travelwin/view/screens/tourism_areas/tourism_areas.dart';
+import 'package:travelwin/view/screens/flights/flights_screen.dart';
 import 'package:travelwin/view/screens/welcome_screen.dart';
 import '../logic/bindings/auth_biniding.dart';
 import '../view/screens/about_screen.dart';
@@ -181,6 +182,10 @@ class AppRoutes {
       ],
     ),
     GetPage(
+      name: Routes.FlightsScreen,
+      page: () => const FlightsScreen(),
+    ),
+    GetPage(
       name: Routes.ViewNotificationScreen,
       page: () => ViewNotificationScreen(),
       //  binding: NotificationBininding(),
@@ -284,6 +289,7 @@ class AppRoutes {
 }
 
 class Routes {
+  static const FlightsScreen = '/FlightsScreen';
   static const welcomeScreen = '/welcomeScreen';
   static const booking = '/booking';
   static const enterCode = '/enterCode';

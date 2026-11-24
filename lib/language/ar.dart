@@ -129,6 +129,7 @@ const Map<String, String> ar = {
   "Daily Trips": "الرحلات اليومية",
   "Medical": "السياحة العلاجية",
   "Flights": "الرحلات الجوية",
+  "Flight Booking": "حجز رحلات الطيران",
   "Activities": "الأنشطة",
   "Guide": "المرشد السياحي",
   "Pharmacies": "الصيدليات",
