@@ -18,16 +18,14 @@ class _FlightsScreenState extends State<FlightsScreen> {
   bool _isLoading = true;
   double _progress = 0.0;
 
-  // Travelpayouts / Aviasales Partner Marker
-  static const String travelpayoutsMarker = "606353"; 
+  // Travelpayouts Kiwi Affiliate Link (Campaign: Kiwi.com, Marker: 811370, TRS: 606353)
+  static const String kiwiAffiliateUrl = "https://kiwi.tp.st/DNTIKy9o";
 
   String get _flightSearchUrl {
     if (widget.customUrl != null && widget.customUrl!.isNotEmpty) {
       return widget.customUrl!;
     }
-    final lang = Get.locale?.languageCode ?? 'ar';
-    // Aviasales mobile-optimized search engine with partner tracking & localization
-    return 'https://www.aviasales.com/?marker=$travelpayoutsMarker&locale=$lang';
+    return kiwiAffiliateUrl;
   }
 
   @override
