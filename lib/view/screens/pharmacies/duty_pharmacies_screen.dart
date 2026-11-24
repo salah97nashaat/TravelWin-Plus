@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class DutyPharmaciesScreen extends StatefulWidget {
   const DutyPharmaciesScreen({Key? key}) : super(key: key);
@@ -72,8 +73,18 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
             // Silently handle transient connection errors
           },
         ),
-      )
-      ..loadRequest(Uri.parse(dutyPharmaciesUrl));
+      );
+
+    if (_controller.platform is AndroidWebViewController) {
+      (_controller.platform as AndroidWebViewController)
+          .setOnPlatformPermissionRequest(
+        (PlatformWebViewPermissionRequest request) {
+          request.grant();
+        },
+      );
+    }
+
+    _controller.loadRequest(Uri.parse(dutyPharmaciesUrl));
   }
 
   @override
