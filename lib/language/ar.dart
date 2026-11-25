@@ -527,4 +527,5 @@ const Map<String, String> ar = {
   "Manage Activity Seats": "إدارة مقاعد طلعتك",
   "Today\\'s Hangouts Near You": "طلعات اليوم القريبة منك",
   "Medical Consultation": "طلب استشارة طبية",
+  "Request Free Consultation & Quote 🩺": "طلب استشارة مجانية وعرض سعر 🩺",
 };

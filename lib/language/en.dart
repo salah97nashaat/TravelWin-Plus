@@ -557,4 +557,5 @@ const Map<String, String> en = {
   "You don\\'t have enough points to by this ticket": "You don",
   "سيتم مراجعة ملفك خلال 48 ساعة": "Your application will be reviewed within 48 hours",
   "Medical Consultation": "Medical Consultation",
+  "Request Free Consultation & Quote 🩺": "Request Free Consultation & Quote 🩺",
 };

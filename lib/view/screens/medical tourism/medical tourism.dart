@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,11 +21,16 @@ class MedicalTourism extends StatelessWidget {
 
   void _showConsultationSheet(BuildContext context) {
     final isAr = Get.locale?.languageCode == 'ar';
-    final nameController =
-        TextEditingController(text: profile.value.data?.name != null ? profile.value.data!.name.toString() : '');
-    final phoneController =
-        TextEditingController(text: profile.value.data?.mobile != null ? profile.value.data!.mobile.toString() : '');
+    final nameController = TextEditingController(
+        text: profile.value.data?.name != null
+            ? profile.value.data!.name.toString()
+            : '');
+    final phoneController = TextEditingController(
+        text: profile.value.data?.mobile != null
+            ? profile.value.data!.mobile.toString()
+            : '');
     final notesController = TextEditingController();
+    File? selectedImage;
     bool isSubmitting = false;
 
     final specialty = isAr
@@ -83,8 +90,8 @@ class MedicalTourism extends StatelessWidget {
                             children: [
                               Text(
                                 isAr
-                                    ? 'استشارة سياحة علاجية مجانية'
-                                    : 'Free Medical Consultation',
+                                    ? 'طلب استشارة مجانية وعرض سعر 🩺'
+                                    : 'Free Consultation & Quote 🩺',
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.bold,
@@ -170,8 +177,8 @@ class MedicalTourism extends StatelessWidget {
                     SizedBox(height: 14.h),
                     Text(
                       isAr
-                          ? 'تفاصيل الحالة أو الاستفسار'
-                          : 'Medical Case Details / Inquiries',
+                          ? 'وصف الحالة أو الاستفسار (اختياري)'
+                          : 'Case Description / Inquiries (Optional)',
                       style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13.sp,
@@ -183,8 +190,8 @@ class MedicalTourism extends StatelessWidget {
                       maxLines: 3,
                       decoration: InputDecoration(
                         hintText: isAr
-                            ? 'اشرح ما تحتاجه أو أي تفاصيل ترغب باستشارة الطبيب عنها...'
-                            : 'Describe your medical inquiry or condition...',
+                            ? 'أرغب في معرفة التكلفة، مدة العلاج، أو أي تفاصيل...'
+                            : 'Describe your medical inquiry, desired goals, or questions...',
                         hintStyle: TextStyle(
                             fontSize: 12.sp, color: Colors.grey[400]),
                         contentPadding: EdgeInsets.symmetric(
@@ -201,6 +208,122 @@ class MedicalTourism extends StatelessWidget {
                                 BorderSide(color: mainColor, width: 1.5)),
                       ),
                     ),
+                    SizedBox(height: 14.h),
+                    // Image Attachment Section
+                    Text(
+                      isAr
+                          ? 'إرفاق صورة للحالة (اختياري)'
+                          : 'Attach Condition Photo (Optional)',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13.sp,
+                          color: Colors.grey[800]),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      isAr
+                          ? 'مثلاً: صورة الأسنان أو الشعر لتقييم الطبيب المنسق'
+                          : 'e.g. photo of teeth or hair for doctor evaluation',
+                      style: TextStyle(fontSize: 11.5.sp, color: Colors.grey[500]),
+                    ),
+                    SizedBox(height: 8.h),
+                    if (selectedImage == null)
+                      InkWell(
+                        onTap: () async {
+                          final picker = ImagePicker();
+                          final picked = await picker.pickImage(
+                            source: ImageSource.gallery,
+                            imageQuality: 85,
+                          );
+                          if (picked != null) {
+                            setModalState(() {
+                              selectedImage = File(picked.path);
+                            });
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12.h, horizontal: 16.w),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: Colors.grey[300]!, style: BorderStyle.solid),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_photo_alternate_outlined,
+                                  color: mainColor, size: 22.sp),
+                              SizedBox(width: 8.w),
+                              Text(
+                                isAr
+                                    ? 'اختر صورة من المعرض 📷'
+                                    : 'Select photo from gallery 📷',
+                                style: TextStyle(
+                                  color: mainColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                selectedImage!,
+                                width: 50.w,
+                                height: 50.w,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    isAr ? 'تم إرفاق الصورة' : 'Photo Attached',
+                                    style: TextStyle(
+                                        fontSize: 13.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green[700]),
+                                  ),
+                                  Text(
+                                    selectedImage!.path.split(Platform.pathSeparator).last,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 11.sp, color: Colors.grey[500]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close_rounded,
+                                  color: Colors.redAccent),
+                              onPressed: () {
+                                setModalState(() {
+                                  selectedImage = null;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     SizedBox(height: 20.h),
                     ElevatedButton(
                       onPressed: isSubmitting
@@ -224,21 +347,31 @@ class MedicalTourism extends StatelessWidget {
 
                               setModalState(() => isSubmitting = true);
                               try {
-                                final response = await http.post(
+                                var request = http.MultipartRequest(
+                                  'POST',
                                   Uri.parse(
                                       'https://travelwin1.com/api/medical-tourism/inquire'),
-                                  headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json',
-                                  },
-                                  body: jsonEncode({
-                                    'specialty': specialty,
-                                    'user_name': name,
-                                    'user_phone': phone,
-                                    'notes': notesController.text.trim(),
-                                    'lang': isAr ? 'ar' : 'en',
-                                  }),
                                 );
+                                request.headers.addAll({
+                                  'Accept': 'application/json',
+                                });
+                                request.fields['specialty'] = specialty;
+                                request.fields['user_name'] = name;
+                                request.fields['user_phone'] = phone;
+                                request.fields['notes'] =
+                                    notesController.text.trim();
+                                request.fields['lang'] = isAr ? 'ar' : 'en';
+
+                                if (selectedImage != null) {
+                                  request.files.add(
+                                    await http.MultipartFile.fromPath(
+                                        'image', selectedImage!.path),
+                                  );
+                                }
+
+                                final streamedResponse = await request.send();
+                                final response = await http.Response.fromStream(
+                                    streamedResponse);
 
                                 if (response.statusCode == 200) {
                                   Navigator.pop(ctx);
@@ -254,7 +387,7 @@ class MedicalTourism extends StatelessWidget {
                                           const SizedBox(width: 8),
                                           Text(
                                             isAr
-                                                ? 'تم استلام استشارتك'
+                                                ? 'تم استلام استشارتك بنجاح'
                                                 : 'Consultation Received',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
@@ -264,8 +397,8 @@ class MedicalTourism extends StatelessWidget {
                                       ),
                                       content: Text(
                                         isAr
-                                            ? 'شكراً لتواصلك! تم إرسال استشارتك بنجاح، وسيتواصل معك مستشار TravelWin الطبي بأقرب وقت ممكن.'
-                                            : 'Thank you! Your inquiry has been sent successfully. A TravelWin medical advisor will contact you shortly.',
+                                            ? 'شكراً لتواصلك! تم إرسال طلب الاستشارة للمنسق الطبي لـ TravelWin بنجاح، وسيتواصل معك مباشرة لتقديم الخطة العلاجية وعرض السعر.'
+                                            : 'Thank you! Your consultation request has been delivered to TravelWin medical coordinator. We will contact you shortly with the treatment plan and quote.',
                                         style: TextStyle(fontSize: 13.sp),
                                       ),
                                       actions: [
@@ -314,8 +447,8 @@ class MedicalTourism extends StatelessWidget {
                             )
                           : Text(
                               isAr
-                                  ? 'إرسال طلب الاستشارة المجانية'
-                                  : 'Submit Free Consultation Request',
+                                  ? 'تأكيد وإرسال الطلب'
+                                  : 'Confirm & Send Request',
                               style: TextStyle(
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.bold,
@@ -564,7 +697,7 @@ class MedicalTourism extends StatelessWidget {
           NormalButton(
             onTap: () => _showConsultationSheet(context),
             color: mainColor,
-            name: 'Medical Consultation'.tr,
+            name: 'Request Free Consultation & Quote 🩺'.tr,
             fontColor: Colors.white,
           ),
           SizedBox(
