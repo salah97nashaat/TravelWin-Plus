@@ -17,25 +17,20 @@ class DutyPharmaciesScreen extends StatefulWidget {
 }
 
 class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
-  // Supported Cities list (with defaults)
+  // Supported Cities list (all 81 loaded from server or fallback)
   List<Map<String, dynamic>> _cities = [
-    {'id': 'istanbul', 'name_tr': 'İstanbul', 'name_ar': 'إسطنبول', 'name_en': 'Istanbul'},
-    {'id': 'ankara', 'name_tr': 'Ankara', 'name_ar': 'أنقرة', 'name_en': 'Ankara'},
-    {'id': 'izmir', 'name_tr': 'İzmir', 'name_ar': 'إزمير', 'name_en': 'Izmir'},
-    {'id': 'bursa', 'name_tr': 'Bursa', 'name_ar': 'بورصة', 'name_en': 'Bursa'},
-    {'id': 'antalya', 'name_tr': 'Antalya', 'name_ar': 'أنطاليا', 'name_en': 'Antalya'},
-    {'id': 'trabzon', 'name_tr': 'Trabzon', 'name_ar': 'طرابزون', 'name_en': 'Trabzon'},
-    {'id': 'sakarya', 'name_tr': 'Sakarya / Sapanca', 'name_ar': 'سكاريا / سبانجا', 'name_en': 'Sakarya / Sapanca'},
-    {'id': 'yalova', 'name_tr': 'Yalova', 'name_ar': 'يلوا', 'name_en': 'Yalova'},
-    {'id': 'mugla', 'name_tr': 'Muğla / Fethiye / Bodrum', 'name_ar': 'موغلا / بودروم / فتحية', 'name_en': 'Mugla / Bodrum'},
-    {'id': 'gaziantep', 'name_tr': 'Gaziantep', 'name_ar': 'غازي عنتاب', 'name_en': 'Gaziantep'},
-    {'id': 'konya', 'name_tr': 'Konya', 'name_ar': 'قونية', 'name_en': 'Konya'},
-    {'id': 'mersin', 'name_tr': 'Mersin', 'name_ar': 'مرسين', 'name_en': 'Mersin'},
-    {'id': 'adana', 'name_tr': 'Adana', 'name_ar': 'أضنة', 'name_en': 'Adana'},
-    {'id': 'kayseri', 'name_tr': 'Kayseri', 'name_ar': 'قيصري', 'name_en': 'Kayseri'},
-    {'id': 'eskisehir', 'name_tr': 'Eskişehir', 'name_ar': 'إسكي شهير', 'name_en': 'Eskisehir'},
-    {'id': 'samsun', 'name_tr': 'Samsun', 'name_ar': 'سامسون', 'name_en': 'Samsun'},
-    {'id': 'rize', 'name_tr': 'Rize', 'name_ar': 'ريزا', 'name_en': 'Rize'},
+    {'id': 'istanbul', 'name_tr': 'İstanbul', 'name_ar': 'إسطنبول', 'name_en': 'Istanbul', 'popular': true},
+    {'id': 'bursa', 'name_tr': 'Bursa', 'name_ar': 'بورصة', 'name_en': 'Bursa', 'popular': true},
+    {'id': 'antalya', 'name_tr': 'Antalya', 'name_ar': 'أنطاليا', 'name_en': 'Antalya', 'popular': true},
+    {'id': 'trabzon', 'name_tr': 'Trabzon', 'name_ar': 'طرابزون', 'name_en': 'Trabzon', 'popular': true},
+    {'id': 'sakarya', 'name_tr': 'Sakarya (Sapanca)', 'name_ar': 'سكاريا (سبانجا)', 'name_en': 'Sakarya (Sapanca)', 'popular': true},
+    {'id': 'yalova', 'name_tr': 'Yalova', 'name_ar': 'يلوا', 'name_en': 'Yalova', 'popular': true},
+    {'id': 'mugla', 'name_tr': 'Muğla (Bodrum/Fethiye)', 'name_ar': 'موغلا (بودروم/فتحية)', 'name_en': 'Mugla (Bodrum/Fethiye)', 'popular': true},
+    {'id': 'ankara', 'name_tr': 'Ankara', 'name_ar': 'أنقرة', 'name_en': 'Ankara', 'popular': true},
+    {'id': 'izmir', 'name_tr': 'İzmir', 'name_ar': 'إزمير', 'name_en': 'Izmir', 'popular': true},
+    {'id': 'gaziantep', 'name_tr': 'Gaziantep', 'name_ar': 'غازي عنتاب', 'name_en': 'Gaziantep', 'popular': true},
+    {'id': 'nevsehir', 'name_tr': 'Nevşehir (Kapadokya)', 'name_ar': 'نوشهير (كابادوكيا)', 'name_en': 'Nevsehir (Cappadocia)', 'popular': true},
+    {'id': 'rize', 'name_tr': 'Rize', 'name_ar': 'ريزا', 'name_en': 'Rize', 'popular': true},
   ];
 
   String _selectedCityId = 'istanbul';
@@ -51,7 +46,14 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
 
   bool _isLoading = true;
   bool _isLocating = false;
+  bool _isSortingByDistance = false;
   String _errorMessage = '';
+
+  // User GPS position
+  Position? _userPosition;
+
+  // Local Geocoding memory cache to avoid repeated lookups
+  final Map<String, Location> _geocodeCache = {};
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -70,10 +72,10 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
     super.dispose();
   }
 
-  /// Fetch cities from backend API
+  /// Fetch all 81 cities from backend API
   Future<void> _fetchCities() async {
     try {
-      final res = await http.get(Uri.parse('$_apiBase/cities')).timeout(const Duration(seconds: 5));
+      final res = await http.get(Uri.parse('$_apiBase/cities')).timeout(const Duration(seconds: 6));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         if (data['success'] == true && data['data'] is List) {
@@ -115,6 +117,11 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
               _isLoading = false;
               _applyLocalFilter();
             });
+
+            // If user location is already available and distance sort is active, re-calculate
+            if (_userPosition != null && _isSortingByDistance) {
+              _calculateDistancesAndSort();
+            }
           }
           return;
         }
@@ -164,13 +171,22 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
       }).toList();
     }
 
+    // Preserve distance sorting if active
+    if (_isSortingByDistance && _userPosition != null) {
+      result.sort((a, b) {
+        final double distA = a['distanceMeters'] ?? 999999999.0;
+        final double distB = b['distanceMeters'] ?? 999999999.0;
+        return distA.compareTo(distB);
+      });
+    }
+
     setState(() {
       _filteredPharmacies = result;
     });
   }
 
-  /// Detect user location via GPS to pick closest city/district
-  Future<void> _detectLocation() async {
+  /// Detect user location via GPS and sort by closest
+  Future<void> _detectLocationAndFindNearest() async {
     final isAr = Get.locale?.languageCode == 'ar';
 
     setState(() => _isLocating = true);
@@ -227,6 +243,8 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
         ),
       );
 
+      _userPosition = position;
+
       List<Placemark> placemarks = await Geocoding().placemarkFromCoordinates(
         position.latitude,
         position.longitude,
@@ -238,7 +256,7 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
         final subAdmin = (place.subAdministrativeArea ?? '').toLowerCase();
         final locality = (place.locality ?? '').toLowerCase();
 
-        // Find matching city
+        // Match Turkish city
         Map<String, dynamic>? matchedCity;
         for (var c in _cities) {
           final id = c['id'].toString().toLowerCase();
@@ -252,10 +270,13 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
         }
 
         if (matchedCity != null) {
-          _onCitySelected(matchedCity);
+          final isSameCity = matchedCity['id'] == _selectedCityId;
+          if (!isSameCity) {
+            _onCitySelected(matchedCity);
+          }
 
           // Try matching district
-          Future.delayed(const Duration(milliseconds: 600), () {
+          Future.delayed(Duration(milliseconds: isSameCity ? 100 : 700), () {
             if (_districts.isNotEmpty) {
               for (var d in _districts) {
                 final dLower = d.toLowerCase();
@@ -268,22 +289,27 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
                 }
               }
             }
+
+            // Calculate distance & sort by nearest
+            _calculateDistancesAndSort();
           });
 
           Get.snackbar(
-            isAr ? 'تم تحديد موقعك بنجاح' : 'Location Detected',
+            isAr ? 'تم تحديد موقعك بدقة 📍' : 'Location Detected 📍',
             isAr
-                ? 'تم عرض صيدليات ${matchedCity['name_ar'] ?? matchedCity['name_tr']}'
-                : 'Showing pharmacies for ${matchedCity['name_en'] ?? matchedCity['name_tr']}',
+                ? 'تم فرز الصيدليات تلقائياً من الأقرب إليك لموقعك الحالي'
+                : 'Pharmacies sorted by closest distance to you',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: const Color(0xFF10B981),
             colorText: Colors.white,
             margin: EdgeInsets.all(12.w),
           );
         } else {
+          // If outside Turkey, still calculate distance based on current view
+          _calculateDistancesAndSort();
           Get.snackbar(
-            isAr ? 'موقعك خارج النطاق المغطى' : 'Out of Coverage Area',
-            isAr ? 'يرجى اختيار مدينتك يدوياً من القائمة' : 'Please select your city manually',
+            isAr ? 'تم تحديد إحداثياتك' : 'Coordinates Located',
+            isAr ? 'تم فرز الصيدليات المتاحة حسب المسافة' : 'Pharmacies sorted by distance',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: const Color(0xFF1E293B),
             colorText: Colors.white,
@@ -305,6 +331,62 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
     }
   }
 
+  /// Asynchronously calculate distance for displayed pharmacies and sort by nearest
+  Future<void> _calculateDistancesAndSort() async {
+    if (_userPosition == null) return;
+    setState(() => _isSortingByDistance = true);
+
+    final userLat = _userPosition!.latitude;
+    final userLng = _userPosition!.longitude;
+
+    // Process displayed pharmacies (limit geocoding batch to top 25 for fast response)
+    final itemsToProcess = _filteredPharmacies.take(25).toList();
+
+    for (var p in itemsToProcess) {
+      final addr = (p['address'] ?? '').toString();
+      if (addr.isEmpty) continue;
+
+      try {
+        Location? loc = _geocodeCache[addr];
+        if (loc == null) {
+          final results = await Geocoding().locationFromAddress(addr);
+          if (results.isNotEmpty) {
+            loc = results.first;
+            _geocodeCache[addr] = loc;
+          }
+        }
+
+        if (loc != null) {
+          final double distanceMeters = Geolocator.distanceBetween(
+            userLat,
+            userLng,
+            loc.latitude,
+            loc.longitude,
+          );
+
+          p['distanceMeters'] = distanceMeters;
+          if (distanceMeters < 1000) {
+            p['distanceText'] = '${distanceMeters.round()} م';
+          } else {
+            p['distanceText'] = '${(distanceMeters / 1000).toStringAsFixed(1)} كم';
+          }
+        }
+      } catch (_) {
+        // Continue silently if an address cannot be geocoded
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _filteredPharmacies.sort((a, b) {
+          final double distA = a['distanceMeters'] ?? 999999999.0;
+          final double distB = b['distanceMeters'] ?? 999999999.0;
+          return distA.compareTo(distB);
+        });
+      });
+    }
+  }
+
   void _onCitySelected(Map<String, dynamic> city) {
     setState(() {
       _selectedCityId = city['id'] ?? 'istanbul';
@@ -312,6 +394,7 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
       _selectedCityNameAr = city['name_ar'] ?? 'إسطنبول';
       _selectedCityNameEn = city['name_en'] ?? 'Istanbul';
       _selectedDistrict = '';
+      _isSortingByDistance = false;
       _searchController.clear();
     });
     _fetchDutyPharmacies();
@@ -356,7 +439,7 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
     }
   }
 
-  /// Copy address to clipboard
+  /// Copy text to clipboard
   void _copyToClipboard(String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
     final isAr = Get.locale?.languageCode == 'ar';
@@ -371,102 +454,197 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
     );
   }
 
-  /// Show City Picker Bottom Sheet
+  /// Show Comprehensive City Picker Bottom Sheet with Search and Popular sections
   void _showCityPicker() {
     final isAr = Get.locale?.languageCode == 'ar';
+    final citySearchController = TextEditingController();
 
     Get.bottomSheet(
-      Container(
-        height: 520.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: 12.h),
-            Container(
-              width: 40.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2.r),
-              ),
-            ),
-            SizedBox(height: 12.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Row(
-                children: [
-                  Icon(Icons.location_city_rounded, color: const Color(0xFF10B981), size: 22.sp),
-                  SizedBox(width: 8.w),
-                  Text(
-                    isAr ? 'اختر المدينة / الولاية' : 'Select City / Province',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF0F2B48),
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded, color: Colors.grey),
-                    onPressed: () => Get.back(),
-                  ),
-                ],
-              ),
-            ),
-            Divider(height: 1.h, color: Colors.grey.shade200),
-            Expanded(
-              child: ListView.separated(
-                itemCount: _cities.length,
-                separatorBuilder: (_, __) => Divider(height: 1.h, color: Colors.grey.shade100),
-                itemBuilder: (context, index) {
-                  final city = _cities[index];
-                  final isSelected = city['id'] == _selectedCityId;
-                  final cityName = isAr
-                      ? '${city['name_ar']} (${city['name_tr']})'
-                      : '${city['name_en']} (${city['name_tr']})';
+      StatefulBuilder(
+        builder: (context, setModalState) {
+          final query = citySearchController.text.trim().toLowerCase();
 
-                  return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 2.h),
-                    leading: Container(
-                      padding: EdgeInsets.all(8.w),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFF10B981).withOpacity(0.15)
-                            : const Color(0xFFF1F5F9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.pin_drop_rounded,
-                        color: isSelected ? const Color(0xFF10B981) : const Color(0xFF64748B),
-                        size: 18.sp,
-                      ),
-                    ),
-                    title: Text(
-                      cityName,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: isSelected ? const Color(0xFF10B981) : const Color(0xFF1E293B),
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? Icon(Icons.check_circle_rounded, color: const Color(0xFF10B981), size: 20.sp)
-                        : null,
-                    onTap: () {
-                      Get.back();
-                      _onCitySelected(city);
-                    },
-                  );
-                },
-              ),
+          final filteredCities = query.isEmpty
+              ? _cities
+              : _cities.where((c) {
+                  final ar = (c['name_ar'] ?? '').toString().toLowerCase();
+                  final tr = (c['name_tr'] ?? '').toString().toLowerCase();
+                  final en = (c['name_en'] ?? '').toString().toLowerCase();
+                  return ar.contains(query) || tr.contains(query) || en.contains(query);
+                }).toList();
+
+          final popularCities = filteredCities.where((c) => c['popular'] == true).toList();
+          final allOtherCities = filteredCities.where((c) => c['popular'] != true).toList();
+
+          return Container(
+            height: 600.h,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
             ),
-          ],
-        ),
+            child: Column(
+              children: [
+                SizedBox(height: 12.h),
+                Container(
+                  width: 44.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+                SizedBox(height: 14.h),
+
+                // Title Row
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(6.w),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Icon(Icons.location_city_rounded, color: const Color(0xFF10B981), size: 22.sp),
+                      ),
+                      SizedBox(width: 10.w),
+                      Text(
+                        isAr ? 'اختر الولاية (81 ولاية تركية)' : 'Select Province (81 Provinces)',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF0F2B48),
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, color: Colors.grey),
+                        onPressed: () => Get.back(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // City Search Box
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 10.h),
+                  child: Container(
+                    height: 40.h,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: TextField(
+                      controller: citySearchController,
+                      onChanged: (_) => setModalState(() {}),
+                      style: TextStyle(fontSize: 13.sp),
+                      decoration: InputDecoration(
+                        hintText: isAr ? 'ابحث عن اسم الولاية...' : 'Search province name...',
+                        hintStyle: TextStyle(fontSize: 12.sp, color: const Color(0xFF94A3B8)),
+                        prefixIcon: Icon(Icons.search_rounded, color: const Color(0xFF64748B), size: 18.sp),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                      ),
+                    ),
+                  ),
+                ),
+                Divider(height: 1.h, color: Colors.grey.shade200),
+
+                // List of Cities (Categorized into Popular + All)
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    children: [
+                      if (popularCities.isNotEmpty && query.isEmpty) ...[
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+                          child: Row(
+                            children: [
+                              Icon(Icons.star_rounded, color: const Color(0xFFF59E0B), size: 16.sp),
+                              SizedBox(width: 6.w),
+                              Text(
+                                isAr ? 'الولايات السياحية الأكثر زيارة' : 'Popular Tourist Destinations',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF0F2B48),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ...popularCities.map((c) => _buildCityListTile(c, isAr)),
+                        Divider(height: 20.h, color: Colors.grey.shade200),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+                          child: Row(
+                            children: [
+                              Icon(Icons.map_rounded, color: const Color(0xFF64748B), size: 16.sp),
+                              SizedBox(width: 6.w),
+                              Text(
+                                isAr ? 'كافة الولايات التركية (أبجدياً)' : 'All Turkish Provinces',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      ...allOtherCities.map((c) => _buildCityListTile(c, isAr)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
       isScrollControlled: true,
+    );
+  }
+
+  Widget _buildCityListTile(Map<String, dynamic> city, bool isAr) {
+    final isSelected = city['id'] == _selectedCityId;
+    final cityName = isAr
+        ? '${city['name_ar']} (${city['name_tr']})'
+        : '${city['name_en']} (${city['name_tr']})';
+
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 1.h),
+      leading: Container(
+        padding: EdgeInsets.all(6.w),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF10B981).withOpacity(0.15)
+              : const Color(0xFFF1F5F9),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.pin_drop_rounded,
+          color: isSelected ? const Color(0xFF10B981) : const Color(0xFF64748B),
+          size: 16.sp,
+        ),
+      ),
+      title: Text(
+        cityName,
+        style: TextStyle(
+          fontSize: 13.sp,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          color: isSelected ? const Color(0xFF10B981) : const Color(0xFF1E293B),
+        ),
+      ),
+      trailing: isSelected
+          ? Icon(Icons.check_circle_rounded, color: const Color(0xFF10B981), size: 18.sp)
+          : null,
+      onTap: () {
+        Get.back();
+        _onCitySelected(city);
+      },
     );
   }
 
@@ -524,7 +702,7 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
       bottomNavigationBar: const AdmobBannerUi(),
       body: Column(
         children: [
-          // Top Header Banner with City Selector & Search
+          // Top Header Banner with City Selector & Search & GPS Quick Actions
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -580,7 +758,7 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
                     ),
                     SizedBox(width: 8.w),
                     Text(
-                      isAr ? 'تحديث يومي رسمي مباشر' : 'Live Official Daily Directory',
+                      isAr ? 'محدث يومياً لكافة الـ 81 ولاية' : 'Live Daily for all 81 Provinces',
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 11.sp,
@@ -591,7 +769,7 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
                 ),
                 SizedBox(height: 12.h),
 
-                // City Selector Button & GPS Button
+                // City Selector Button & GPS Nearest Pharmacy Button
                 Row(
                   children: [
                     // City Dropdown Button
@@ -630,9 +808,9 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
                     ),
                     SizedBox(width: 10.w),
 
-                    // GPS Nearest Pharmacy Button
+                    // GPS Nearest Pharmacy Button (الأقرب لموقعي)
                     InkWell(
-                      onTap: _isLocating ? null : _detectLocation,
+                      onTap: _isLocating ? null : _detectLocationAndFindNearest,
                       borderRadius: BorderRadius.circular(12.r),
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
@@ -662,7 +840,7 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
                                   Icon(Icons.my_location_rounded, color: Colors.white, size: 18.sp),
                                   SizedBox(width: 6.w),
                                   Text(
-                                    isAr ? 'موقعي' : 'Near Me',
+                                    isAr ? 'الأقرب لي' : 'Near Me',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12.sp,
@@ -788,35 +966,51 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
               ),
             ),
 
-          // Pharmacies Count Bar
+          // Count & Distance Sorting Status Bar
           if (!_isLoading && _errorMessage.isEmpty)
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 4.h),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle_outline_rounded, color: const Color(0xFF10B981), size: 16.sp),
-                  SizedBox(width: 6.w),
-                  Text(
-                    isAr
-                        ? 'تم العثور على ${_filteredPharmacies.length} صيدلية مناوبة'
-                        : '${_filteredPharmacies.length} duty pharmacies found',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF475569),
-                    ),
+                  Icon(
+                    _isSortingByDistance ? Icons.sort_by_alpha_rounded : Icons.check_circle_outline_rounded,
+                    color: const Color(0xFF10B981),
+                    size: 16.sp,
                   ),
-                  if (_selectedDistrict.isNotEmpty) ...[
-                    SizedBox(width: 4.w),
-                    Text(
-                      isAr ? 'في $_selectedDistrict' : 'in $_selectedDistrict',
+                  SizedBox(width: 6.w),
+                  Expanded(
+                    child: Text(
+                      _isSortingByDistance
+                          ? (isAr ? 'مرتبة حسب الأقرب لموقعك أولاً 📍' : 'Sorted by closest to you 📍')
+                          : (isAr
+                              ? 'تم العثور على ${_filteredPharmacies.length} صيدلية مناوبة'
+                              : '${_filteredPharmacies.length} duty pharmacies found'),
                       style: TextStyle(
                         fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF0F2B48),
+                        fontWeight: _isSortingByDistance ? FontWeight.bold : FontWeight.w600,
+                        color: _isSortingByDistance ? const Color(0xFF0F2B48) : const Color(0xFF475569),
                       ),
                     ),
-                  ],
+                  ),
+                  if (_userPosition != null && !_isSortingByDistance)
+                    InkWell(
+                      onTap: _calculateDistancesAndSort,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981).withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Text(
+                          isAr ? 'ترتيب حسب الأقرب' : 'Sort by Distance',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF10B981),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -914,7 +1108,8 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
                               itemCount: _filteredPharmacies.length,
                               itemBuilder: (context, index) {
                                 final pharmacy = _filteredPharmacies[index];
-                                return _buildPharmacyCard(context, pharmacy, isAr);
+                                final isNearest = _isSortingByDistance && index == 0 && (pharmacy['distanceText'] != null);
+                                return _buildPharmacyCard(context, pharmacy, isAr, isNearest: isNearest);
                               },
                             ),
                           ),
@@ -924,38 +1119,86 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
     );
   }
 
-  /// Modern Native Pharmacy Card
-  Widget _buildPharmacyCard(BuildContext context, Map<String, dynamic> p, bool isAr) {
+  /// Modern Native Pharmacy Card with Nearest highlight & Distance Badge
+  Widget _buildPharmacyCard(BuildContext context, Map<String, dynamic> p, bool isAr, {bool isNearest = false}) {
     final name = (p['name'] ?? '').toString();
     final district = (p['district'] ?? '').toString();
     final address = (p['address'] ?? '').toString();
     final phone = (p['phone'] ?? '').toString();
     final phoneDisplay = (p['phone_display'] ?? phone).toString();
     final mapUrl = (p['map_url'] ?? '').toString();
+    final distanceText = p['distanceText'] as String?;
 
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isNearest ? const Color(0xFF10B981) : const Color(0xFFE2E8F0),
+          width: isNearest ? 1.8 : 1.0,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: isNearest
+                ? const Color(0xFF10B981).withOpacity(0.12)
+                : Colors.black.withOpacity(0.04),
+            blurRadius: isNearest ? 12 : 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: Name + Open Badge
+          // Nearest Top Banner (if this is card #1 closest to user)
+          if (isNearest)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 5.h),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(14.r)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.workspace_premium_rounded, color: Colors.white, size: 16.sp),
+                  SizedBox(width: 6.w),
+                  Text(
+                    isAr ? 'الأقرب لموقعك الحالي الآن' : 'Closest to your current location',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (distanceText != null)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.25),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        distanceText,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+          // Header: Name + Open Badge + Distance
           Container(
             padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 10.h),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+              color: isNearest ? const Color(0xFFF0FDF4) : const Color(0xFFF8FAFC),
+              borderRadius: isNearest ? null : BorderRadius.vertical(top: Radius.circular(16.r)),
               border: Border(bottom: BorderSide(color: const Color(0xFFF1F5F9))),
             ),
             child: Row(
@@ -1012,34 +1255,57 @@ class _DutyPharmaciesScreenState extends State<DutyPharmaciesScreen> {
                   ),
                 ),
 
-                // Duty Badge
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.alarm_on_rounded, size: 13.sp, color: const Color(0xFF10B981)),
-                      SizedBox(width: 4.w),
-                      Text(
-                        isAr ? 'مناوبة الآن' : 'On Duty',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF059669),
+                // Duty Badge or Distance Badge
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.alarm_on_rounded, size: 12.sp, color: const Color(0xFF10B981)),
+                          SizedBox(width: 4.w),
+                          Text(
+                            isAr ? 'مناوبة الآن' : 'On Duty',
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF059669),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (distanceText != null && !isNearest) ...[
+                      SizedBox(height: 3.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE2E8F0),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Text(
+                          isAr ? 'يبعد $distanceText' : distanceText,
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF475569),
+                          ),
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
 
-          // Body: Address & Phone
+          // Body: Address & Phone & Actions
           Padding(
             padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 12.h),
             child: Column(
