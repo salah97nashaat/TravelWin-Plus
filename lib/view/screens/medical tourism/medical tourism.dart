@@ -1,17 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/logic/controllers/medicalTourismController.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/utils/theme.dart';
-// import 'package:url_launcher/url_launcher.dart';
-import '../../../const.dart';
-import '../../widgets/normalButton.dart';
 
 class MedicalTourism extends StatelessWidget {
   MedicalTourism({Key? key}) : super(key: key);
@@ -466,292 +461,527 @@ class MedicalTourism extends StatelessWidget {
     );
   }
 
+  IconData _getSpecialtyIcon(String title) {
+    final t = title.toLowerCase();
+    if (t.contains('شعر') || t.contains('hair')) {
+      return Icons.face_retouching_natural_rounded;
+    }
+    if (t.contains('أسنان') ||
+        t.contains('سن') ||
+        t.contains('dental') ||
+        t.contains('teeth')) {
+      return Icons.sentiment_very_satisfied_rounded;
+    }
+    if (t.contains('عين') || t.contains('عيون') || t.contains('eye')) {
+      return Icons.remove_red_eye_rounded;
+    }
+    if (t.contains('سمنة') ||
+        t.contains('تكميم') ||
+        t.contains('weight') ||
+        t.contains('bariatric')) {
+      return Icons.monitor_weight_outlined;
+    }
+    if (t.contains('تجميل') ||
+        t.contains('plastic') ||
+        t.contains('cosmetic')) {
+      return Icons.auto_awesome_rounded;
+    }
+    if (t.contains('قلب') || t.contains('heart') || t.contains('cardio')) {
+      return Icons.favorite_rounded;
+    }
+    return Icons.medical_services_rounded;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isAr = Get.locale?.languageCode == 'ar';
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        forceMaterialTransparency: true,
-        leading: Container(),
+        elevation: 0.5,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: const Color(0xFF1E293B),
+            size: 20.sp,
+          ),
+          onPressed: () => Get.back(),
+        ),
         title: Text(
           "Medical tourism".tr,
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: const Color(0xFF0F172A),
+            fontSize: 17.sp,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        actions: [
-          Padding(
-            padding: Get.locale == Locale('ar')
-                ? EdgeInsets.only(left: 25.w, top: 5.h)
-                : EdgeInsets.only(right: 25.w, top: 5.h),
-            child: InkWell(
-                onTap: () {
-                  Get.back();
-                },
-                child: Transform.flip(
-                  flipX: Get.locale == Locale('ar') ? false : true,
-                  child: SvgPicture.asset(
-                    'assets/images/back.svg',
-                    height: 30,
-                  ),
-                )),
-          ),
-        ],
-        centerTitle: true,
-        elevation: 0,
       ),
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 24.h),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.w),
-            child: Divider(
-              color: Colors.grey.withOpacity(0.35),
-              thickness: 1,
-            ),
-          ),
-          Center(
-              child: SvgPicture.asset(
-            'assets/images/medical tourism.svg',
-            height: Get.locale == Locale('ar') ? 160.h : 150.h,
-            width: 180.w,
-          )),
-          SizedBox(
-            height: 10.h,
-          ),
-          Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.w),
-              child: Text(
-                "We help tourism to obtain the best medical services at costs less than 70%"
-                    .tr,
-                style: TextStyle(
-                    color: mainColor,
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 45.w),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 15.w,
-                      backgroundColor: mainColor.withOpacity(0.12),
-                      child: CircleAvatar(
-                        radius: 9.w,
-                        backgroundColor: mainColor,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                      child: VerticalDivider(
-                        color: Colors.grey,
-                        width: 2,
-                      ),
-                    ),
-                    CircleAvatar(
-                      radius: 15.w,
-                      backgroundColor: mainColor.withOpacity(0.12),
-                      child: CircleAvatar(
-                        radius: 9.w,
-                        backgroundColor: mainColor,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 25,
-                      child: VerticalDivider(
-                        color: Colors.grey,
-                        width: 2,
-                      ),
-                    ),
-                    CircleAvatar(
-                      radius: 15.w,
-                      backgroundColor: mainColor.withOpacity(0.12),
-                      child: CircleAvatar(
-                        radius: 9.w,
-                        backgroundColor: mainColor,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 15,
-                      child: VerticalDivider(
-                        color: Colors.grey,
-                        width: 2,
-                      ),
-                    ),
-                    CircleAvatar(
-                      radius: 15.w,
-                      backgroundColor: mainColor.withOpacity(0.12),
-                      child: CircleAvatar(
-                        radius: 9.w,
-                        backgroundColor: mainColor,
-                      ),
-                    ),
+            // Hero Card
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF0F2B48),
+                    Color(0xFF1B4D73),
+                    Color(0xFF215B82),
                   ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                SizedBox(
-                  width: 10.w,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 5.h,
-                    ),
-                    SizedBox(
-                      width: 262,
-                      child: Text(
-                        'With the same European international medical standards'
-                            .tr,
-                        style: TextStyle(color: Colors.black, fontSize: 12.sp),
-                      ),
-                    ),
-                    SizedBox(
-                      height: Get.locale == Locale('ar') ? 20.h : 10.h,
-                    ),
-                    SizedBox(
-                      width: 262,
-                      child: Text(
-                        'Arrangement of hotel accommodation, transportation, translation services, appointments and the hospital'
-                            .tr
-                            .tr,
-                        style: TextStyle(color: Colors.black, fontSize: 12.sp),
-                      ),
-                    ),
-                    SizedBox(
-                      height: Get.locale == Locale('ar') ? 26.h : 12.h,
-                    ),
-                    SizedBox(
-                      width: 262,
-                      child: Text(
-                        'JCI Non-Profit Certificate'.tr,
-                        style: TextStyle(color: Colors.black, fontSize: 12.sp),
-                      ),
-                    ),
-                    SizedBox(
-                      height: Get.locale == Locale('ar') ? 24.h : 16.h,
-                    ),
-                    SizedBox(
-                      width: 262,
-                      child: Text(
-                        'Develop a treatment plan and free consultation'.tr,
-                        style: TextStyle(color: Colors.black, fontSize: 12.sp),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Container(
-            width: 350.w,
-            height: 195.h,
-            decoration: BoxDecoration(
-                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.grey.shade400,
-                      blurRadius: 2,
-                      spreadRadius: 2,
-                      offset: Offset(0, 2)),
+                    color: const Color(0xFF0F2B48).withOpacity(0.25),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
                 ],
-                borderRadius: BorderRadius.circular(15)),
-            child: RawScrollbar(
-              thumbColor: mainColor,
-              radius: Radius.circular(15),
-              interactive: false,
-              thumbVisibility: true,
-              child: ListView.builder(
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.25),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.verified_rounded,
+                            color: const Color(0xFF38BDF8), size: 14.sp),
+                        SizedBox(width: 5.w),
+                        Text(
+                          isAr
+                              ? 'معايير أوروبية واعتماد دولي JCI'
+                              : 'European Standards & JCI Accredited',
+                          style: TextStyle(
+                            color: const Color(0xFFE0F2FE),
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    "We help tourism to obtain the best medical services at costs less than 70%"
+                        .tr,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      height: 1.4,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    isAr
+                        ? 'إشراف استشاريين معتمدين، إقامة فندقية فاخرة، ومرافقة ومتابعة شاملة طوال فترة العلاج.'
+                        : 'Certified consultants, luxury hotel stay, translation, and VIP medical escort throughout your treatment.',
+                    style: TextStyle(
+                      color: const Color(0xFFE2E8F0),
+                      fontSize: 12.sp,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Highlights Section Header
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 4.h),
+              child: Row(
+                children: [
+                  Icon(Icons.shield_outlined,
+                      color: mainColor, size: 19.sp),
+                  SizedBox(width: 8.w),
+                  Text(
+                    isAr
+                        ? 'مزايا باقة الرعاية الطبية المتكاملة'
+                        : 'Integrated Medical Care Highlights',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1E293B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 8.h),
+
+            // Highlights 2x2 Grid
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildFeatureCard(
+                          icon: Icons.hotel_rounded,
+                          iconColor: const Color(0xFF0284C7),
+                          title: isAr
+                              ? 'إقامة وتنقلات VIP'
+                              : 'VIP Accommodation',
+                          desc: isAr
+                              ? 'فندق فاخر واستقبال خاص'
+                              : 'Luxury stay & transfers',
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: _buildFeatureCard(
+                          icon: Icons.translate_rounded,
+                          iconColor: const Color(0xFF7C3AED),
+                          title: isAr
+                              ? 'مترجم طبي خاص'
+                              : 'Medical Translator',
+                          desc: isAr
+                              ? 'مرافقة طوال المواعيد'
+                              : 'Escort during visits',
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildFeatureCard(
+                          icon: Icons.verified_user_rounded,
+                          iconColor: const Color(0xFF059669),
+                          title: isAr
+                              ? 'مستشفيات JCI معتمدة'
+                              : 'JCI Accredited',
+                          desc: isAr
+                              ? 'أعلى معايير الأمان الطبي'
+                              : 'Top safety standards',
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: _buildFeatureCard(
+                          icon: Icons.assessment_outlined,
+                          iconColor: const Color(0xFFD97706),
+                          title: isAr
+                              ? 'استشارة مجانية'
+                              : 'Free Assessment',
+                          desc: isAr
+                              ? 'خطة علاجية وعرض سعر'
+                              : 'Plan & exact quote',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 18.h),
+
+            // Specialties Header
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.category_rounded,
+                          color: mainColor, size: 19.sp),
+                      SizedBox(width: 8.w),
+                      Text(
+                        isAr
+                            ? 'اختر التخصص الطبي المطلوب'
+                            : 'Select Medical Specialty',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1E293B),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Obx(() {
+                    final count =
+                        medicalTrips.value?.medicalTrips?.length ?? 0;
+                    return Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 8.w, vertical: 3.h),
+                      decoration: BoxDecoration(
+                        color: mainColor.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        isAr ? '$count تخصصات' : '$count Specialties',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: mainColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 10.h),
+
+            // Specialties List
+            Obx(() {
+              final list = medicalTrips.value?.medicalTrips ?? [];
+              if (list.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(30.h),
+                    child: CircularProgressIndicator(color: mainColor),
+                  ),
+                );
+              }
+              return ListView.separated(
                 shrinkWrap: true,
-                itemBuilder: (context, index) => Obx(
-                  () => InkWell(
-                      onTap: () {
-                        medicalTourismController.changeIndex(index);
-                      },
-                      child: MedicalService(
-                          name: Get.locale == Locale('ar')
-                              ? medicalTrips
-                                  .value!.medicalTrips![index].titleAr!
-                              : medicalTrips
-                                  .value!.medicalTrips![index].titleEn!,
-                          chosen: medicalTourismController.index == index)),
-                ),
-                itemCount: medicalTrips.value!.medicalTrips!.length,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          NormalButton(
-            onTap: () => _showConsultationSheet(context),
-            color: mainColor,
-            name: 'Request Free Consultation & Quote 🩺'.tr,
-            fontColor: Colors.white,
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-        ],
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                itemCount: list.length,
+                separatorBuilder: (_, __) => SizedBox(height: 8.h),
+                itemBuilder: (context, index) {
+                  final item = list[index];
+                  final name = isAr
+                      ? (item.titleAr ?? '')
+                      : (item.titleEn ?? item.titleAr ?? '');
+                  final isSelected =
+                      medicalTourismController.index.value == index;
+
+                  return InkWell(
+                    onTap: () =>
+                        medicalTourismController.changeIndex(index),
+                    borderRadius: BorderRadius.circular(14),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 14.w, vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFFF0F7FF)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: isSelected
+                              ? mainColor
+                              : const Color(0xFFE2E8F0),
+                          width: isSelected ? 1.8 : 1.0,
+                        ),
+                        boxShadow: [
+                          if (isSelected)
+                            BoxShadow(
+                              color: mainColor.withOpacity(0.08),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          else
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.02),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40.w,
+                            height: 40.w,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? mainColor
+                                  : const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              _getSpecialtyIcon(name),
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xFF64748B),
+                              size: 20.sp,
+                            ),
+                          ),
+                          SizedBox(width: 14.w),
+                          Expanded(
+                            child: Text(
+                              name,
+                              style: TextStyle(
+                                fontSize: 13.5.sp,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.w600,
+                                color: isSelected
+                                    ? mainColor
+                                    : const Color(0xFF1E293B),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 22.w,
+                            height: 22.w,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isSelected
+                                  ? mainColor
+                                  : Colors.transparent,
+                              border: Border.all(
+                                color: isSelected
+                                    ? mainColor
+                                    : const Color(0xFFCBD5E1),
+                                width: 2,
+                              ),
+                            ),
+                            child: isSelected
+                                ? Icon(Icons.check,
+                                    size: 14.sp, color: Colors.white)
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
+          ],
+        ),
       ),
-    ),
-    );
-  }
-}
-
-class MedicalService extends StatelessWidget {
-  MedicalService({super.key, required this.name, required this.chosen});
-
-  final String name;
-  final bool chosen;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 45.h,
-      decoration: BoxDecoration(
-          color: chosen ? Color(0xffE9EFF3) : Colors.transparent,
-          borderRadius: BorderRadius.circular(15)),
-      child: Center(
-        child: Row(
-          children: [
-            SizedBox(
-              width: 20.w,
-            ),
-            CircleAvatar(
-              backgroundColor: chosen ? mainColor : Colors.grey.shade300,
-              radius: 10.w,
-            ),
-            SizedBox(
-              width: 15.w,
-            ),
-            Expanded(
-              child: Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    color: mainColor,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-            SizedBox(
-              width: 15.w,
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
             ),
           ],
         ),
+        child: SafeArea(
+          child: SizedBox(
+            height: 52.h,
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => _showConsultationSheet(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: mainColor,
+                elevation: 3,
+                shadowColor: mainColor.withOpacity(0.4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 14.w),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.medical_services_rounded,
+                      color: Colors.white, size: 20.sp),
+                  SizedBox(width: 10.w),
+                  Flexible(
+                    child: Text(
+                      isAr
+                          ? 'طلب استشارة مجانية وعرض سعر 🩺'
+                          : 'Request Free Consultation & Quote 🩺',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String desc,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: iconColor, size: 18.sp),
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  desc,
+                  style: TextStyle(
+                    fontSize: 10.5.sp,
+                    color: const Color(0xFF64748B),
+                    height: 1.25,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
