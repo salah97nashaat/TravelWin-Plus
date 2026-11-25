@@ -8,11 +8,19 @@ import 'package:travelwin/logic/controllers/medicalTourismController.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/utils/theme.dart';
 
-class MedicalTourism extends StatelessWidget {
-  MedicalTourism({Key? key}) : super(key: key);
+class MedicalTourism extends StatefulWidget {
+  const MedicalTourism({Key? key}) : super(key: key);
 
+  @override
+  State<MedicalTourism> createState() => _MedicalTourismState();
+}
+
+class _MedicalTourismState extends State<MedicalTourism> {
+  int _selectedIndex = 0;
   final MedicalTourismController medicalTourismController =
-      MedicalTourismController();
+      Get.isRegistered<MedicalTourismController>()
+          ? Get.find<MedicalTourismController>()
+          : Get.put(MedicalTourismController());
 
   void _showConsultationSheet(BuildContext context) {
     final isAr = Get.locale?.languageCode == 'ar';
@@ -29,9 +37,9 @@ class MedicalTourism extends StatelessWidget {
     bool isSubmitting = false;
 
     final specialty = isAr
-        ? (medicalTrips.value?.medicalTrips?[medicalTourismController.index.value].titleAr ?? '')
-        : (medicalTrips.value?.medicalTrips?[medicalTourismController.index.value].titleEn ??
-            medicalTrips.value?.medicalTrips?[medicalTourismController.index.value].titleAr ?? '');
+        ? (medicalTrips.value?.medicalTrips?[_selectedIndex].titleAr ?? '')
+        : (medicalTrips.value?.medicalTrips?[_selectedIndex].titleEn ??
+            medicalTrips.value?.medicalTrips?[_selectedIndex].titleAr ?? '');
 
     showModalBottomSheet(
       context: context,
@@ -758,113 +766,123 @@ class MedicalTourism extends StatelessWidget {
                   ),
                 );
               }
-              return ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+              if (_selectedIndex >= list.length) {
+                _selectedIndex = 0;
+              }
+              return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
-                itemCount: list.length,
-                separatorBuilder: (_, __) => SizedBox(height: 8.h),
-                itemBuilder: (context, index) {
-                  final item = list[index];
-                  final name = isAr
-                      ? (item.titleAr ?? '')
-                      : (item.titleEn ?? item.titleAr ?? '');
-                  final isSelected =
-                      medicalTourismController.index.value == index;
+                child: Column(
+                  children: List.generate(list.length, (index) {
+                    final item = list[index];
+                    final name = isAr
+                        ? (item.titleAr ?? '')
+                        : (item.titleEn ?? item.titleAr ?? '');
+                    final isSelected = _selectedIndex == index;
 
-                  return InkWell(
-                    onTap: () =>
-                        medicalTourismController.changeIndex(index),
-                    borderRadius: BorderRadius.circular(14),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 14.w, vertical: 12.h),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFFF0F7FF)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: isSelected
-                              ? mainColor
-                              : const Color(0xFFE2E8F0),
-                          width: isSelected ? 1.8 : 1.0,
-                        ),
-                        boxShadow: [
-                          if (isSelected)
-                            BoxShadow(
-                              color: mainColor.withOpacity(0.08),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            )
-                          else
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.02),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40.w,
-                            height: 40.w,
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 8.h),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = index;
+                            });
+                            medicalTourismController.changeIndex(index);
+                          },
+                          borderRadius: BorderRadius.circular(14),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 14.w, vertical: 12.h),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? mainColor
-                                  : const Color(0xFFF1F5F9),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(
-                              _getSpecialtyIcon(name),
-                              color: isSelected
-                                  ? Colors.white
-                                  : const Color(0xFF64748B),
-                              size: 20.sp,
-                            ),
-                          ),
-                          SizedBox(width: 14.w),
-                          Expanded(
-                            child: Text(
-                              name,
-                              style: TextStyle(
-                                fontSize: 13.5.sp,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.w600,
-                                color: isSelected
-                                    ? mainColor
-                                    : const Color(0xFF1E293B),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 22.w,
-                            height: 22.w,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isSelected
-                                  ? mainColor
-                                  : Colors.transparent,
+                                  ? const Color(0xFFF0F7FF)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(14),
                               border: Border.all(
                                 color: isSelected
                                     ? mainColor
-                                    : const Color(0xFFCBD5E1),
-                                width: 2,
+                                    : const Color(0xFFE2E8F0),
+                                width: isSelected ? 2.0 : 1.0,
                               ),
+                              boxShadow: [
+                                if (isSelected)
+                                  BoxShadow(
+                                    color: mainColor.withOpacity(0.10),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  )
+                                else
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.02),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                              ],
                             ),
-                            child: isSelected
-                                ? Icon(Icons.check,
-                                    size: 14.sp, color: Colors.white)
-                                : null,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40.w,
+                                  height: 40.w,
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? mainColor
+                                        : const Color(0xFFF1F5F9),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    _getSpecialtyIcon(name),
+                                    color: isSelected
+                                        ? Colors.white
+                                        : const Color(0xFF64748B),
+                                    size: 20.sp,
+                                  ),
+                                ),
+                                SizedBox(width: 14.w),
+                                Expanded(
+                                  child: Text(
+                                    name,
+                                    style: TextStyle(
+                                      fontSize: 13.5.sp,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w600,
+                                      color: isSelected
+                                          ? mainColor
+                                          : const Color(0xFF1E293B),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 22.w,
+                                  height: 22.w,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isSelected
+                                        ? mainColor
+                                        : Colors.transparent,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? mainColor
+                                          : const Color(0xFFCBD5E1),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: isSelected
+                                      ? Icon(Icons.check,
+                                          size: 14.sp, color: Colors.white)
+                                      : null,
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  }),
+                ),
               );
             }),
           ],
@@ -883,42 +901,88 @@ class MedicalTourism extends StatelessWidget {
           ],
         ),
         child: SafeArea(
-          child: SizedBox(
-            height: 52.h,
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => _showConsultationSheet(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: mainColor,
-                elevation: 3,
-                shadowColor: mainColor.withOpacity(0.4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 14.w),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.medical_services_rounded,
-                      color: Colors.white, size: 20.sp),
-                  SizedBox(width: 10.w),
-                  Flexible(
-                    child: Text(
-                      isAr
-                          ? 'طلب استشارة مجانية وعرض سعر 🩺'
-                          : 'Request Free Consultation & Quote 🩺',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Obx(() {
+                final list = medicalTrips.value?.medicalTrips ?? [];
+                if (list.isEmpty || _selectedIndex >= list.length) {
+                  return const SizedBox.shrink();
+                }
+                final selectedItem = list[_selectedIndex];
+                final selectedTitle = isAr
+                    ? (selectedItem.titleAr ?? '')
+                    : (selectedItem.titleEn ?? selectedItem.titleAr ?? '');
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 8.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        isAr ? 'التخصص المختار:' : 'Selected:',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: const Color(0xFF64748B),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
+                      SizedBox(width: 6.w),
+                      Flexible(
+                        child: Text(
+                          selectedTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12.5.sp,
+                            color: mainColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                );
+              }),
+              SizedBox(
+                height: 52.h,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _showConsultationSheet(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: mainColor,
+                    elevation: 3,
+                    shadowColor: mainColor.withOpacity(0.4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.medical_services_rounded,
+                          color: Colors.white, size: 20.sp),
+                      SizedBox(width: 8.w),
+                      Flexible(
+                        child: Text(
+                          isAr
+                              ? 'طلب استشارة مجانية وعرض سعر 🩺'
+                              : 'Request Free Consultation & Quote 🩺',
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13.5.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
