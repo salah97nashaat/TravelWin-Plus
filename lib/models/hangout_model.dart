@@ -168,6 +168,15 @@ class HangoutModel {
     return parts.isNotEmpty && parts.first.isNotEmpty ? parts.first : (Get.locale?.languageCode == 'ar' ? 'مستخدم' : 'User');
   }
 
+  /// Accurate expiration date (guaranteed non-null fallback)
+  DateTime get effectiveExpiresAt {
+    if (expiresAt != null) return expiresAt!;
+    if (createdAt != null && minutesLeft > 0) {
+      return createdAt!.add(Duration(minutes: minutesLeft));
+    }
+    return DateTime.now().add(Duration(minutes: minutesLeft > 0 ? minutesLeft : 120));
+  }
+
   String get timeLeftFormatted {
     final isAr = Get.locale?.languageCode == 'ar';
     if (minutesLeft <= 0) return isAr ? 'منتهي' : 'Expired';

@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/models/hangout_model.dart';
@@ -660,21 +661,34 @@ class _HangoutCardState extends State<HangoutCard> {
         currentUserId != 0 &&
         currentUserId == widget.hangout.userId);
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18.r),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.3),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 16 * (1.0 - value)),
+            child: child,
           ),
-        ],
-      ),
-      child: Column(
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18.r),
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // 1. TOP BAR: Category + Countdown + Prominent Red Report Button
@@ -724,28 +738,10 @@ class _HangoutCardState extends State<HangoutCard> {
                 ),
                 const Spacer(),
 
-                // Expiry countdown pill
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFEF3C7),
-                    borderRadius: BorderRadius.circular(10.r),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.timer_outlined,
-                          size: 13, color: Color(0xFFB45309)),
-                      SizedBox(width: 4.w),
-                      Text(
-                        widget.hangout.timeLeftFormatted,
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF92400E),
-                        ),
-                      ),
-                    ],
-                  ),
+                // Live Ticking Countdown Pill (Hours, Minutes, Seconds)
+                HangoutLiveCountdown(
+                  expiresAt: widget.hangout.effectiveExpiresAt,
+                  onExpired: widget.onRefresh,
                 ),
                 SizedBox(width: 8.w),
 
@@ -1009,6 +1005,154 @@ class _HangoutCardState extends State<HangoutCard> {
                   ],
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+}
+
+/// Live Ticking Countdown Pill Widget (Hours, Minutes, Seconds)
+class HangoutLiveCountdown extends StatefulWidget {
+  final DateTime? expiresAt;
+  final VoidCallback? onExpired;
+
+  const HangoutLiveCountdown({
+    Key? key,
+    required this.expiresAt,
+    this.onExpired,
+  }) : super(key: key);
+
+  @override
+  State<HangoutLiveCountdown> createState() => _HangoutLiveCountdownState();
+}
+
+class _HangoutLiveCountdownState extends State<HangoutLiveCountdown> {
+  Timer? _timer;
+  Duration _remaining = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateRemaining();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        _calculateRemaining();
+      }
+    });
+  }
+
+  void _calculateRemaining() {
+    if (widget.expiresAt == null) {
+      _remaining = Duration.zero;
+      return;
+    }
+    final now = DateTime.now();
+    final diff = widget.expiresAt!.difference(now);
+    if (diff <= Duration.zero) {
+      if (_remaining > Duration.zero) {
+        _timer?.cancel();
+        widget.onExpired?.call();
+      }
+      setState(() {
+        _remaining = Duration.zero;
+      });
+    } else {
+      setState(() {
+        _remaining = diff;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isAr = Get.locale?.languageCode == 'ar';
+
+    if (_remaining <= Duration.zero) {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFEE2E2),
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: const Color(0xFFFCA5A5)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.timer_off_outlined, size: 13, color: Color(0xFFDC2626)),
+            SizedBox(width: 4.w),
+            Text(
+              isAr ? 'منتهي' : 'Expired',
+              style: TextStyle(
+                fontSize: 10.5.sp,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFFDC2626),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final days = _remaining.inDays;
+    final hours = _remaining.inHours % 24;
+    final minutes = _remaining.inMinutes % 60;
+    final seconds = _remaining.inSeconds % 60;
+
+    String formattedText;
+    if (days > 0) {
+      formattedText = isAr
+          ? '$daysي ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}'
+          : '${days}d ${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    } else {
+      formattedText =
+          '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    }
+
+    final isUrgent = _remaining.inHours < 2;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.5.h),
+      decoration: BoxDecoration(
+        color: isUrgent ? const Color(0xFFFEF2F2) : const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: isUrgent ? const Color(0xFFF87171) : const Color(0xFFFBBF24),
+          width: 1.1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: (isUrgent ? Colors.red : Colors.amber).withOpacity(0.12),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isUrgent ? Icons.local_fire_department_rounded : Icons.timer_outlined,
+            size: 13.sp,
+            color: isUrgent ? const Color(0xFFEF4444) : const Color(0xFFD97706),
+          ),
+          SizedBox(width: 4.w),
+          Text(
+            formattedText,
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'monospace',
+              letterSpacing: 0.5,
+              color: isUrgent ? const Color(0xFFB91C1C) : const Color(0xFFB45309),
             ),
           ),
         ],
