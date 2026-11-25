@@ -5,7 +5,7 @@ description: Travelwin Flutter project.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 1.0.8+54
+version: 1.0.8+55
 
 environment:
   sdk: '>=2.18.4 <4.0.0'
