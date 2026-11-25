@@ -198,7 +198,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(
                 height: 18.h,
               ),
-
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Align(
+                    alignment: Get.locale == Locale('ar')
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Text(
+                      'Gender'.tr,
+                      style: TextStyle(color: mainColor),
+                    )),
+              ),
+              SizedBox(
+                height: 8.h,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: MyDropDown(
+                    dropDownController: dropDownController,
+                    publisher: false,
+                    locations: ['male'.tr, 'female'.tr]),
+              ),
               const SizedBox(
                 height: 18,
               ),
