@@ -236,27 +236,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Align(
-                          alignment: Get.locale == Locale('ar')
-                              ? Alignment.centerRight
-                              : Alignment.centerLeft,
-                          child: Text(
-                            'Gender'.tr,
-                            style: TextStyle(color: mainColor),
-                          )),
-                    ),
-                    SizedBox(
-                      height: 8.h,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                      child: MyDropDown(
-                          dropDownController: dropDownController,
-                          publisher: false,
-                          locations: ['male'.tr, 'female'.tr]),
-                    ),
+
                     const SizedBox(
                       height: 10,
                     ),

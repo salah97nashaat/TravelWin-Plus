@@ -526,4 +526,5 @@ const Map<String, String> ar = {
   "Hangout Partner": "مين قريب",
   "Manage Activity Seats": "إدارة مقاعد طلعتك",
   "Today\\'s Hangouts Near You": "طلعات اليوم القريبة منك",
+  "Medical Consultation": "طلب استشارة طبية",
 };

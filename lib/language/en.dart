@@ -556,4 +556,5 @@ const Map<String, String> en = {
   "Today\\'s Hangouts Near You": "Today",
   "You don\\'t have enough points to by this ticket": "You don",
   "سيتم مراجعة ملفك خلال 48 ساعة": "Your application will be reviewed within 48 hours",
+  "Medical Consultation": "Medical Consultation",
 };
