@@ -261,7 +261,7 @@ class _WinPassSuccessScreenState extends State<WinPassSuccessScreen>
                               ),
                             ),
                             child: Text(
-                              widget.result.rewardValue ?? 'خصم فوري',
+                              widget.result.rewardValue ?? (isAr ? 'خصم فوري' : 'Instant Discount'),
                               style: TextStyle(
                                 color: const Color(0xFF15803D),
                                 fontSize: 26.sp,

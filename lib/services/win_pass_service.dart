@@ -159,9 +159,10 @@ class WinPassService {
       if (response.data != null) {
         return WinPassRedeemResult.fromJson(response.data);
       }
+      final isAr = Get.locale?.languageCode == 'ar';
       return WinPassRedeemResult(
         success: false,
-        message: 'استجابة غير متوقعة من الخادم.',
+        message: isAr ? 'استجابة غير متوقعة من الخادم.' : 'Unexpected server response.',
       );
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
@@ -173,14 +174,16 @@ class WinPassService {
           );
         }
       }
+      final isAr = Get.locale?.languageCode == 'ar';
       return WinPassRedeemResult(
         success: false,
-        message: 'تعذر الاتصال بالخادم، يرجى التأكد من اتصال الإنترنت.',
+        message: isAr ? 'تعذر الاتصال بالخادم، يرجى التأكد من اتصال الإنترنت.' : 'Could not connect to server, please check internet connection.',
       );
     } catch (e) {
+      final isAr = Get.locale?.languageCode == 'ar';
       return WinPassRedeemResult(
         success: false,
-        message: 'حدث خطأ أثناء معالجة الطلب.',
+        message: isAr ? 'حدث خطأ أثناء معالجة الطلب.' : 'An error occurred while processing the request.',
       );
     }
   }

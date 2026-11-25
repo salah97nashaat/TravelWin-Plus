@@ -25,7 +25,7 @@ class TicketTile extends StatelessWidget {
                             " " +
                             (counter + 1).toString() +
                             ' :' +
-                            'فارغ',
+                            (Get.locale?.languageCode == 'ar' ? 'فارغ' : ' Empty'),
                         style: TextStyle(
                           fontSize: 20,
                           color: Get.isDarkMode ? Colors.white : darkGreyClr2,

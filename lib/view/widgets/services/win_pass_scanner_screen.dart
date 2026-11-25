@@ -124,7 +124,7 @@ class _WinPassScannerScreenState extends State<WinPassScannerScreen>
           children: [
             const Icon(Icons.error_outline_rounded, color: Colors.redAccent),
             SizedBox(width: 8.w),
-            Text('تنبيه', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+            Text('Alert'.tr, style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
           ],
         ),
         content: Text(
@@ -134,7 +134,7 @@ class _WinPassScannerScreenState extends State<WinPassScannerScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('حسناً', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF00B67A))),
+            child: Text('OK'.tr, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF00B67A))),
           ),
         ],
       ),

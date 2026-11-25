@@ -109,7 +109,7 @@ class ProviderListTile extends StatelessWidget {
                               Icon(Icons.confirmation_number_rounded, size: 11.sp, color: const Color(0xFF059669)),
                               SizedBox(width: 4.w),
                               Text(
-                                'كوبون الخصم (Win Pass) 🎫',
+                                'Discount Coupon (Win Pass) 🎫'.tr,
                                 style: TextStyle(
                                   color: const Color(0xFF047857),
                                   fontSize: 10.sp,

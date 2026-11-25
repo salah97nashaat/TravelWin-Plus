@@ -53,13 +53,15 @@ class HangoutService {
     required int seatsNeeded,
     String? note,
   }) async {
+    final isAr = Get.locale?.languageCode == 'ar';
     // Client-side profile completion gate
     if (isUserProfileIncomplete()) {
       return {
         'success': false,
         'error_code': 'PROFILE_INCOMPLETE',
-        'message':
-            'يجب إكمال ملفك الشخصي (الاسم، رقم الهاتف، والصورة الشخصية) قبل إنشاء نشاط.',
+        'message': isAr
+            ? 'يجب إكمال ملفك الشخصي (الاسم، رقم الهاتف، والصورة الشخصية) قبل إنشاء نشاط.'
+            : 'Please complete your profile (name, phone & photo) before creating an activity.',
       };
     }
 
@@ -85,13 +87,13 @@ class HangoutService {
       if (res.statusCode == 200 || res.statusCode == 201) {
         return {
           'success': true,
-          'message': res.data['message'] ?? 'تم إنشاء النشاط بنجاح!',
+          'message': res.data['message'] ?? (isAr ? 'تم إنشاء النشاط بنجاح!' : 'Activity created successfully!'),
           'hangout': HangoutModel.fromJson(res.data['hangout']),
         };
       }
       return {
         'success': false,
-        'message': res.data['message'] ?? 'فشل إنشاء النشاط',
+        'message': res.data['message'] ?? (isAr ? 'فشل إنشاء النشاط' : 'Failed to create activity'),
       };
     } on DioException catch (dioErr) {
       if (dioErr.response?.data != null && dioErr.response?.data is Map) {
@@ -99,17 +101,17 @@ class HangoutService {
         return {
           'success': false,
           'error_code': data['error_code'],
-          'message': data['message'] ?? 'حدث خطأ أثناء إنشاء النشاط',
+          'message': data['message'] ?? (isAr ? 'حدث خطأ أثناء إنشاء النشاط' : 'An error occurred while creating activity'),
         };
       }
       return {
         'success': false,
-        'message': 'تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت.',
+        'message': isAr ? 'تعذر الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت.' : 'Could not connect to server. Please check internet connection.',
       };
     } catch (e) {
       return {
         'success': false,
-        'message': 'حدث خطأ غير متوقع: $e',
+        'message': isAr ? 'حدث خطأ غير متوقع: $e' : 'Unexpected error: $e',
       };
     }
   }
@@ -137,12 +139,14 @@ class HangoutService {
     int hangoutId, {
     String? message,
   }) async {
+    final isAr = Get.locale?.languageCode == 'ar';
     if (isUserProfileIncomplete()) {
       return {
         'success': false,
         'error_code': 'PROFILE_INCOMPLETE',
-        'message':
-            'يجب إكمال ملفك الشخصي (الاسم، رقم الهاتف، والصورة الشخصية) قبل طلب الانضمام.',
+        'message': isAr
+            ? 'يجب إكمال ملفك الشخصي (الاسم، رقم الهاتف، والصورة الشخصية) قبل طلب الانضمام.'
+            : 'Please complete your profile (name, phone & photo) before requesting to join.',
       };
     }
 
@@ -155,7 +159,7 @@ class HangoutService {
           'user_name': userData?.name ?? '',
           'user_phone': userData?.mobile != null ? userData!.mobile.toString() : '',
           'user_image': userData?.image ?? '',
-          'message': message ?? 'مهتم بالانضمام للنشاط',
+          'message': message ?? (isAr ? 'مهتم بالانضمام للنشاط' : 'Interested in joining this activity'),
         },
       );
       return {
@@ -164,10 +168,10 @@ class HangoutService {
       };
     } on DioException catch (dioErr) {
       final msg = dioErr.response?.data?['message'] ??
-          'تعذر إرسال طلب الانضمام، حاول مرة أخرى';
+          (isAr ? 'تعذر إرسال طلب الانضمام، حاول مرة أخرى' : 'Failed to send join request, please try again');
       return {'success': false, 'message': msg};
     } catch (e) {
-      return {'success': false, 'message': 'حدث خطأ غير متوقع'};
+      return {'success': false, 'message': isAr ? 'حدث خطأ غير متوقع' : 'Unexpected error occurred'};
     }
   }
 
@@ -177,6 +181,7 @@ class HangoutService {
     required String reason,
     String? details,
   }) async {
+    final isAr = Get.locale?.languageCode == 'ar';
     final userData = profile.value.data;
     try {
       final res = await _dio.post(
@@ -189,12 +194,12 @@ class HangoutService {
       );
       return {
         'success': res.data['success'] == true,
-        'message': res.data['message'] ?? 'تم إرسال البلاغ بنجاح',
+        'message': res.data['message'] ?? (isAr ? 'تم إرسال البلاغ بنجاح' : 'Report sent successfully'),
       };
     } catch (e) {
       return {
         'success': false,
-        'message': 'تعذر إرسال البلاغ حالياً، يرجى المحاولة لاحقاً',
+        'message': isAr ? 'تعذر إرسال البلاغ حالياً، يرجى المحاولة لاحقاً' : 'Could not submit report now, please try again later',
       };
     }
   }
@@ -214,6 +219,7 @@ class HangoutService {
     int requestId, {
     required String action, // 'accept' or 'reject'
   }) async {
+    final isAr = Get.locale?.languageCode == 'ar';
     try {
       final res = await _dio.post(
         '/hangouts/requests/$requestId/respond',
@@ -221,17 +227,20 @@ class HangoutService {
       );
       return {
         'success': res.data['success'] == true,
-        'message': res.data['message'] ?? (action == 'accept' ? 'تم تأكيد حجز المقعد بنجاح!' : 'تم رفض الطلب'),
+        'message': res.data['message'] ??
+            (action == 'accept'
+                ? (isAr ? 'تم تأكيد حجز المقعد بنجاح!' : 'Seat confirmed successfully!')
+                : (isAr ? 'تم رفض الطلب' : 'Request rejected')),
       };
     } on DioException catch (e) {
       return {
         'success': false,
-        'message': e.response?.data?['message'] ?? 'فشل الاتصال بالخادم',
+        'message': e.response?.data?['message'] ?? (isAr ? 'فشل الاتصال بالخادم' : 'Failed to connect to server'),
       };
     } catch (_) {
       return {
         'success': false,
-        'message': 'حدث خطأ غير متوقع',
+        'message': isAr ? 'حدث خطأ غير متوقع' : 'Unexpected error occurred',
       };
     }
   }

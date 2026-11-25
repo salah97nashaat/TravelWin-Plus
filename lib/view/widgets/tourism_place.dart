@@ -351,12 +351,12 @@ class TourismPlace2 extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'اسطنبول -',
+                            Get.locale?.languageCode == 'ar' ? 'اسطنبول - ' : 'Istanbul - ',
                             style: TextStyle(
                                 color: Color(0xff92A63D), fontSize: 20.w),
                           ),
                           Text(
-                            'تركيا',
+                            Get.locale?.languageCode == 'ar' ? 'تركيا' : 'Turkey',
                             style: TextStyle(
                                 color: Color(0xffCD2030), fontSize: 20.w),
                           ),

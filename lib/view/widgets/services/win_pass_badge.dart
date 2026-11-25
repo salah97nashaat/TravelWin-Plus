@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class WinPassBadge extends StatelessWidget {
   final bool compact;
@@ -75,7 +76,7 @@ class WinPassBadge extends StatelessWidget {
           ),
           SizedBox(width: 5.w),
           Text(
-            'كوبون الخصم (Win Pass)',
+            'Discount Coupon (Win Pass)'.tr,
             style: TextStyle(
               color: const Color(0xFF4ADE80),
               fontWeight: FontWeight.bold,

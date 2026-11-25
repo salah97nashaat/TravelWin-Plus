@@ -322,6 +322,7 @@ class _WinPassStampSheetState extends State<WinPassStampSheet> {
     required WinPassStepModel? stepDef,
     required bool hasReward,
   }) {
+    final isAr = Get.locale?.languageCode == 'ar';
     Color borderColor;
     Color bgColor;
     Widget content;
@@ -390,7 +391,7 @@ class _WinPassStampSheetState extends State<WinPassStampSheet> {
                     ],
                   ),
                   child: Text(
-                    stepNum == 10 ? '🎁' : (stepDef?.rewardValue ?? 'خصم'),
+                    stepNum == 10 ? '🎁' : (stepDef?.rewardValue ?? (isAr ? 'خصم' : 'Discount')),
                     style: TextStyle(
                       color: const Color(0xFF78350F),
                       fontSize: 8.sp,
@@ -403,7 +404,7 @@ class _WinPassStampSheetState extends State<WinPassStampSheet> {
         ),
         SizedBox(height: 4.h),
         Text(
-          hasReward ? (stepDef?.rewardValue ?? '') : 'طلب $stepNum',
+          hasReward ? (stepDef?.rewardValue ?? '') : (isAr ? 'طلب $stepNum' : 'Order $stepNum'),
           style: TextStyle(
             fontSize: 9.sp,
             color: hasReward ? const Color(0xFFD97706) : Colors.grey.shade600,
@@ -454,7 +455,7 @@ class _WinPassStampSheetState extends State<WinPassStampSheet> {
                   ),
                 ),
                 Text(
-                  nextRewardTitle ?? '$nextRewardVal خصم',
+                  nextRewardTitle ?? (isAr ? '$nextRewardVal خصم' : '$nextRewardVal Discount'),
                   style: TextStyle(
                     color: const Color(0xFF047857),
                     fontSize: 13.sp,

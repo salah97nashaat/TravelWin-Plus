@@ -33,9 +33,9 @@ class MyDrawer extends StatelessWidget {
                           color: const Color(0xFFEF4444),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
-                          'غير مكتمل',
-                          style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        child: Text(
+                          Get.locale?.languageCode == 'ar' ? 'غير مكتمل' : 'Incomplete',
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -72,9 +72,9 @@ class MyDrawer extends StatelessWidget {
             ListTile(
               title: Row(
                 children: [
-                  const Text(
-                    "مساعد السفر الذكي ",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    Get.locale?.languageCode == 'ar' ? "مساعد السفر الذكي " : "Smart Travel Assistant ",
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   ShaderMask(
                     shaderCallback: (bounds) => googleGradient.createShader(bounds),
@@ -98,9 +98,9 @@ class MyDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              title: const Text(
-                "محول العملات ومصاريف السفر",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+              title: Text(
+                Get.locale?.languageCode == 'ar' ? "محول العملات ومصاريف السفر" : "Currency & Travel Expenses",
+                style: const TextStyle(color: Colors.white, fontSize: 18),
               ),
               leading: const Icon(
                 Icons.currency_exchange_rounded,
@@ -112,9 +112,9 @@ class MyDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              title: const Text(
-                "دليل الطوارئ والعبارات السياحية",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+              title: Text(
+                Get.locale?.languageCode == 'ar' ? "دليل الطوارئ والعبارات السياحية" : "Emergency & Travel Guide",
+                style: const TextStyle(color: Colors.white, fontSize: 18),
               ),
               leading: const Icon(
                 Icons.emergency_outlined,
@@ -142,7 +142,7 @@ class MyDrawer extends StatelessWidget {
             ),
             ListTile(
               title: Text(
-                "Notification".tr,
+                "Notifications".tr,
                 style: const TextStyle(color: Colors.white, fontSize: 18),
               ),
               leading: const Icon(

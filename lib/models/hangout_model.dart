@@ -71,7 +71,7 @@ class HangoutModel {
     return HangoutModel(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
       userId: json['user_id'] is int ? json['user_id'] : int.tryParse(json['user_id']?.toString() ?? '0') ?? 0,
-      creatorName: json['creator_name'] ?? 'مستخدم',
+      creatorName: json['creator_name'] ?? (Get.locale?.languageCode == 'ar' ? 'مستخدم' : 'User'),
       creatorImage: json['creator_image'] ?? '',
       creatorPhone: json['creator_phone'] ?? '',
       activityType: json['activity_type'] ?? 'coffee',
@@ -165,7 +165,7 @@ class HangoutModel {
   /// Displays only the first name of creator as requested
   String get firstName {
     final parts = creatorName.trim().split(RegExp(r'\s+'));
-    return parts.isNotEmpty && parts.first.isNotEmpty ? parts.first : 'مستخدم';
+    return parts.isNotEmpty && parts.first.isNotEmpty ? parts.first : (Get.locale?.languageCode == 'ar' ? 'مستخدم' : 'User');
   }
 
   String get timeLeftFormatted {
@@ -214,7 +214,7 @@ class HangoutApplicantModel {
     return HangoutApplicantModel(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       applicantId: json['applicant_id'] is int ? json['applicant_id'] : int.tryParse(json['applicant_id']?.toString() ?? '0') ?? 0,
-      applicantName: json['applicant_name'] ?? 'مستخدم',
+      applicantName: json['applicant_name'] ?? (Get.locale?.languageCode == 'ar' ? 'مستخدم' : 'User'),
       applicantImage: json['applicant_image'] ?? '',
       applicantPhone: json['applicant_phone'] ?? '',
       status: json['status'] ?? 'pending',
