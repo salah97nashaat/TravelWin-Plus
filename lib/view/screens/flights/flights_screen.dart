@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/helpers/adv/admob_banner.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class FlightsScreen extends StatefulWidget {
@@ -18,14 +19,15 @@ class _FlightsScreenState extends State<FlightsScreen> {
   bool _isLoading = true;
   double _progress = 0.0;
 
-  // Travelpayouts Kiwi Affiliate Link (Campaign: Kiwi.com, Marker: 811370, TRS: 606353)
-  static const String kiwiAffiliateUrl = "https://kiwi.tp.st/DNTIKy9o";
+  // TravelWin White Label Flights (Domain: flights.travelwin1.com, Marker: 811370)
+  static const String whiteLabelUrl = "https://flights.travelwin1.com";
 
   String get _flightSearchUrl {
     if (widget.customUrl != null && widget.customUrl!.isNotEmpty) {
       return widget.customUrl!;
     }
-    return kiwiAffiliateUrl;
+    final lang = Get.locale?.languageCode ?? 'ar';
+    return '$whiteLabelUrl/?locale=$lang';
   }
 
   @override
@@ -56,6 +58,16 @@ class _FlightsScreenState extends State<FlightsScreen> {
                 _isLoading = false;
               });
             }
+          },
+          onNavigationRequest: (NavigationRequest request) async {
+            if (request.url.startsWith('tel:') || request.url.startsWith('mailto:')) {
+              final uri = Uri.parse(request.url);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              }
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
           },
           onWebResourceError: (WebResourceError error) {
             // Silently handle transient network glitches
