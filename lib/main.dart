@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,6 +25,13 @@ import 'package:travelwin/utils/theme.dart';
 
 import 'firebase_options.dart';
 import 'logic/controllers/home_controller.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (_) {}
+}
 
 void main() {
   try {
@@ -65,6 +73,7 @@ Future<void> initializeServices() async {
 
   print("Main: Initializing Firebase...");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   print("Main: Firebase initialized.");
 
   print("Main: Initializing MobileAds...");

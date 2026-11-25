@@ -329,34 +329,45 @@ class AuthController extends GetxController {
     try {
       FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-      // 1. Request permission
-      NotificationSettings settings = await messaging.requestPermission(
+      // 1. Request full notification permission (Heads-up, Sound, Badge, Alert)
+      await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: true,
+        provisional: false,
+        sound: true,
+      );
+
+      await messaging.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true,
-        provisional: false,
       );
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print("User granted notification permission.");
-        // 2. Get the token
-        String? fcmToken = await messaging.getToken();
-        if (fcmToken != null) {
-          print("FCM Token retrieved: $fcmToken");
-          // 3. Send it to your server (using your existing fcmToken function)
-          await this.fcmToken(
-              fcm: fcmToken); // 'this.' is optional but good for clarity
-          print("FCM Token sent to server.");
-        } else {
-          print("WARNING: Could not get FCM token. It was null.");
-        }
-      } else {
-        print("User declined notification permission.");
+      // 2. Get the token
+      String? fcmToken = await messaging.getToken();
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        print("FCM Token retrieved: $fcmToken");
+        // 3. Send it to server
+        await fcmTokenToServer(fcm: fcmToken);
+        print("FCM Token sent to server.");
       }
+
+      // 4. Auto-update token if it refreshes
+      messaging.onTokenRefresh.listen((newToken) async {
+        if (newToken.isNotEmpty) {
+          await fcmTokenToServer(fcm: newToken);
+        }
+      });
     } catch (e) {
       print("Error during FCM Token update: $e");
-      // Don't block the login if this fails, just log it.
     }
+  }
+
+  Future<void> fcmTokenToServer({required String fcm}) async {
+    await this.fcmToken(fcm: fcm);
   }
 
 //============================appleSinUpApp==========================

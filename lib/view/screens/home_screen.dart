@@ -9,7 +9,6 @@ import 'package:travelwin/logic/controllers/adController.dart';
 import 'package:travelwin/logic/controllers/guidence_controller.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:upgrader/upgrader.dart';
-import '../../helpers/helper.dart';
 import '../../logic/controllers/home_controller.dart';
 import '../../routes/routes.dart';
 import '../../utils/theme.dart';
@@ -62,16 +61,64 @@ class _HomeScreenState extends State<HomeScreen> {
         updateUnreadNotificationCount();
       }
 
+      // Check if app was opened from a terminated state via notification click
+      FirebaseMessaging.instance.getInitialMessage().then((message) {
+        if (message != null) {
+          Get.toNamed(Routes.ViewNotificationScreen);
+        }
+      });
+
       FirebaseMessaging.onMessage.listen((event) async {
         final notifs = await n.RemoteServices.fetchNotifications('1');
         if (notifs != null) {
           notification.value = notifs;
           updateUnreadNotificationCount();
         }
-        if (event.notification != null && mounted) {
-          showSnackBar(
-            context,
-            '${event.notification!.title ?? ""}\n${event.notification!.body ?? ""}',
+        if (event.notification != null) {
+          final title = event.notification!.title ?? 'Notification'.tr;
+          final body = event.notification!.body ?? '';
+          Get.snackbar(
+            title,
+            body,
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.white,
+            colorText: const Color(0xFF1E293B),
+            titleText: Text(
+              title,
+              style: TextStyle(
+                fontSize: 13.5.sp,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF0F172A),
+              ),
+            ),
+            messageText: Text(
+              body,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: const Color(0xFF475569),
+              ),
+            ),
+            icon: Container(
+              margin: EdgeInsets.all(6.w),
+              padding: EdgeInsets.all(8.w),
+              decoration: const BoxDecoration(
+                color: Color(0xFFEF4444),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.notifications_active_rounded,
+                  color: Colors.white, size: 18.sp),
+            ),
+            duration: const Duration(seconds: 5),
+            margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+            borderRadius: 14,
+            boxShadows: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.12),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+            onTap: (_) => Get.toNamed(Routes.ViewNotificationScreen),
           );
         }
       });
