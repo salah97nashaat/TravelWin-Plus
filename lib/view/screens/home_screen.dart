@@ -411,57 +411,109 @@ class _HomeScreenState extends State<HomeScreen> {
                 Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(), // Important
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 8.w,
-                    crossAxisSpacing: 8.w,
-                    childAspectRatio: 0.86, // Optimized height to perfectly fit larger icons without overflow
-                    children: [
-                      HomeActionItem(
-                        title: 'Flights',
-                        icon: Icons.flight_takeoff_rounded,
-                        gradientColors: const [Color(0xFF2563EB), Color(0xFF38BDF8)],
-                        onTap: () => Get.toNamed(Routes.FlightsScreen),
-                      ),
-                      HomeActionItem(
-                        title: 'Daily Trips',
-                        icon: Icons.explore_rounded,
-                        gradientColors: const [Color(0xFF059669), Color(0xFF34D399)],
-                        onTap: () => Get.toNamed(Routes.ViewTripsScreen),
-                      ),
-                      HomeActionItem(
-                        title: 'Medical',
-                        icon: Icons.health_and_safety_rounded,
-                        gradientColors: const [Color(0xFFE11D48), Color(0xFFFB7185)],
-                        onTap: () => Get.toNamed(Routes.MedicalTourism),
-                      ),
-                      HomeActionItem(
-                        title: 'Activities',
-                        icon: Icons.attractions_rounded,
-                        gradientColors: const [Color(0xFFD97706), Color(0xFFFBBF24)],
-                        onTap: () => Get.toNamed(Routes.ActivitiesScreen),
-                      ),
-                      HomeActionItem(
-                        title: 'Guide',
-                        icon: Icons.badge_rounded,
-                        gradientColors: const [Color(0xFF7C3AED), Color(0xFFA78BFA)],
-                        onTap: () => Get.toNamed(Routes.SearchTour),
-                      ),
-                      HomeActionItem(
-                        title: 'Duty Pharmacies',
-                        icon: Icons.local_pharmacy_rounded,
-                        gradientColors: const [Color(0xFF0D9488), Color(0xFF2DD4BF)],
-                        onTap: () => Get.toNamed(Routes.DutyPharmaciesScreen),
-                      ),
-                      HomeActionItem(
-                        title: 'Whos Around',
-                        icon: Icons.groups_rounded,
-                        gradientColors: const [Color(0xFF8B5CF6), Color(0xFFEC4899)],
-                        onTap: () => Get.to(() => const HangoutsScreen()),
-                      ),
-                    ],
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final totalW = constraints.maxWidth;
+                      final itemW = (totalW - 24.w) / 4;
+                      final itemH = itemW / 0.86;
+                      final wideW = (itemW * 2) + 8.w;
+
+                      return Column(
+                        children: [
+                          // Row 1: 4 standard action boxes
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: itemW,
+                                height: itemH,
+                                child: HomeActionItem(
+                                  title: 'Flights',
+                                  icon: Icons.flight_takeoff_rounded,
+                                  gradientColors: const [Color(0xFF2563EB), Color(0xFF38BDF8)],
+                                  onTap: () => Get.toNamed(Routes.FlightsScreen),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              SizedBox(
+                                width: itemW,
+                                height: itemH,
+                                child: HomeActionItem(
+                                  title: 'Daily Trips',
+                                  icon: Icons.explore_rounded,
+                                  gradientColors: const [Color(0xFF059669), Color(0xFF34D399)],
+                                  onTap: () => Get.toNamed(Routes.ViewTripsScreen),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              SizedBox(
+                                width: itemW,
+                                height: itemH,
+                                child: HomeActionItem(
+                                  title: 'Medical',
+                                  icon: Icons.health_and_safety_rounded,
+                                  gradientColors: const [Color(0xFFE11D48), Color(0xFFFB7185)],
+                                  onTap: () => Get.toNamed(Routes.MedicalTourism),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              SizedBox(
+                                width: itemW,
+                                height: itemH,
+                                child: HomeActionItem(
+                                  title: 'Activities',
+                                  icon: Icons.attractions_rounded,
+                                  gradientColors: const [Color(0xFFD97706), Color(0xFFFBBF24)],
+                                  onTap: () => Get.toNamed(Routes.ActivitiesScreen),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8.w),
+                          // Row 2: 2 standard boxes + 1 wide card covering 2 columns
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: itemW,
+                                height: itemH,
+                                child: HomeActionItem(
+                                  title: 'Guide',
+                                  icon: Icons.badge_rounded,
+                                  gradientColors: const [Color(0xFF7C3AED), Color(0xFFA78BFA)],
+                                  onTap: () => Get.toNamed(Routes.SearchTour),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              SizedBox(
+                                width: itemW,
+                                height: itemH,
+                                child: HomeActionItem(
+                                  title: 'Duty Pharmacies',
+                                  icon: Icons.local_pharmacy_rounded,
+                                  gradientColors: const [Color(0xFF0D9488), Color(0xFF2DD4BF)],
+                                  onTap: () => Get.toNamed(Routes.DutyPharmaciesScreen),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              // Spans 2 slots: "Who's Around" / مين قريب
+                              SizedBox(
+                                width: wideW,
+                                height: itemH,
+                                child: HomeActionWideItem(
+                                  title: 'Whos Around',
+                                  badge: Get.locale?.languageCode == 'ar' ? 'جديد' : 'NEW',
+                                  subtitle: Get.locale?.languageCode == 'ar'
+                                      ? 'شارك الأنشطة وتعرّف'
+                                      : 'Connect & Hangout',
+                                  icon: Icons.groups_rounded,
+                                  gradientColors: const [Color(0xFF8B5CF6), Color(0xFFEC4899)],
+                                  onTap: () => Get.to(() => const HangoutsScreen()),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
 
@@ -1006,6 +1058,196 @@ class _HomeActionItemState extends State<HomeActionItem>
                       letterSpacing: 0.1,
                       height: 1.15,
                     ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Modern Animated Wide Home Action Card (Spans 2 columns for featured/new sections)
+class HomeActionWideItem extends StatefulWidget {
+  final String title;
+  final String? subtitle;
+  final String? badge;
+  final IconData icon;
+  final List<Color> gradientColors;
+  final VoidCallback onTap;
+
+  const HomeActionWideItem({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.badge,
+    required this.icon,
+    required this.gradientColors,
+    required this.onTap,
+  });
+
+  @override
+  State<HomeActionWideItem> createState() => _HomeActionWideItemState();
+}
+
+class _HomeActionWideItemState extends State<HomeActionWideItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 2200),
+      vsync: this,
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+      scale: _isPressed ? 0.94 : 1.0,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(
+            color: widget.gradientColors.first.withOpacity(0.25),
+            width: 1.3,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: widget.gradientColors.first.withOpacity(0.12),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onTap,
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) => setState(() => _isPressed = false),
+            onTapCancel: () => setState(() => _isPressed = false),
+            borderRadius: BorderRadius.circular(14.r),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+              child: Row(
+                children: [
+                  AnimatedBuilder(
+                    animation: _pulseAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _pulseAnimation.value,
+                        child: Container(
+                          padding: EdgeInsets.all(7.w),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: widget.gradientColors,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: widget.gradientColors.first
+                                    .withOpacity(0.35 * _pulseAnimation.value),
+                                blurRadius: 6 * _pulseAnimation.value,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            widget.icon,
+                            color: Colors.white,
+                            size: 19.sp,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(width: 7.w),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                widget.title.tr,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10.2.sp,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF1E293B),
+                                  height: 1.15,
+                                ),
+                              ),
+                            ),
+                            if (widget.badge != null) ...[
+                              SizedBox(width: 4.w),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 4.w, vertical: 1.5.h),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFEC4899), Color(0xFFF43F5E)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(5.r),
+                                ),
+                                child: Text(
+                                  widget.badge!,
+                                  style: TextStyle(
+                                    fontSize: 7.2.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    height: 1.1,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        if (widget.subtitle != null) ...[
+                          SizedBox(height: 2.h),
+                          Text(
+                            widget.subtitle!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 8.sp,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF64748B),
+                              height: 1.15,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 12.sp,
+                    color: widget.gradientColors.first.withOpacity(0.6),
                   ),
                 ],
               ),
