@@ -18,6 +18,7 @@ import '../widgets/slider/carsoul_slider.dart';
 import '../widgets/tourism_place.dart';
 import 'hangouts/hangouts_screen.dart';
 import '../../services/weather_service.dart';
+import '../../services/app_update_service.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -37,6 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WeatherService.init();
     _initNotifications();
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        AppUpdateService.checkForUpdate();
+      }
+    });
   }
 
   Future<void> _initNotifications() async {
