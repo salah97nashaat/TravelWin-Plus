@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/helpers/adv/admob_banner.dart';
+import 'package:travelwin/helpers/helper.dart';
 import 'package:travelwin/models/hangout_model.dart';
 import 'package:travelwin/services/hangout_service.dart';
 import 'package:travelwin/view/screens/hangouts/create_hangout_sheet.dart';
@@ -95,6 +96,12 @@ class _HangoutsScreenState extends State<HangoutsScreen>
   }
 
   void _openCreateSheet() {
+    if (!checkLogin(
+      message: Get.locale?.languageCode == 'ar'
+          ? 'يجب تسجيل الدخول لإنشاء نشاط والبحث عن شريك طلعة بالقرب منك'
+          : 'Please sign in to create a meetup',
+    )) return;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

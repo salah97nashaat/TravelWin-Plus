@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:travelwin/helpers/adv/admob_banner.dart';
+import 'package:travelwin/helpers/helper.dart';
 import 'package:travelwin/logic/controllers/medicalTourismController.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/utils/theme.dart';
@@ -24,6 +24,11 @@ class _MedicalTourismState extends State<MedicalTourism> {
           : Get.put(MedicalTourismController());
 
   void _showConsultationSheet(BuildContext context) {
+    if (!checkLogin(
+      message: Get.locale?.languageCode == 'ar'
+          ? 'يرجى تسجيل الدخول أولاً لطلب استشارة طبية أو حجز موعد في المشافي'
+          : 'Please sign in to request a medical consultation',
+    )) return;
     final isAr = Get.locale?.languageCode == 'ar';
     final nameController = TextEditingController(
         text: profile.value.data?.name != null
@@ -507,7 +512,6 @@ class _MedicalTourismState extends State<MedicalTourism> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,

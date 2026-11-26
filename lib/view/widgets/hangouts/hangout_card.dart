@@ -6,6 +6,7 @@ import 'package:travelwin/models/hangout_model.dart';
 import 'package:travelwin/routes/routes.dart';
 import 'package:travelwin/services/hangout_service.dart';
 import 'package:travelwin/services/profile_services.dart';
+import 'package:travelwin/helpers/helper.dart';
 import 'package:travelwin/logic/controllers/chat_controller.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/view/widgets/hangouts/hangout_report_dialog.dart';
@@ -28,6 +29,12 @@ class _HangoutCardState extends State<HangoutCard> {
   bool _isJoining = false;
 
   void _handleJoin() {
+    if (!checkLogin(
+      message: Get.locale?.languageCode == 'ar'
+          ? 'يجب تسجيل الدخول للانضمام والتفاعل مع الأنشطة القريبة'
+          : 'Please sign in to join meetups',
+    )) return;
+
     if (isUserProfileIncomplete()) {
       _showIncompleteProfileAlert();
       return;

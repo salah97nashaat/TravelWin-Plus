@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/models/win_pass_model.dart';
 import 'package:travelwin/services/win_pass_service.dart';
+import 'package:travelwin/helpers/helper.dart';
 import 'win_pass_stamp_sheet.dart';
 
 class WinPassHeroCard extends StatefulWidget {
@@ -41,6 +42,11 @@ class _WinPassHeroCardState extends State<WinPassHeroCard> {
 
   void _openSheet() {
     if (_program == null || !_program!.hasWinPass) return;
+    if (!checkLogin(
+      message: Get.locale?.languageCode == 'ar'
+          ? 'قسم الكوبونات وبطاقات الخصم مخصص للأعضاء المسجلين.. يرجى تسجيل الدخول لتفعيل خصمك!'
+          : 'Coupons are available for registered members. Please sign in!',
+    )) return;
 
     showModalBottomSheet(
       context: context,

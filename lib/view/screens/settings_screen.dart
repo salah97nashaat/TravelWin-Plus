@@ -9,6 +9,7 @@ import 'package:travelwin/logic/controllers/auth_controller.dart';
 import 'package:travelwin/logic/controllers/settings_controller.dart';
 import 'package:travelwin/utils/my_string.dart';
 import '../../routes/routes.dart';
+import '../../helpers/helper.dart';
 import '../widgets/setting/share_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -326,7 +327,14 @@ class _SettingsScreenState extends State<SettingsScreen>
                   ),
                 ),
               ),
-              onTap: () => Get.toNamed(Routes.travelAIAssistantScreen),
+              onTap: () {
+                if (!checkLogin(
+                  message: isAr
+                      ? 'يرجى تسجيل الدخول أولاً للتحدث مع المساعد الذكي Salo ✦'
+                      : 'Please sign in to chat with Salo AI assistant',
+                )) return;
+                Get.toNamed(Routes.travelAIAssistantScreen);
+              },
             ),
             const Divider(height: 1, color: Color(0xFFF1F5F9), indent: 56),
 

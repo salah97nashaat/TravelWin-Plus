@@ -11,6 +11,7 @@ import 'package:travelwin/utils/my_string.dart';
 import '../../../logic/controllers/tourguy_controller.dart';
 import '../../../logic/controllers/chat_controller.dart';
 import '../../../routes/routes.dart';
+import '../../../helpers/helper.dart';
 
 class TourGuyWidget extends StatelessWidget {
   TourGuyWidget({super.key, required this.index});
@@ -321,6 +322,11 @@ class TourGuyWidget extends StatelessWidget {
                       InkWell(
                         borderRadius: BorderRadius.circular(12),
                         onTap: () async {
+                          if (!checkLogin(
+                            message: Get.locale?.languageCode == 'ar'
+                                ? 'يرجى تسجيل الدخول لمراسلة المرشد السياحي عبر الشات'
+                                : 'Please sign in to chat with the tour guide',
+                          )) return;
                           if (token.value != 'null') {
                             showLoaderDialog();
                             await RemoteServices.fetchChatMessages(

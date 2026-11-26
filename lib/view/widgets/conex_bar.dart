@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../logic/controllers/main_controller.dart';
 import '../../logic/controllers/service_controller.dart';
 import '../../routes/routes.dart';
+import '../../helpers/helper.dart';
 import '../../utils/my_string.dart';
 import '../../utils/theme.dart';
 
@@ -131,17 +132,13 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
               iconPath: 'assets/images/income.svg',
               label: 'Services',
               customTap: () {
-                if (token.value != 'null') {
-                  ServicesController sc = Get.put(ServicesController());
-                  sc.getBanners();
-                  sc.getServices();
-                  setState(() {
-                    controller.currentIndex.value = 1;
-                    tabController.animateTo(1);
-                  });
-                } else {
-                  showSnackBar(context, 'Login is required'.tr);
-                }
+                ServicesController sc = Get.put(ServicesController());
+                sc.getBanners();
+                sc.getServices();
+                setState(() {
+                  controller.currentIndex.value = 1;
+                  tabController.animateTo(1);
+                });
               },
             ),
             // 2: TWA (NEW)
@@ -150,14 +147,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
               iconPath: 'assets/images/hiking.svg', // Ensure this asset exists
               label: 'TWA',
               customTap: () {
-                if (token.value != 'null') {
-                  setState(() {
-                    controller.currentIndex.value = 2;
-                    tabController.animateTo(2);
-                  });
-                } else {
-                  showSnackBar(context, 'Login is required'.tr);
-                }
+                setState(() {
+                  controller.currentIndex.value = 2;
+                  tabController.animateTo(2);
+                });
               },
             ),
             // // 3: Activities (NEW)
@@ -182,15 +175,18 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
               iconPath: 'assets/images/send.svg',
               label: 'Messages',
               customTap: () {
+                if (!checkLogin(
+                  message: Get.locale?.languageCode == 'ar'
+                      ? 'قسم الرسائل والمحادثات مخصص للأعضاء.. يرجى تسجيل الدخول للتواصل'
+                      : 'Please sign in to view and send messages',
+                )) return;
                 if (token.value != 'null') {
                   setState(() {
                     controller.currentIndex.value = 3;
                     tabController.animateTo(3);
                   });
-                } else {
-                  showSnackBar(context, 'Login is required'.tr);
                 }
-              }
+              },
             ),
 
             /* 

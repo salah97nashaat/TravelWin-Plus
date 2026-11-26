@@ -1,7 +1,5 @@
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:travelwin/models/advUnitId.dart';
@@ -36,10 +34,123 @@ bool get isLogin {
 
 bool get isGustUser {
   final GetStorage authBox = GetStorage();
+  final token = authBox.read('token');
+  if (token == null || token.toString() == 'null' || token.toString().trim().isEmpty) {
+    return true;
+  }
   final x = authBox.read('useremail');
-
   if (x != null && x == 'usergust@gmail.com') return true;
   return false;
+}
+
+bool get isGuestUser => isGustUser;
+
+bool checkLogin({String? title, String? message}) {
+  if (isGuestUser) {
+    showGuestLoginDialog(title: title, message: message);
+    return false;
+  }
+  return true;
+}
+
+void showGuestLoginDialog({String? title, String? message}) {
+  final isAr = Get.locale?.languageCode == 'ar' || (Get.locale == null);
+  Get.dialog(
+    Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      elevation: 10,
+      backgroundColor: Colors.white,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 26, vertical: 24),
+      child: Padding(
+        padding: const EdgeInsets.all(22.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFBFDBFE), width: 1.5),
+              ),
+              child: const Icon(
+                Icons.lock_outline_rounded,
+                color: Color(0xFF2563EB),
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title ?? (isAr ? "تسجيل الدخول مطلوب" : "Login Required"),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF0F172A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message ??
+                  (isAr
+                      ? "يرجى تسجيل الدخول أو إنشاء حساب للاستفادة من هذه الميزة والتواصل بحرية."
+                      : "Please sign in or create an account to access this feature."),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 13,
+                height: 1.45,
+                color: Color(0xFF475569),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  Get.toNamed(Routes.loginScreen);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2563EB),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  isAr ? "تسجيل الدخول / إنشاء حساب 🚀" : "Sign In / Register 🚀",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            SizedBox(
+              width: double.infinity,
+              height: 38,
+              child: TextButton(
+                onPressed: () => Get.back(),
+                child: Text(
+                  isAr ? "المتابعة كزائر" : "Continue as Guest",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF94A3B8),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 //  Future<bool> showMessageIfGust(BuildContext context) async {

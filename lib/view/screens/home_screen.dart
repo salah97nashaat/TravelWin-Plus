@@ -20,6 +20,7 @@ import '../widgets/tourism_place.dart';
 import 'hangouts/hangouts_screen.dart';
 import '../../services/weather_service.dart';
 import '../../services/app_update_service.dart';
+import '../../helpers/helper.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -363,20 +364,24 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildIconButton(
                 icon: 'assets/images/favorite.svg',
                 onTap: () {
-                  if (token != 'null') {
+                  if (checkLogin(
+                    message: Get.locale?.languageCode == 'ar'
+                        ? 'يرجى تسجيل الدخول للوصول إلى قائمتك المفضلة وحفظ رحلاتك'
+                        : 'Please sign in to access your favorites list',
+                  )) {
                     Get.toNamed(Routes.favorites);
-                  } else {
-                    showSnackBar(context, 'Login is required'.tr);
                   }
                 },
               ),
               SizedBox(width: 6.w),
               AnimatedNotificationBell(
                 onTap: () {
-                  if (token != 'null') {
+                  if (checkLogin(
+                    message: Get.locale?.languageCode == 'ar'
+                        ? 'يرجى تسجيل الدخول للاطلاع على إشعاراتك وتحديثات طلباتك'
+                        : 'Please sign in to view your notifications',
+                  )) {
                     Get.toNamed(Routes.ViewNotificationScreen);
-                  } else {
-                    showSnackBar(context, 'Login is required'.tr);
                   }
                 },
               ),
@@ -768,6 +773,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildAiButton() {
     return GestureDetector(
       onTap: () {
+        if (!checkLogin(
+          message: Get.locale?.languageCode == 'ar'
+              ? 'يرجى تسجيل الدخول أولاً للتحدث مع المساعد الذكي Salo ✦'
+              : 'Please sign in to chat with Salo AI assistant',
+        )) return;
         Get.toNamed(Routes.travelAIAssistantScreen);
       },
       child: Container(

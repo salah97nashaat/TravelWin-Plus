@@ -707,7 +707,14 @@ class _ViewTripsDetailsScreenState extends State<ViewTripsDetailsScreen> {
                 color: mainColor,
                 fontColor: Colors.white,
                 name: 'Book Trip'.tr,
-                onTap: _showBookingSheet),
+                onTap: () {
+                  if (!checkLogin(
+                    message: Get.locale?.languageCode == 'ar'
+                        ? 'يرجى تسجيل الدخول لتأكيد حجز الرحلة ومتابعة تفاصيلها وتواصل السائق'
+                        : 'Please sign in to book this trip',
+                  )) return;
+                  _showBookingSheet();
+                }),
             SizedBox(
               height: 10.h,
             ),
