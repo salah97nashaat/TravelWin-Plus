@@ -13,6 +13,7 @@ import '../../logic/controllers/home_controller.dart';
 import '../../routes/routes.dart';
 import '../../utils/theme.dart';
 import 'package:travelwin/services/notification_services.dart' as n;
+import '../../services/profile_services.dart';
 // import '../widgets/card_ui.dart';
 import '../widgets/slider/carsoul_slider.dart';
 import '../widgets/tourism_place.dart';
@@ -261,86 +262,85 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 38.h,
               fit: BoxFit.contain,
             ),
-            // --- LEFT: Profile & Settings ---
-            leadingWidth: 120.w,
-            leading: Row(
-              children: [
-                SizedBox(width: 15.w),
-                // 1. Profile with Static Fallback & Incomplete Badge
-                Visibility(
-                  visible: token.toString() != 'null',
-                  child: GestureDetector(
-                    onTap: () => Get.toNamed(Routes.ProfileScreen),
-                    child: Obx(() {
-                      final imageUrl = profile.value.data?.image;
-                      final profileImageUri =
-                          imageUrl == null ? null : Uri.tryParse(imageUrl);
-                      final bool hasImage = profileImageUri != null &&
-                          profileImageUri.hasScheme &&
-                          profileImageUri.host.isNotEmpty &&
-                          !profileImageUri.path.endsWith('/public/') &&
-                          profileImageUri.path != '/';
-                      final bool incomplete = isUserProfileIncomplete();
+            // --- LEFT: Single Unified Profile / Settings Avatar ---
+            leadingWidth: 62.w,
+            leading: Padding(
+              padding: EdgeInsetsDirectional.only(start: 14.w),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => Get.toNamed(Routes.SettingsScreen),
+                  child: Obx(() {
+                    final imageUrl = profile.value.data?.image;
+                    final profileImageUri =
+                        imageUrl == null ? null : Uri.tryParse(imageUrl);
+                    final bool hasImage = profileImageUri != null &&
+                        profileImageUri.hasScheme &&
+                        profileImageUri.host.isNotEmpty &&
+                        !profileImageUri.path.endsWith('/public/') &&
+                        profileImageUri.path != '/';
+                    final bool incomplete = isUserProfileIncomplete();
 
-                      return Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: incomplete
-                                    ? const Color(0xFFEF4444)
-                                    : mainColor.withOpacity(0.3),
-                                width: 1.5,
-                              ),
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: incomplete
+                                  ? const Color(0xFFEF4444)
+                                  : mainColor.withOpacity(0.4),
+                              width: 1.8,
                             ),
-                            child: CircleAvatar(
-                              radius: 20.w,
-                              backgroundColor: Colors.white,
-                              // If hasImage is true, use NetworkImage, else use static Asset
-                              backgroundImage: hasImage
-                                  ? NetworkImage(imageUrl!)
-                                  : const AssetImage('assets/images/user.png')
-                                      as ImageProvider,
+                            boxShadow: [
+                              BoxShadow(
+                                color: (incomplete
+                                        ? const Color(0xFFEF4444)
+                                        : mainColor)
+                                    .withOpacity(0.15),
+                                blurRadius: 6,
+                                spreadRadius: 0.5,
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 19.w,
+                            backgroundColor: Colors.white,
+                            backgroundImage: hasImage
+                                ? NetworkImage(imageUrl!)
+                                : const AssetImage('assets/images/user.png')
+                                    as ImageProvider,
+                          ),
+                        ),
+                        if (incomplete)
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Container(
+                              width: 11.w,
+                              height: 11.w,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEF4444),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: Colors.white, width: 2),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFEF4444)
+                                        .withOpacity(0.6),
+                                    blurRadius: 4,
+                                    spreadRadius: 0.5,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          if (incomplete)
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Container(
-                                width: 11.w,
-                                height: 11.w,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFEF4444),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                      color: Colors.white, width: 2),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFEF4444)
-                                          .withOpacity(0.6),
-                                      blurRadius: 4,
-                                      spreadRadius: 0.5,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                        ],
-                      );
-                    }),
-                  ),
+                      ],
+                    );
+                  }),
                 ),
-                SizedBox(width: 12.w),
-                // 2. Settings
-                _buildIconButton(
-                  icon: 'assets/images/setting.svg',
-                  onTap: () => Get.toNamed(Routes.SettingsScreen),
-                ),
-              ],
+              ),
             ),
             // --- RIGHT: Tools, Favorite & Notification ---
             actions: [
