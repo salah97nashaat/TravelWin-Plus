@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,6 +25,8 @@ class _ChatState extends State<Chat> {
   late final ChatController chatController;
   final ScrollController _scrollController = ScrollController();
   Timer? _pollTimer;
+  StreamSubscription<RemoteMessage>? _fcmSub;
+  bool _isFetching = false;
 
   @override
   void initState() {
@@ -34,23 +37,41 @@ class _ChatState extends State<Chat> {
     chatController.loadMessages();
     _scrollToBottom();
 
-    // Live polling every 3 seconds to keep chat updated without manual refresh
-    _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
-      if (!mounted || guidenceId.value <= 0) return;
-      try {
-        final res = await RemoteServices.fetchChatMessages(guidenceId.value.toString());
-        if (res != null && res.data != null && mounted) {
-          if (res.data!.length != chatController.messages.length) {
-            chatController.loadMessages();
-            _scrollToBottom();
-          }
-        }
-      } catch (_) {}
+    // 1. Instant FCM trigger: as soon as a message arrives from server via push, refresh immediately!
+    _fcmSub = FirebaseMessaging.onMessage.listen((message) {
+      if (!mounted) return;
+      _fetchLatestMessages();
     });
+
+    // 2. Ultra-responsive 1.5s background polling ticker for real-time moment-by-moment chat
+    _pollTimer = Timer.periodic(const Duration(milliseconds: 1500), (_) {
+      _fetchLatestMessages();
+    });
+  }
+
+  Future<void> _fetchLatestMessages() async {
+    if (!mounted || guidenceId.value <= 0 || _isFetching) return;
+    _isFetching = true;
+    try {
+      final res = await RemoteServices.fetchChatMessages(guidenceId.value.toString());
+      if (res != null && res.data != null && mounted) {
+        final remote = res.data!;
+        final current = chatController.messages;
+        final bool changed = remote.length != current.length ||
+            (remote.isNotEmpty && current.isNotEmpty && remote.last.message != current.last.message);
+        if (changed) {
+          chatController.loadMessages();
+          _scrollToBottom();
+        }
+      }
+    } catch (_) {} finally {
+      _isFetching = false;
+    }
   }
 
   @override
   void dispose() {
+    _fcmSub?.cancel();
     _pollTimer?.cancel();
     controller.dispose();
     _scrollController.dispose();
@@ -85,6 +106,7 @@ class _ChatState extends State<Chat> {
     _scrollToBottom();
 
     RemoteServices.SendMessage(guidenceId.value, text, 'text').then((val) {
+      _fetchLatestMessages();
       RemoteServices.fetchChats();
     });
   }

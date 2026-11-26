@@ -64,6 +64,17 @@ class _HomeScreenState extends State<HomeScreen> {
       // Check if app was opened from a terminated state via notification click
       FirebaseMessaging.instance.getInitialMessage().then((message) {
         if (message != null) {
+          final data = message.data;
+          if (data['type'] == 'chat' && data['sender_id'] != null) {
+            final senderId = int.tryParse(data['sender_id'].toString()) ?? 0;
+            if (senderId > 0) {
+              guidenceId.value = senderId;
+              RemoteServices.fetchChatMessages(senderId.toString()).then((_) {
+                Get.toNamed(Routes.ChatScreen);
+              });
+              return;
+            }
+          }
           Get.toNamed(Routes.ViewNotificationScreen);
         }
       });
@@ -77,6 +88,14 @@ class _HomeScreenState extends State<HomeScreen> {
         if (event.notification != null) {
           final title = event.notification!.title ?? 'Notification'.tr;
           final body = event.notification!.body ?? '';
+          final data = event.data;
+          final isChat = data['type'] == 'chat';
+
+          // If currently inside the chat screen, suppress floating banner (the chat screen updates live)
+          if (isChat && Get.currentRoute == Routes.ChatScreen) {
+            return;
+          }
+
           Get.snackbar(
             title,
             body,
@@ -101,14 +120,17 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Container(
               margin: EdgeInsets.all(6.w),
               padding: EdgeInsets.all(8.w),
-              decoration: const BoxDecoration(
-                color: Color(0xFFEF4444),
+              decoration: BoxDecoration(
+                color: isChat ? const Color(0xFF2563EB) : const Color(0xFFEF4444),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.notifications_active_rounded,
-                  color: Colors.white, size: 18.sp),
+              child: Icon(
+                isChat ? Icons.chat_bubble_rounded : Icons.notifications_active_rounded,
+                color: Colors.white,
+                size: 18.sp,
+              ),
             ),
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 4),
             margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             borderRadius: 14,
             boxShadows: [
@@ -118,7 +140,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 offset: const Offset(0, 4),
               ),
             ],
-            onTap: (_) => Get.toNamed(Routes.ViewNotificationScreen),
+            onTap: (_) {
+              if (isChat && data['sender_id'] != null) {
+                final senderId = int.tryParse(data['sender_id'].toString()) ?? 0;
+                if (senderId > 0) {
+                  guidenceId.value = senderId;
+                  RemoteServices.fetchChatMessages(senderId.toString()).then((_) {
+                    Get.toNamed(Routes.ChatScreen);
+                  });
+                  return;
+                }
+              }
+              Get.toNamed(Routes.ViewNotificationScreen);
+            },
           );
         }
       });
@@ -128,6 +162,17 @@ class _HomeScreenState extends State<HomeScreen> {
         if (notifs != null) {
           notification.value = notifs;
           updateUnreadNotificationCount();
+        }
+        final data = event.data;
+        if (data['type'] == 'chat' && data['sender_id'] != null) {
+          final senderId = int.tryParse(data['sender_id'].toString()) ?? 0;
+          if (senderId > 0) {
+            guidenceId.value = senderId;
+            RemoteServices.fetchChatMessages(senderId.toString()).then((_) {
+              Get.toNamed(Routes.ChatScreen);
+            });
+            return;
+          }
         }
         Get.toNamed(Routes.ViewNotificationScreen);
       });
@@ -1099,7 +1144,7 @@ class _HomeActionItemState extends State<HomeActionItem>
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 8.8.sp,
+                      fontSize: 10.5.sp,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF1E293B),
                       letterSpacing: 0.1,
@@ -1194,7 +1239,7 @@ class _HomeActionWideItemState extends State<HomeActionWideItem>
             onTapCancel: () => setState(() => _isPressed = false),
             borderRadius: BorderRadius.circular(14.r),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
               child: Row(
                 children: [
                   AnimatedBuilder(
@@ -1203,7 +1248,7 @@ class _HomeActionWideItemState extends State<HomeActionWideItem>
                       return Transform.scale(
                         scale: _pulseAnimation.value,
                         child: Container(
-                          padding: EdgeInsets.all(7.w),
+                          padding: EdgeInsets.all(8.w),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: widget.gradientColors,
@@ -1223,13 +1268,13 @@ class _HomeActionWideItemState extends State<HomeActionWideItem>
                           child: Icon(
                             widget.icon,
                             color: Colors.white,
-                            size: 19.sp,
+                            size: 21.sp,
                           ),
                         ),
                       );
                     },
                   ),
-                  SizedBox(width: 7.w),
+                  SizedBox(width: 8.w),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1243,28 +1288,28 @@ class _HomeActionWideItemState extends State<HomeActionWideItem>
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: 10.2.sp,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF1E293B),
+                                  fontSize: 13.5.sp,
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xFF0F172A),
                                   height: 1.15,
                                 ),
                               ),
                             ),
                             if (widget.badge != null) ...[
-                              SizedBox(width: 4.w),
+                              SizedBox(width: 5.w),
                               Container(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 4.w, vertical: 1.5.h),
+                                    horizontal: 5.w, vertical: 2.h),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
                                     colors: [Color(0xFFEC4899), Color(0xFFF43F5E)],
                                   ),
-                                  borderRadius: BorderRadius.circular(5.r),
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                   widget.badge!,
                                   style: TextStyle(
-                                    fontSize: 7.2.sp,
+                                    fontSize: 9.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                     height: 1.1,
@@ -1275,15 +1320,15 @@ class _HomeActionWideItemState extends State<HomeActionWideItem>
                           ],
                         ),
                         if (widget.subtitle != null) ...[
-                          SizedBox(height: 2.h),
+                          SizedBox(height: 2.5.h),
                           Text(
                             widget.subtitle!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 8.sp,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF64748B),
+                              fontSize: 10.5.sp,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF475569),
                               height: 1.15,
                             ),
                           ),
@@ -1293,7 +1338,7 @@ class _HomeActionWideItemState extends State<HomeActionWideItem>
                   ),
                   Icon(
                     Icons.arrow_forward_ios_rounded,
-                    size: 12.sp,
+                    size: 13.5.sp,
                     color: widget.gradientColors.first.withOpacity(0.6),
                   ),
                 ],

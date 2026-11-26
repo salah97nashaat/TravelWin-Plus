@@ -793,8 +793,8 @@ class _HangoutCardState extends State<HangoutCard> {
                 Text(
                   widget.hangout.title,
                   style: TextStyle(
-                    fontSize: 15.5.sp,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 16.5.sp,
+                    fontWeight: FontWeight.w900,
                     color: const Color(0xFF0F172A),
                     height: 1.3,
                   ),
@@ -807,7 +807,7 @@ class _HangoutCardState extends State<HangoutCard> {
                   Row(
                     children: [
                       const Icon(Icons.location_on_rounded,
-                          size: 16, color: Color(0xFFEA580C)),
+                          size: 17, color: Color(0xFFEA580C)),
                       SizedBox(width: 4.w),
                       Expanded(
                         child: Text(
@@ -815,8 +815,8 @@ class _HangoutCardState extends State<HangoutCard> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 12.5.sp,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 13.5.sp,
+                            fontWeight: FontWeight.w700,
                             color: const Color(0xFF334155),
                           ),
                         ),
@@ -1141,17 +1141,17 @@ class _HangoutLiveCountdownState extends State<HangoutLiveCountdown> {
         children: [
           Icon(
             isUrgent ? Icons.local_fire_department_rounded : Icons.timer_outlined,
-            size: 13.sp,
+            size: 14.5.sp,
             color: isUrgent ? const Color(0xFFEF4444) : const Color(0xFFD97706),
           ),
-          SizedBox(width: 4.w),
+          SizedBox(width: 4.5.w),
           Text(
             formattedText,
             style: TextStyle(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w700,
+              fontSize: 12.5.sp,
+              fontWeight: FontWeight.w800,
               fontFamily: 'monospace',
-              letterSpacing: 0.5,
+              letterSpacing: 0.6,
               color: isUrgent ? const Color(0xFFB91C1C) : const Color(0xFFB45309),
             ),
           ),
