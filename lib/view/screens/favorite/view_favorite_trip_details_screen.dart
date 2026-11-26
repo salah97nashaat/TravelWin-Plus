@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/helper.dart';
+import '../../../helpers/adv/admob_banner.dart';
 import '../../../logic/controllers/tripe_favorite_details_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
@@ -29,6 +30,7 @@ class _ViewFavoriteTripsDetailsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: const AdmobBannerUi(),
         appBar: AppBar(
             backgroundColor: Get.isDarkMode ? darkGreyClr : mainColor,
             elevation: 0,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../helpers/adv/admob_banner.dart';
 import '../../../logic/controllers/tripe_controller.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/theme.dart';
@@ -11,6 +12,7 @@ class ViewFavoritrTripsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: Get.isDarkMode ? darkGreyClr : mainColor,
         elevation: 0,

@@ -7,6 +7,7 @@ import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:travelwin/logic/controllers/activities_controller.dart';
 import 'package:travelwin/models/activity_model.dart';
 import 'package:travelwin/view/screens/activities/activities_card.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 
 class ActivitiesScreen extends StatelessWidget {
   final controller = Get.put(ActivitiesController());
@@ -15,6 +16,7 @@ class ActivitiesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FBFF), // Fresh light background
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

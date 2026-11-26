@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:travelwin/utils/my_string.dart';
 // import 'package:travelwin/view/widgets/upperContainerUi.dart';
-// import '../../../helpers/adv/admob_banner.dart';
+import '../../../helpers/adv/admob_banner.dart';
 import '../../../logic/controllers/tripe_controller.dart';
 import '../../../logic/controllers/adController.dart';
 import '../../../helpers/adv/admob_native.dart';
@@ -19,6 +19,7 @@ class ViewTripsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         leading: Container(),
         backgroundColor: Colors.white,

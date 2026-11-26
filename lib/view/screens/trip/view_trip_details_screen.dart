@@ -9,6 +9,7 @@ import 'package:travelwin/helpers/helper.dart';
 import 'package:travelwin/logic/controllers/place_details_controller.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/view/widgets/normalButton.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 import '../../../const.dart';
 import '../../../logic/controllers/slider_controller.dart';
 import '../../../services/profile_services.dart';
@@ -478,6 +479,7 @@ class _ViewTripsDetailsScreenState extends State<ViewTripsDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: const AdmobBannerUi(),
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Text(

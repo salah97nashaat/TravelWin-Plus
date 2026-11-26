@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../helpers/adv/admob_banner.dart';
 import '../../../routes/routes.dart';
 import '../../widgets/card_ui.dart';
 
@@ -11,8 +12,7 @@ class FavoriteHomeScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          //   drawer: MyDrawer(),
-          //    bottomNavigationBar: const AdmobBannerUi(),
+          bottomNavigationBar: const AdmobBannerUi(),
 
           // const ApplovinBannerUi(),
           body: Padding(

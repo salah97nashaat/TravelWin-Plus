@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:travelwin/logic/controllers/medicalTourismController.dart';
 import 'package:travelwin/utils/my_string.dart';
 import 'package:travelwin/utils/theme.dart';
@@ -506,6 +507,7 @@ class _MedicalTourismState extends State<MedicalTourism> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
+      bottomNavigationBar: const AdmobBannerUi(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,

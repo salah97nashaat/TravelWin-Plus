@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:travelwin/models/activity_model.dart';
 import 'package:travelwin/const.dart';
 import 'package:travelwin/utils/theme.dart';
+import 'package:travelwin/helpers/adv/admob_banner.dart';
 import 'package:travelwin/view/screens/activities/join_activityPage.dart'; // Ensure mainColor is here
 
 class ActivityDetailScreen extends StatelessWidget {
@@ -17,8 +18,14 @@ class ActivityDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // Floating Bottom Button
-      bottomNavigationBar: _buildBottomAction(context, isAr),
+      // Floating Bottom Button with Admob Banner
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildBottomAction(context, isAr),
+          const AdmobBannerUi(),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
           // 1. Immersive Header Image
